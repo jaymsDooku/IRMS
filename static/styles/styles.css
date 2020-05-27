@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono&display=swap');
+
+:root {
+	--main-bg-color: #bbc5f2;
+
+	--footer-bg-color: #1d2a61;
+
+	--login-title-color: #dbab27;
+    --login-bg-color: #dbd7d5;
+    --login-bg-color2: #adaaa8;
+    --login-fg-color: #ffffff;
+}
+
+@keyframes animatedBackground {
+	0% { background-position: 0% 50% }
+	50% { background-position: 100% 50% }
+	100% { background-position: 0% 50% }
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+	font-family: Jost;
+	color: white;
+	position: relative;
+}
+
+.container {
+	background: linear-gradient(295deg, #1d2a61, #e9e3ee);
+	background-size: 400% 400%;
+
+	animation: animatedBackground 30s ease infinite;
+
+	text-align: center;
+	height: 100%;
+	position: relative;
+}
+
+.login-container {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+
+	color: black;
+
+	display: inline-block;
+	padding: 100px;
+	padding-top: 50px;
+	background-color: var(--login-bg-color);
+}
+
+.login-header {
+	letter-spacing: 2px;
+}
+
+.login-header h2:first-child {
+	padding-left: 75px;
+	letter-spacing: 75px;
+	color: var(--login-bg-color2);
+	margin-bottom: 40px;
+}
+
+.login-container > * {
+	margin-bottom: 20px;
+}
+
+.form-entry {
+	margin-bottom: 20px;
+	font-size: 16px;
+}
+
+.login-body input {
+	padding: 5px 5px;
+	font-family: Jost;
+	font-size: 16px;
+	border: none;
+}
+
+.login-button-container button {
+	padding: 10px 10px;
+	font-family: Jost;
+	border: none;
+}
+
+.login-button-container button:hover {
+	color: white;
+	background-color: var(--login-bg-color2);
+	cursor: pointer;
+}
+
+footer {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: var(--footer-bg-color);
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
