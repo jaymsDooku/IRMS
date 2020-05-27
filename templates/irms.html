@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Incident Response Management System</title>
+        <meta name="description" content="IRMS">
+        <meta name="author" content="Cuddle Of Pandas">
+        <!--<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
+        <link href="{{ url_for('static', filename='styles/styles.css') }}" rel="stylesheet" type="text/css"/>
+    </head>
+  
+    <body>
+        <div class="container">
+            <header>
+                <div class="title">
+                    <h2>Incident Response Management System</h2>
+                </div>
+            </header>
+            <div class="section-container" id="sectionView">
+            </div>
+            <footer>
+                <div class="footer-container">
+                    <p>Written by Cuddle Of Pandas 2020 for BE SAD</p>
+                </div>
+            </footer>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+</html>
