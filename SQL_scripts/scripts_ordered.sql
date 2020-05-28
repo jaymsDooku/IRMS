@@ -28,6 +28,7 @@ CREATE TABLE SystemClasification
 CREATE TABLE Incident
 (
     incident_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author INTEGER REFERENCES User(user_id)
     title TEXT,
     desciption TEXT,
     sla_resolution_identification_time_frame NUMERIC,
