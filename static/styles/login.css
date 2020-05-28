@@ -1,0 +1,13 @@
+.login-container .irms-body {
+	flex-direction: column;
+	text-align: center;
+}
+
+.login-container .irms-body > * {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+.login-container .form-entry {
+	margin-bottom: 20px;
+}

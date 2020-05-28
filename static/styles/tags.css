@@ -1,0 +1,22 @@
+.incident-tag {
+	padding: 0 5px;
+	border: 1px solid black;
+	border-radius: 3px;
+	letter-spacing: 0;
+	margin-left: 10px;
+}
+
+.impact-1-tag {
+	background-color: #a83e32;
+	color: white;
+}
+
+.priority-1-tag {
+	background-color: #a83e32;
+	color: white;	
+}
+
+.resolving-tag {
+	background-color: #58ed55;
+	color: #0d2b0c;
+}
