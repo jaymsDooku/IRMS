@@ -329,3 +329,66 @@ th, td {
 .incident-teams tr td:last-child {
 	white-space: nowrap;
 }
+
+.incidents-container {
+	padding: 0;
+	padding-bottom: 20px;
+	width: 100%;
+}
+
+.incident-item {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 20px;
+	margin-bottom: 3px;
+	background-color: white;
+}
+
+.incident-item:last-child {
+	align-self: flex-end;
+}
+
+.tags {
+	display: flex;
+	flex-direction: row;
+}
+
+.incidents-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	background-color: white;
+}
+
+.incidents-header .irms-title {
+	padding: 20px;
+}
+
+.sort-options {
+	padding: 20px;
+	display: flex;
+	flex-direction: row;
+	align-self: flex-end;
+}
+
+.sort-options > * {
+	border-right: 1px solid black;
+	padding: 0 15px;
+}
+
+.sort-incident:hover {
+	cursor: pointer;
+}
+
+.sort-impact {
+	border-left: 1px solid black;
+}
+
+.sort-by {
+	background-color: #b4b5b3;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	color: white;
+}
