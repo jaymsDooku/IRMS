@@ -8,32 +8,35 @@
         <!--<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
         <link href="{{ url_for('static', filename='styles/styles.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ url_for('static', filename='styles/tags.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ url_for('static', filename='styles/navbar.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ url_for('static', filename='styles/login.css') }}" rel="stylesheet" type="text/css"/>
     </head>
   
     <body>
         <div class="container">
-            <!--<div class="navbar">
+            <div class="navbar">
                 <div class="navbar-body">
                     <div class="navbar-title">
                         <h3>IRMS</h3>
                     </div>
                     <div class="navbar-login">
-                        <p>Logged in: Ronald McDonald</p>
+                        <p>Logged in: <span>Ronald McDonald</span></p>
+                        <p>Role: <span>End User</span></p>
                     </div>
                     <div class="navbar-items">
                         <ul>
-                            <li>Raise Incident</li>
+                            <li class="navbar-selected">Raise Incident</li>
                             <li>Active Incidents</li>
                         </ul>
                     </div>
                 </div>
-            </div>-->
-            {% include 'list_incidents.html' %}
-            <footer>
-                <div class="footer-container">
-                    <p>Written by Cuddle Of Pandas 2020 for BE SAD 😢</p>
+                <div class="navbar-footer">
+                    <p><a href="https://github.com/jaymsDooku/IRMS">GitHub</a> | Cuddle Of Pandas 2020 for BE SAD 😢</p>
                 </div>
-            </footer>
+            </div>
+            <div class="container-body">
+                {% include 'list_incidents.html' %}
+            </div>
         </div>
 
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
