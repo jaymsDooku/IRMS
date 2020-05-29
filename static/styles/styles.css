@@ -293,11 +293,16 @@ button:hover {
 	background-color: var(--question-bg-color);
 }
 
-.incident-task {
-	background-color: var(--task-bg-color);
+.incident-task:first-child {
+	margin-left: 20px;
 }
 
-.incident-question, .incident-note, .incident-task {
+.incident-task {
+	background-color: var(--task-bg-color);
+	margin-right: 20px;
+}
+
+.incident-question, .incident-note {
 	flex: 1;
 	max-width: 250px;
 	max-height: 250px;
@@ -305,6 +310,15 @@ button:hover {
 	min-height: 250px;
 	padding: 20px;
 	border: 1px solid black;
+}
+
+.incident-task {
+	padding: 0;
+}
+
+.incident-task-body {
+	flex: 1;
+	padding: 20px;
 }
 
 .incident-question:hover, .incident-note:hover, .incident-task:hover {
@@ -317,7 +331,42 @@ button:hover {
 }
 
 .incident-question .irms-body, .incident-note .irms-body, .incident-task .irms-body {
-	padding-top: 10px;
+	padding: 10px;
+}
+
+.incident-task {
+	flex: 1;
+}
+
+.incident-task-meta {
+	background-color: #ed9693;
+	padding: 10px;
+	border: 1px solid black;
+	border-bottom: none;
+}
+
+.incident-task-body {
+	padding: 20px;
+	border: 1px solid black;
+	border-top: none;
+}
+
+.teams-assigned {
+	padding: 5px;
+	margin-top: 5px;
+	flex-wrap: wrap;
+}
+
+.teams-assigned .incident-tag {
+	background-color: black;
+	color: white;
+	margin-left: 0;
+	margin-right: 15px;
+	margin-bottom: 5px;
+}
+
+.teams-assigned .incident-tag:last-child {
+	margin-bottom: 0;
 }
 
 table {
@@ -439,11 +488,23 @@ th, td {
 	background-color: var(--note-bg-color);
 }
 
-.new-task-btn {
-	background-color: var(--task-bg-color);	
+.add-incident-task-container {
+	text-align: center;
+	background-color: var(--task-new-color);
+	border-radius: 30px;
+
+	transition: background-color 0.3s linear;
 }
 
-.new-task-btn, .new-question-btn, .new-note-btn {
+.new-task-btn {
+	vertical-align: middle;
+	display: inline-block;
+	background-color: var(--task-bg-color);	
+
+	transition: background-color 0.3s linear;
+}
+
+.new-question-btn, .new-note-btn {
 	position: absolute;
     top: 50%;
     left: 50%;
@@ -459,7 +520,11 @@ th, td {
     height: 48px;
 }
 
-.add-incident-question:hover, .add-incident-note:hover, .add-incident-task:hover {
+.add-incident-task-container:hover {
+	background-color: var(--task-bg-color);
+}
+
+.add-incident-task-container:hover, .add-incident-question:hover, .add-incident-note:hover, .add-incident-task:hover {
 	cursor: pointer;
 }
 
@@ -483,7 +548,7 @@ th, td {
 	background-color: var(--question-new-color);
 }
 
-.add-incident-task:hover .new-task-btn {
+.add-incident-task-container:hover .new-task-btn {
 	background-color: var(--task-new-color);
 }
 
@@ -505,7 +570,7 @@ th, td {
 }
 
 .assign-team-container {
-	margin-top: 15px;
+	margin: 15px 0;
 }
 
 .assign-team {
