@@ -1,0 +1,29 @@
+.sidebar{
+    float: right;
+    height: 100%;
+    width: 20%;
+    background-color: #051e34;
+    padding: 20px;
+}
+
+#sidebar-h1{
+    padding: 20px;
+}
+
+
+.sidebar-header{
+    height: 10%;
+    width: 100%;
+}
+
+.note-date-time{
+    margin-top: 5px;
+    
+    
+}
+
+.note-content{
+    margin-top: 10px;
+    text-align: left;
+    
+}
