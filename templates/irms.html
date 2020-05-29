@@ -8,6 +8,7 @@
         <!--<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">-->
         <link href="{{ url_for('static', filename='styles/styles.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ url_for('static', filename='styles/tags.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ url_for('static', filename='styles/tabs.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ url_for('static', filename='styles/navbar.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{ url_for('static', filename='styles/login.css') }}" rel="stylesheet" type="text/css"/>
     </head>
@@ -26,7 +27,8 @@
                     <div class="navbar-items">
                         <ul>
                             <li class="navbar-selected">Raise Incident</li>
-                            <li>Active Incidents</li>
+                            <li>Your Incidents</li>
+                            <li>Your Requests</li>
                         </ul>
                     </div>
                 </div>
@@ -35,7 +37,7 @@
                 </div>
             </div>
             <div class="container-body">
-                {% include 'list_incidents.html' %}
+                {% include 'view_incident.html' %}
             </div>
         </div>
 

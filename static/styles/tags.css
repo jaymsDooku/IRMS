@@ -1,4 +1,8 @@
-.incident-tag {
+.tab, .incident-tag {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
 	padding: 0 5px;
 	border: 1px solid black;
 	border-radius: 3px;
@@ -6,12 +10,21 @@
 	margin-left: 10px;
 }
 
+.incident-tag select {
+	padding: 0;
+}
+
+span.pending {
+	align-self: center;
+	color: white;
+}
+
 .impact-1-tag {
 	background-color: #a83e32;
 	color: white;
 }
 
-.priority-1-tag {
+.priority-1-tag, .priority-1-tag select {
 	background-color: #a83e32;
 	color: white;	
 }
@@ -19,4 +32,26 @@
 .resolving-tag {
 	background-color: #58ed55;
 	color: #0d2b0c;
+}
+
+.pending-tag {
+	background-color: #68666b;
+	color: white;
+}
+
+.follow {
+	background-color: white;
+	border-radius: 2px;
+	align-self: flex-end;
+}
+
+.follow:hover {
+	background-color: #4582d1;
+	color: white;
+	cursor: pointer;
+}
+
+.following {
+	background-color: #4582d1;
+	color: white;
 }

@@ -1,0 +1,18 @@
+.tab:hover {
+	cursor: pointer;
+	background-color: #051e34;
+}
+
+.team-assignments-tab {
+	background-color: #85170b;
+	color: white;
+}
+
+.priority-changes-tab {
+	background-color: #6b25ba;
+	color: white;
+}
+
+.selected-tab {
+	background-color: #051e34;
+}

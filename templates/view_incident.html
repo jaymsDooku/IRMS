@@ -1,5 +1,11 @@
 <div class="irms-container view-incident-container">
 	<div class="irms-header">
+		<div class="irms-header-actions">
+			<div></div>
+			<div class="incident-tag follow">
+				<p>Follow</p>
+			</div>
+		</div>
 		<div class="irms-title">
 			<div class="irms-title-left">
 				<div class="incident-title irms-inline-container">
@@ -8,7 +14,15 @@
 						<p>IMP1</p>
 					</div>
 					<div class="incident-tag priority-1-tag">
-						<p>P1</p>
+						<select name="priority">
+							<option>P1</option>
+							<option>P2</option>
+							<option>P3</option>
+							<option>S1</option>
+							<option>S2</option>
+							<option>S3</option>
+						</select>
+						<span class="pending">*</span>
 					</div>
 				</div>
 				<div class="incident-issuer">
@@ -89,13 +103,38 @@
 		                <tr>
 		                    <th class="team-name">Team Name</th>
 		                    <th>Date Assigned</th>
+		                    <th>Assigned By</th>
+		                    <th>Status</th>
 		                </tr>
 		                <tr>
 		                	<td class="team-name">Networking</td>
 		                	<td>28/05/20 14:16</td>
+		                	<td>Ronald McDonald</td>
+		                	<td>Pending Review</td>
+		                </tr>
+		                <tr>
+		                	<td class="team-name">Maintenance</td>
+		                	<td>28/05/20 14:16</td>
+		                	<td>Ronald McDonald</td>
+		                	<td>Confirmed</td>
 		                </tr>
 		            </tbody>
 				</table>
+				<div class="assign-team-container">
+					<h4>Assign New Team</h4>
+					<div class="assign-team">
+						<div class="assign-team-fields">
+							<div class="irms-inline-container">
+								<label>Team: </label>
+								<select name="team-name">
+									<option>Networking</option>
+									<option>Maintenance</option>
+								</select>
+							</div>
+						</div>
+						<img class="new-btn assign-team-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="incident-notes">
@@ -127,6 +166,9 @@
 						<p>The cause of the crash of the payroll system was an OutOfMemoryException.</p>
 					</div>
 				</div>
+				<div class="incident-note add-incident-note">
+					<img class="new-btn new-note-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+				</div>
 			</div>
 		</div>
 		<div class="incident-questions">
@@ -157,6 +199,43 @@
 					<div class="irms-body">
 						<p>So stuff is wrong with me, why is that?</p>
 					</div>
+				</div>
+				<div class="incident-question add-incident-question">
+					<img class="new-btn new-question-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+				</div>
+			</div>
+		</div>
+		<div class="incident-tasks">
+			<div class="irms-header">
+				<h3>Tasks</h3>
+			</div>
+			<div class="irms-body">
+				<div class="incident-task">
+					<div class="irms-header">
+						<h3>We need to do things</h3>
+					</div>
+					<div class="irms-body">
+						<p>Things need to be done, so let's do those things</p>
+					</div>
+				</div>
+				<div class="incident-task">
+					<div class="irms-header">
+						<h3>We need to do things</h3>
+					</div>
+					<div class="irms-body">
+						<p>Things need to be done, so let's do those things</p>
+					</div>
+				</div>
+				<div class="incident-task">
+					<div class="irms-header">
+						<h3>We need to do things</h3>
+					</div>
+					<div class="irms-body">
+						<p>Things need to be done, so let's do those things</p>
+					</div>
+				</div>
+				<div class="incident-task add-incident-task">
+					<img class="new-btn new-task-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
 				</div>
 			</div>
 		</div>

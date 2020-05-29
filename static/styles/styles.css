@@ -10,6 +10,15 @@
     --login-bg-color: #dbd7d5;
     --login-bg-color2: #adaaa8;
     --login-fg-color: #ffffff;
+
+    --note-new-color: #34eb6b;
+    --note-bg-color: #32ad67;
+
+    --question-new-color: #eb9c34;
+    --question-bg-color: #edbb55;
+
+    --task-new-color: #c92c26;
+    --task-bg-color: #d9615d;
 }
 
 @keyframes animatedBackground {
@@ -209,7 +218,7 @@ button:hover {
 }
 
 .view-incident-container {
-	width: 80%;
+	min-width: 80%;
 	text-align: left;
 }
 
@@ -266,47 +275,54 @@ button:hover {
 	padding: 0 10px;
 }
 
-.incident-teams .irms-header, .incident-questions .irms-header, .incident-notes .irms-header {
+.incident-teams .irms-header, .incident-questions .irms-header, .incident-notes .irms-header, .incident-tasks .irms-header {
 	text-align: center;
 }
 
-.incident-questions .irms-body, .incident-notes .irms-body {
+.incident-questions .irms-body, .incident-notes .irms-body, .incident-tasks .irms-body {
 	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
+	justify-content: flex-start space-around;
+	flex-flow: row wrap;
 }
 
 .incident-note {
-	background-color: #32ad67;
+	background-color: var(--note-bg-color);
 }
 
 .incident-question {
-	background-color: #edbb55;
+	background-color: var(--question-bg-color);
 }
 
-.incident-question, .incident-note {
+.incident-task {
+	background-color: var(--task-bg-color);
+}
+
+.incident-question, .incident-note, .incident-task {
+	flex: 1;
 	max-width: 250px;
 	max-height: 250px;
 	min-width: 250px;
 	min-height: 250px;
 	padding: 20px;
+	border: 1px solid black;
 }
 
-.incident-question:hover, .incident-note:hover {
+.incident-question:hover, .incident-note:hover, .incident-task:hover {
 	cursor: pointer;
 }
 
-.incident-question .irms-header, .incident-note .irms-header {
+.incident-question .irms-header, .incident-note .irms-header, .incident-task .irms-header {
 	text-align: left;
 	border-bottom: 1px solid black;
 }
 
-.incident-question .irms-body, .incident-note .irms-body {
+.incident-question .irms-body, .incident-note .irms-body, .incident-task .irms-body {
 	padding-top: 10px;
 }
 
 table {
 	border-collapse: collapse;
+	white-space: nowrap;
 }
 
 th, td {
@@ -333,13 +349,13 @@ th, td {
 	white-space: nowrap;
 }
 
-.incidents-container {
+.requests-container, .incidents-container {
 	padding: 0;
 	padding-bottom: 20px;
 	width: 100%;
 }
 
-.incident-item {
+.request-item, .incident-item {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -348,8 +364,14 @@ th, td {
 	background-color: white;
 }
 
-.incident-item:last-child {
+.request-item:last-child, .incident-item:last-child {
 	align-self: flex-end;
+}
+
+.request-title > p  {
+	margin: 0 15px;
+	font-size: 20px;
+	font-weight: 1000;
 }
 
 .tags {
@@ -357,7 +379,7 @@ th, td {
 	flex-direction: row;
 }
 
-.incidents-header {
+.requests-header, .incidents-header {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -365,7 +387,7 @@ th, td {
 	background-color: white;
 }
 
-.incidents-header .irms-title {
+.requests-header .irms-title, .incidents-header .irms-title {
 	padding: 20px;
 }
 
@@ -400,4 +422,140 @@ th, td {
 	position: relative;
 	width: 100%;
 	min-height: 100%;
+}
+
+.irms-header-actions {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.new-question-btn {
+	background-color: var(--question-bg-color);
+}
+
+.new-note-btn {
+	background-color: var(--note-bg-color);
+}
+
+.new-task-btn {
+	background-color: var(--task-bg-color);	
+}
+
+.new-task-btn, .new-question-btn, .new-note-btn {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -24px 0 0 -24px;
+    transition: background-color 0.3s linear;
+}
+
+.new-btn {
+	max-width: 64px;
+    max-height: 64px;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+}
+
+.add-incident-question:hover, .add-incident-note:hover, .add-incident-task:hover {
+	cursor: pointer;
+}
+
+.add-incident-note:hover {
+	background-color: var(--note-bg-color);
+}
+
+.add-incident-question:hover {
+	background-color: var(--question-bg-color);
+}
+
+.add-incident-task:hover {
+	background-color: var(--task-bg-color);
+}
+
+.add-incident-note:hover .new-note-btn {
+	background-color: var(--note-new-color);
+}
+
+.add-incident-question:hover .new-question-btn {
+	background-color: var(--question-new-color);
+}
+
+.add-incident-task:hover .new-task-btn {
+	background-color: var(--task-new-color);
+}
+
+.add-incident-question, .add-incident-note, .add-incident-task {
+	position: relative;
+	transition: background-color 0.3s linear;
+}
+
+.add-incident-note {
+	background-color: var(--note-new-color);
+}
+
+.add-incident-question {
+	background-color: var(--question-new-color);
+}
+
+.add-incident-task {
+	background-color: var(--task-new-color);
+}
+
+.assign-team-container {
+	margin-top: 15px;
+}
+
+.assign-team {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border: 1px solid black;
+	padding: 5px 20px;
+	background-color: white;
+}
+
+.assign-team-btn {
+	align-self: center flex-end;
+	width: 24px;
+	height: 24px;
+	background-color: var(--note-new-color);
+	border: 1px solid black;
+}
+
+.assign-team-btn:hover {
+	background-color: var(--note-bg-color);
+	cursor: pointer;
+	color: white;
+}
+
+.incident-assigned {
+	margin-bottom: 5px !important;
+}
+
+.assign-team-fields label {
+	font-size: 16px;
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+.assign-team-fields select {
+	border: 1px solid black;
+	padding: 0;
+}
+
+.requests-container .checkbox-container {
+	margin-right: 20px;
+}
+
+.checkbox-container label {
+	margin-right: 5px;
+}
+
+.request-types {
+	border-left: 1px solid black;
+	padding-left: 10px;
+	margin-left: 20px;
 }
