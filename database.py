@@ -60,7 +60,7 @@ class Database:
 		self.insert("INSERT INTO Role(role_name, is_customer_facing) VALUES (?, ?)", role)
 
 	def insert_user(self, user):
-		self.insert("INSERT INTO User(forename, surname, email, role) VALUES (?, ?, ?, ?)", user)
+		self.insert("INSERT INTO User(forename, surname, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?)", user)
 
 	def insert_department(self, department):
 		self.insert("INSERT INTO Department(department_name) VALUES (?)", department)
@@ -71,4 +71,4 @@ class Database:
 	def table_empty(self, table):
 		cur = self.connection.cursor()
 		cur.execute("SELECT * FROM " + table + " LIMIT 1")
-		return cur.rowcount == 0
+		return cur.rowcount == -1

@@ -124,6 +124,8 @@ CREATE TABLE User
     forename TEXT,
     surname TEXT,
     email TEXT,
+    username TEXT,
+    password TEXT,
     role INTEGER REFERENCES Role(role_id) 
 );
 

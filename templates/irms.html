@@ -15,32 +15,11 @@
   
     <body>
         <div class="container">
-            <div class="navbar">
-                <div class="navbar-body">
-                    <div class="navbar-title">
-                        <h3>IRMS</h3>
-                    </div>
-                    <div class="navbar-login">
-                        <p>Logged in: <span>Ronald McDonald</span></p>
-                        <p>Role: <span>End User</span></p>
-                    </div>
-                    <div class="navbar-items">
-                        <ul>
-                            <li class="navbar-selected">Raise Incident</li>
-                            <li>Your Incidents</li>
-                            <li>Your Requests</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="navbar-footer">
-                    <p><a href="https://github.com/jaymsDooku/IRMS">GitHub</a> | Cuddle Of Pandas 2020 for BE SAD 😢</p>
-                </div>
-            </div>
-            <div class="container-body">
-                {% include 'view_incident.html' %}
-            </div>
+            {% include 'irms_body.html' %}
         </div>
-
-        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     </body>
+
+    <script src="{{ url_for('static', filename='js/ajax.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/domUtil.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </html>

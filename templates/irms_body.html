@@ -1,0 +1,8 @@
+{% if user is defined %}
+	{% include 'navbar.html' %}
+{% endif %}
+<div class="container-body">
+{% if user is not defined %}
+    {% include 'login.html' %}
+{% endif %}
+</div>

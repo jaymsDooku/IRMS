@@ -5,15 +5,27 @@ from team import Team
 
 class EntityManager:
 
-	def __init__(self, database):
+	def __init__(self, database, clearOnStartUp):
 		self.roles = {}
 		self.users = {}
 		self.departments = {}
 		self.teams = {}
 		self.database = database
+		self.clearOnStartUp = clearOnStartUp
 
 	def initialize(self):
-		self.database.connect():
+		def execute_script(filename):
+			script = open(filename, "r")
+			queries = self.database.parse_queries(script)
+			self.database.execute_queries(queries)
+			script.close()
+
+		self.database.connect()
+
+		if self.clearOnStartUp:
+			execute_script("SQL_scripts/drop_tables.sql")
+			execute_script("SQL_scripts/create_tables.sql")
+
 		if self.database.table_empty("Role"):
 			print("Initializing Role Table")
 			self.create_role(Role.MAJOR_INCIDENT_MANAGER, True)
@@ -25,12 +37,12 @@ class EntityManager:
 
 		if self.database.table_empty("User"):
 			print("Initializing User Table")
-			self.create_user("Joe", "Biden", "jb@email.com", self.get_role(Role.MAJOR_INCIDENT_MANAGER))
-			self.create_user("Donald", "Duck", "DoubleD@email.com", self.get_role(Role.SERVICE_DESK))
-			self.create_user("Boris", "Johnson", "BJob@email.com", self.get_role(Role.QUEUE_MANAGER))
-			self.create_user("Frederick", "William", "TheGreat@email.com", self.get_role(Role.TECHNICIAN))
-			self.create_user("Jim", "Boston", "AgainJ@email.com", self.get_role(Role.BASIC_USER))
-			self.create_user("Alice", "Wonderfill", "AliceWhere@email.com", self.get_role(Role.RESOLVER))
+			self.create_user("Joe", "Biden", "jb@email.com", "jbiden", "password1", self.get_role(Role.MAJOR_INCIDENT_MANAGER))
+			self.create_user("Donald", "Duck", "DoubleD@email.com", "dduck", "password1", self.get_role(Role.SERVICE_DESK))
+			self.create_user("Boris", "Johnson", "BJob@email.com", "bjohnson", "password1", self.get_role(Role.QUEUE_MANAGER))
+			self.create_user("Frederick", "William", "TheGreat@email.com", "fwilliam", "password1", self.get_role(Role.TECHNICIAN))
+			self.create_user("Jim", "Boston", "AgainJ@email.com", "jboston", "password1", self.get_role(Role.BASIC_USER))
+			self.create_user("Alice", "Wonderfill", "AliceWhere@email.com", "awonderfill", "password1", self.get_role(Role.RESOLVER))
 
 		if self.database.table_empty("Department"):
 			print("Initializing Department Table")
@@ -51,6 +63,8 @@ class EntityManager:
 			self.create_team(Team.NETWORKING, self.get_department(Department.IT_SUPPORT))
 			self.create_team(Team.MAINTENANCE, self.get_department(Department.IT_SUPPORT))
 
+		self.database.commit()
+
 	def create_role(self, name, customer_facing):
 		role = Role(name, customer_facing)
 		self.database.insert_role(role)
@@ -58,16 +72,25 @@ class EntityManager:
 		return role
 
 	def get_role(self, name):
-		for role in roles.items():
+		for role in self.roles.values():
 			if role.name == name:
 				return role
 		return None
 
-	def create_user(self, forename, surname, email, role):
-		user = User(forename, surname, email, role)
+	def create_user(self, forename, surname, email, username, password, role):
+		user = User(forename, surname, email, username, password, role)
 		self.database.insert_user(user)
 		self.users[user.id] = user
 		return user
+
+	def get_user_by_username(self, username):
+		for user in self.users.values():
+			if user.username == username:
+				return user
+		return None
+
+	def get_user(self, user_id):
+		return self.users[user_id]
 
 	def create_department(self, name):
 		department = Department(name)
@@ -76,7 +99,7 @@ class EntityManager:
 		return department
 
 	def get_department(self, name):
-		for department in departments.items():
+		for department in self.departments.values():
 			if department.name == name:
 				return department
 		return None

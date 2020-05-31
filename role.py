@@ -7,9 +7,9 @@ class Role:
 	BASIC_USER = "Basic User"
 	QUEUE_MANAGER = "Queue Manager"
 
-	def __init__(self, role_name, customer_facing):
-		self.role_name = role_name
+	def __init__(self, name, customer_facing):
+		self.name = name
 		self.customer_facing = customer_facing
 
 	def to_sql(self):
-		return (self.role_name, self.customer_facing)
+		return (self.name, self.customer_facing)

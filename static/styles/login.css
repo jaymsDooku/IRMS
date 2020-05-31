@@ -11,3 +11,9 @@
 .login-container .form-entry {
 	margin-bottom: 20px;
 }
+
+.login-container .irms-body .login-error {
+	display: none;
+	color: red;
+	margin-bottom: 20px;
+}
