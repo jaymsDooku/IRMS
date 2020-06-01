@@ -1,12 +1,12 @@
 <div class="irms-container requests-container">
 	<div class="requests-header">
 		<div class="irms-title irms-inline-container">
-			<h2>Your Requests</h2>
+			<h2>{{ data.pageTitle }}</h2>
 			<div class="request-types">
-				<div class="tab team-assignments-tab selected-tab">
+				<div class="tab team-assignments-tab">
 					<p>Team Assignments</p>
 				</div>
-				<div class="tab priority-changes-tab">
+				<div class="tab priority-changes-tab selected-tab">
 					<p>Priority Changes</p>
 				</div>
 			</div>
@@ -16,7 +16,40 @@
 			<input type="checkbox" name="unresolved">
 		</div>
 	</div>
-	<div class="request-item">
+	{% if data.requestsLength == 0 %}
+		<div class="request-item  no-requests">
+			<p>No Requests.</p>
+		</div>
+	{% else %}
+		{% for i in range(0, data.requestsLength) %}
+		<div class="request-item" data-user="{{ data.requests[i].user.id }}" data-incident="{{ data.requests[i].incident.id }}">
+			<div class="request-title irms-inline-container">
+				<h3>{{ data.requests[i].get_value_type() }} Change | </h3>
+				<h4 class="old-value">{{ data.requests[i].old_value }}</h4>
+				<p>→</p>
+				<h4 class="new-value">{{ data.requests[i].new_value }}</h4>
+				<div class="incident-tag pending-tag">
+					<p>{{ data.requests[i].get_status() }}</p>
+				</div>
+			</div>
+			<div class="tags">
+				<div class="incident-tag view-incident-btn">
+					<p>View</p>
+				</div>
+				<div class="incident-tag approve-btn">
+					<p>Approve</p>
+				</div>
+				<div class="incident-tag deny-btn">
+					<p>Deny</p>
+				</div>
+				<div class="incident-tag date-tag">
+					<p>{{ data.requests[i].date_requested }}</p>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	{% endif %}
+	<!--<div class="request-item">
 		<div class="request-title irms-inline-container">
 			<h4>Networking Team</h4>
 			<p>→</p>
@@ -33,59 +66,5 @@
 				<p>28/05/2020 16:53</p>
 			</div>
 		</div>
-	</div>
-	<div class="request-item">
-		<div class="request-title irms-inline-container">
-			<h4>Networking Team</h4>
-			<p>→</p>
-			<h4>Incident #001 | Payroll Server #04 Crashed</h4>
-			<div class="incident-tag pending-tag">
-				<p>Pending Review</p>
-			</div>
-		</div>
-		<div class="tags">
-			<div class="incident-tag resolving-tag">
-				<p>Resolving</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
-	<div class="request-item">
-		<div class="request-title irms-inline-container">
-			<h4>Networking Team</h4>
-			<p>→</p>
-			<h4>Incident #001 | Payroll Server #04 Crashed</h4>
-			<div class="incident-tag pending-tag">
-				<p>Pending Review</p>
-			</div>
-		</div>
-		<div class="tags">
-			<div class="incident-tag resolving-tag">
-				<p>Resolving</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
-	<div class="request-item">
-		<div class="request-title irms-inline-container">
-			<h4>Networking Team</h4>
-			<p>→</p>
-			<h4>Incident #001 | Payroll Server #04 Crashed</h4>
-			<div class="incident-tag pending-tag">
-				<p>Pending Review</p>
-			</div>
-		</div>
-		<div class="tags">
-			<div class="incident-tag resolving-tag">
-				<p>Resolving</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
+	</div>-->
 </div>

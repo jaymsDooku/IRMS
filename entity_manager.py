@@ -8,6 +8,7 @@ from stage import Stage
 from system_class import SystemClass
 from incident import Incident
 from user_session import UserSession
+from incident_value_change_request import IncidentValueChangeRequest
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -24,6 +25,7 @@ class EntityManager:
 		self.teams = {}
 		self.incidents = {}
 		self.sessions = {}
+		self.change_requests = {}
 		self.database = database
 		self.clearOnStartUp = clearOnStartUp
 
@@ -159,6 +161,9 @@ class EntityManager:
 		else:
 			print("Loading Incident Table")
 			self.load_incidents()
+
+		if not self.database.table_empty("IncidentValueChangeRequest"):
+			self.load_change_requests()
 
 		self.database.commit()
 
@@ -397,19 +402,50 @@ class EntityManager:
 	def load_incidents(self):
 		incident_rows = self.database.get_incidents()
 		for incident_row in incident_rows:
-			author = self.get_user(incident_row[0])
-			status = self.get_stage(incident_row[5])
-			system = self.get_system_class(incident_row[6])
-			impact = self.get_impact(incident_row[7])
-			priority = self.get_priority(incident_row[8])
-			sla_identification_deadline = TimeUtil.sqlite_to_datetime(incident_row[3])
-			sla_implementation_deadline = TimeUtil.sqlite_to_datetime(incident_row[4])
-			incident = Incident(self, incident_row[1], incident_row[2], author, \
+			author = self.get_user(incident_row[1])
+			status = self.get_stage(incident_row[6])
+			system = self.get_system_class(incident_row[7])
+			impact = self.get_impact(incident_row[8])
+			priority = self.get_priority(incident_row[9])
+			sla_identification_deadline = TimeUtil.sqlite_to_datetime(incident_row[4])
+			sla_implementation_deadline = TimeUtil.sqlite_to_datetime(incident_row[5])
+			incident = Incident(self, incident_row[2], incident_row[3], author, \
 				sla_identification_deadline, sla_implementation_deadline, status, system, \
 				impact, priority)
 			incident.id = incident_row[0]
-			incident.date_created = incident_row[9]
+			incident.date_created = incident_row[10]
 			self.incidents[incident.id] = incident
+
+	def request_value_change(self, user, incident, old_value, new_value, value_type, justification):
+		change_request = IncidentValueChangeRequest(user, incident, old_value, new_value, value_type, justification)
+		self.database.insert_change_request(change_request)
+		change_request.date_requested = self.database.get_date_requested(change_request)
+		change_request.status = IncidentValueChangeRequest.STATUS_PENDING
+
+		self.change_requests[change_request.id] = change_request
+
+		self.database.commit()
+
+	def get_all_change_requests(self):
+		return list(self.change_requests.values())
+
+	def load_change_requests(self):
+		change_request_rows = self.database.get_all_change_requests()
+		for change_request_row in change_request_rows:
+			user = self.get_user(change_request_row[1])
+			incident = self.get_incident(change_request_row[2])
+			old_value = change_request_row[3]
+			new_value = change_request_row[4]
+			value_type = change_request_row[5]
+			justification = change_request_row[6]
+			status = change_request_row[7]
+			date_requested = change_request_row[8]
+			change_request = IncidentValueChangeRequest(user, incident, old_value, new_value, \
+				value_type, justification)
+			change_request.status = status
+			change_request.date_requested = date_requested
+
+			self.change_requests[change_request.id] = change_request
 
 	def get_incident(self, incident_id):
 		return self.incidents[incident_id]

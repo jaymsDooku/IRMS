@@ -2,8 +2,13 @@
 	<div class="irms-header">
 		<div class="irms-header-actions">
 			<div></div>
-			<div class="incident-tag follow">
-				<p>Follow</p>
+			<div class="irms-inline-container">
+				<div class="incident-tag export-csv">
+					<p>Export CSV</p>
+				</div>
+				<div class="incident-tag follow">
+					<p>Follow</p>
+				</div>
 			</div>
 		</div>
 		<div class="irms-title">
@@ -14,7 +19,7 @@
 						<p>{{ data.incident.impact.level }}</p>
 					</div>
 					<div class="incident-tag priority-1-tag">
-						<select name="priority">
+						<select id="prioritySelect" data-incident="{{ data.incident.id }}">
 							{% for i in range(0, data.prioritiesLength) %}
 								<option>{{ data.priorities[i].code }}</option>
 							{% endfor %}
@@ -324,6 +329,11 @@
 			<div class="add-incident-task-container">
 				<img class="new-btn new-task-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
 			</div>
+		</div>
+	</div>
+	<div id="overlay">
+		<div id="overlay-body">
+			{% include 'request_justification.html' %}
 		</div>
 	</div>
 </div>

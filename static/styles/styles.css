@@ -630,7 +630,7 @@ th, td {
 	margin-left: 20px;
 }
 
-.no-incidents {
+.no-requests, .no-incidents {
 	display: block;
 	text-align: center;
 }

@@ -54,7 +54,6 @@ function init(event) {
 	var managerModeBtn = document.getElementById('managerModeBtn');
 	if (userModeBtn != null) {
 		userModeBtn.onclick = function(event) {
-			console.log('hello1');
 			changeModeOnClick(userModeBtn, 'userNavBar', function() {
 				var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
 				changeNavBarItem(raiseIncidentBtn);
@@ -64,7 +63,6 @@ function init(event) {
 	}
 	if (managerModeBtn != null) {
 		managerModeBtn.onclick = function(event) {
-			console.log('hello1');
 			changeModeOnClick(managerModeBtn, 'managerNavBar', function() {
 				var allIncidentsBtn = document.getElementById('allIncidentsBtn');
 				changeNavBarItem(allIncidentsBtn);
@@ -106,6 +104,12 @@ function navbarInit() {
 	}
 
 	var allRequestsBtn = document.getElementById('allRequestsBtn');
+	if (allRequestsBtn != null) {
+		allRequestsBtn.onclick = function(event) {
+			switchBody('allChangeRequests', listRequestsInit);
+			changeNavBarItem(allRequestsBtn);
+		}
+	}
 
 	var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
 	if (raiseIncidentBtn != null) {
@@ -123,6 +127,11 @@ function navbarInit() {
 	}
 
 	var yourRequestsBtn = document.getElementById('yourRequestsBtn');
+	if (yourRequestsBtn != null) {
+		yourRequestsBtn.onclick = function(event) {
+			switchBody('listChangeRequests', listRequestsInit);	
+		}
+	}
 }
 
 function raiseIncidentInit() {
@@ -180,12 +189,44 @@ function raiseIncidentInit() {
 	}
 }
 
+var oldPriority;
+
 function viewIncidentInit() {
+	var prioritySelect = document.getElementById('prioritySelect');
+	prioritySelect.onfocus = function(event) {
+		oldPriority = prioritySelect.value;
+	}
+	prioritySelect.onchange = function(event) {
+		var incidentId = prioritySelect.dataset.incident;
+		var newPriority = prioritySelect.value;
+		showJustificationOverlay(incidentId, oldPriority, newPriority, 'priority');
+		oldPriority = newPriority;
+	}
+}
+
+function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {
+	var requestChangeBtn = document.getElementById('requestChangeBtn');
+	requestChangeBtn.onclick = function(event) {
+		var requestJustification = document.getElementById('requestJustification');
+		var justification = requestJustification.value;
+
+		var data = {
+			oldValue: oldValue,
+			newValue: newValue,
+			justification: justification
+		};
+
+		post(data, 'changeIncidentValue/' + incidentId + '/' + valueType, function(xhttp) {
+			hideOverlay();
+		});
+	}
+
+	showOverlay();
 }
 
 function listIncidentsInit() {
 	var incidentItems = document.getElementsByClassName('incident-item');
-	if (incidentItems.length == 1 && incidentItems[0].children.length == 1) {
+	if (incidentItems.length == 1 && incidentItems[0].classList.contains('no-incidents')) {
 		return;
 	}
 
@@ -193,6 +234,44 @@ function listIncidentsInit() {
 		var incidentId = this.dataset.incident;
 		switchBody('viewIncident/' + incidentId, viewIncidentInit);
 	});
+}
+
+function listRequestsInit() {
+	var requestItems = document.getElementsByClassName('request-item');
+	if (requestItems.length == 1 && requestItems[0].classList.contains('no-requests')) {
+		return;
+	}
+
+	for (var i = 0; i < requestItems.length; i++) {
+		var requestItem = requestItems[i];
+		var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-btn');
+		viewIncidentBtn.onclick = function(event) {
+			var incidentId = requestItem.dataset.incident;
+			switchBody('viewIncident/' + incidentId, viewIncidentInit);
+		}
+
+		var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
+		approveBtn.onclick = function(event) {
+			console.log('dab');
+		}
+
+		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
+		denyBtn.onclick = function(event) {
+			console.log('dab');
+		}
+	}
+
+	domUtil.onClick(requestItems, function(event) {
+
+	});	
+}
+
+function showOverlay() {
+	document.getElementById("overlay").style.display = "block";
+}
+
+function hideOverlay() {
+	document.getElementById("overlay").style.display = "none";
 }
 
 function changeModeOnClick(btn, path, callback)  {

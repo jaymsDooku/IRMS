@@ -98,6 +98,39 @@ def logout():
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
 
+@app.route('/changeIncidentValue/<incident_id>/<value_type>', methods=['POST'])
+def request_incident_value_change(incident_id, value_type):
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+	if incident is None:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+
+	old_value = content['oldValue']
+	new_value = content['newValue']
+	justification = content['justification']
+
+	entity_manager.request_value_change(user, incident, old_value, new_value, value_type, justification)
+	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/allChangeRequests')
+def all_change_requests():
+	user = get_user()
+	change_requests = entity_manager.get_all_change_requests()
+	data = {
+		'pageTitle': 'All Requests',
+		'user': user,
+		'requests': change_requests,
+		'requestsLength': len(change_requests)
+	}
+	return render_template('list_requests.html', data = data)
+
 @app.route('/allIncidents')
 def all_incidents():
 	user = get_user()
@@ -155,8 +188,8 @@ def raise_incident():
 
 		title = content['title']
 		description = content['description']
-		identificationDeadline = TimeUtil.sanitize_time_input(content['identificationDeadline'])
-		implementationDeadline = TimeUtil.sanitize_time_input(content['implementationDeadline'])
+		identificationDeadline = TimeUtil.to_datetime(TimeUtil.sanitize_time_input(content['identificationDeadline']))
+		implementationDeadline = TimeUtil.to_datetime(TimeUtil.sanitize_time_input(content['implementationDeadline']))
 		impact = entity_manager.get_impact_by_level(content['impact'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])

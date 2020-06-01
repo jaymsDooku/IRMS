@@ -142,7 +142,7 @@ class Database:
 
 	def get_incidents(self):
 		cur = self.connection.cursor()
-		cur.execute("SELECT author, title, description, sla_identification_deadline, \
+		cur.execute("SELECT incident_id, author, title, description, sla_identification_deadline, \
 			sla_implementation_deadline, status, system, impact, priority, date_created \
 			FROM Incident")
 		rows = cur.fetchall()
@@ -163,6 +163,22 @@ class Database:
 	def get_team_assignment_details(self, assigned_team):
 		cur = self.connection.cursor()
 		cur.execute("SELECT request_issuer, approved, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))
+		row = cur.fetchone()
+		return row[0]
+
+	def insert_change_request(self, change_request):
+		self.execute_update("INSERT INTO IncidentValueChangeRequest(user_id, incident_id, old_value, new_value, value_type, justification) VALUES (?, ?, ?, ?, ?, ?)", change_request)
+
+	def get_all_change_requests(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT user_id, incident_id, old_value, new_value, value_type, justification, status, date_requested \
+			FROM IncidentValueChangeRequest")
+		rows = cur.fetchall()
+		return rows
+
+	def get_date_requested(self, change_request):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_requested, 'localtime') FROM IncidentValueChangeRequest WHERE user_id = ? AND incident_id = ?", (change_request.user.id, change_request.incident.id))
 		row = cur.fetchone()
 		return row[0]
 

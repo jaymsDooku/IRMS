@@ -68,15 +68,15 @@ CREATE TABLE Task
 
 CREATE TABLE IncidentValueChangeRequest
 (
-    incident_priority_change_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
     incident_id INTEGER REFERENCES Incident(incident_id) ,
-    old_level INTEGER,
-    new_level INTEGER,
+    old_value INTEGER,
+    new_value INTEGER,
     value_type INTEGER,
     justification TEXT,
-    approved BOOLEAN
-    
+    status INTEGER DEFAULT -1,
+    date_requested TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, incident_id)
 );
 
 CREATE TABLE Follow

@@ -1,0 +1,43 @@
+#overlay {
+	position: fixed;
+	display: none;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 2;
+}
+
+#overlay-body {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	color: white;
+	transform: translate(-50%, -50%);
+}
+
+.request-justification-container {
+	background-color: white;
+	color: black;
+	border-radius: 5px;
+	border: 2px solid black;
+	padding: 15px;
+}
+
+.request-justification {
+	display: flex;
+	flex-direction: column;
+}
+
+.request-justification label {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.request-justification textarea {
+	margin: 10px 0;
+	border: 1px solid black;
+}
