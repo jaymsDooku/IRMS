@@ -6,56 +6,46 @@
 		<div class="left-body">
 			<div class="form-entry">
 				<label>Title: </label>
-				<input type="text" name="title" placeholder="Enter title">
+				<input autocomplete="new-password" id="incidentTitle" type="text" name="title" placeholder="Enter title">
 			</div>
 			<div class="form-entry">
 				<label>Description: </label>
-				<textarea id="description" name="description" placeholder="Enter description" cols="8" rows="5"></textarea>
+				<textarea autocomplete="new-password" id="incidentDescription" name="description" placeholder="Enter description" cols="8" rows="5"></textarea>
 			</div>
 			<div class="form-entry">
 				<label>SLA Identification Deadline: </label>
-				<input type="datetime-local" name="identification-deadline"/>
+				<input id="incidentIdentification" type="datetime-local" name="identification-deadline"/>
 			</div>
 			<div class="form-entry">
-				<label>SLA Resolution Deadline: </label>
-				<input type="datetime-local" name="resolution-deadline"/>
+				<label>SLA Implementation Deadline: </label>
+				<input id="incidentImplementation" type="datetime-local" name="resolution-deadline"/>
 			</div>
 		</div>
 		<div class="right-body">
 			<div class="form-entries">
 				<div class="form-entry">
 					<label>Impact: </label>
-					<select name="impact">
-						<option value="imp1">IMP1</option>
-						<option value="imp2">IMP2</option>
-						<option value="imp3">IMP3</option>
+					<select id="impactSelect" name="impact">
+						{% for i in range(0, data.impactsLength) %}
+							<option>{{ data.impacts[i].level }} </option>
+						{% endfor %}
 					</select>
 				</div>
 				<div class="form-entry">
 					<label>System: </label>
-					<select name="system">
-						<option value="investing">Investing Banking Core processing system</option>
-						<option value="retail">Retail customer facing system</option>
-						<option value="transaction">Online transaction system</option>
-						<option value="financial_analysis">Financial Analysis system</option>
-						<option value="financial_analysis">Corporate Accounting reporting system</option>
-						<option value="payroll">Payroll system</option>
-						<option value="financial_internal">Financial Internal Reporting system</option>
-						<option value="system_improvement">System improvement requests system</option>
-						<option value="change_management">Change management system</option>
-						<option value="timesheet">Timesheet hour recording system</option>
+					<select id="systemSelect" name="system">
+						{% for i in range(0, data.systemClassesLength) %}
+							<option>{{ data.system_classes[i].name }}</option>
+						{% endfor %}
 					</select>
 				</div>
 				<div class="noticeable-entry">
 					<div class="form-entry">
 						<label>Priority: </label>
-						<select name="priority">
-							<option value="P1">P1</option>
-							<option value="P2">P2</option>
-							<option value="P3">P3</option>
-							<option value="S1">S1</option>
-							<option value="S2">S2</option>
-							<option value="S3">S3</option>
+						<select id="prioritySelect" name="priority">
+							{% for i in range(0, data.prioritiesLength) %}
+								<option>{{ data.priorities[i].code }}</option>
+							{% endfor %}
 						</select>
 					</div>
 					<p class="notice">The priority may be changed by the Incident Response Team.</p>
@@ -63,27 +53,25 @@
 				<div class="noticeable-entry">
 					<div class="form-entry">
 						<label>Department: </label>
-						<select name="department">
-							<option value="networking">Networking</option>
-							<option value="infrastructure">Infrastructure Technology</option>
-							<option value="product_development">Product Development</option>
-							<option value="data_science">Data Science</option>
+						<select id="departmentSelect" name="department">
+							{% for i in range(0, data.departmentsLength) %}
+								<option>{{ data.departments[i].name }}</option>
+							{% endfor %}
 						</select>
 					</div>
 					<div class="form-entry">
 						<label>Assigned Team: </label>
-						<select name="team">
-							<option value="networking">Networking</option>
-							<option value="infrastructure">Infrastructure Technology</option>
-							<option value="product_development">Product Development</option>
-							<option value="data_science">Data Science</option>
+						<select id="teamSelect" name="team">
+							{% for i in range(0, data.teamsLength) %}
+								<option>{{ data.teams[i].name }}</option>
+							{% endfor %}
 						</select>
 					</div>
 					<p class="notice">The assigned team may be changed by the Incident Response Team.</p>
 				</div>
 			</div>
 			<div class="irms-button-container">
-				<button>Submit Incident</button>
+				<button id="submitIncidentBtn">Submit Incident</button>
 			</div>
 		</div>
 	</div>

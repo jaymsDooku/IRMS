@@ -20,3 +20,9 @@ class TimeUtil:
 			return time * 1000 * 60 * 60
 		elif unit == TimeUnit.DAY:
 			return time * 1000 * 60 * 60 * 24
+
+	@staticmethod
+	def sanitize_time_input(input):
+		result = ' '.join(input.split('T'))
+		result += ':00'
+		return result

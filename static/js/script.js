@@ -67,14 +67,73 @@ function navbarInit() {
 	if (raiseIncidentBtn != null) {
 		raiseIncidentBtn.onclick = function(event) {
 			console.log('hello');
-			get('/raiseIncident', function(xhttp) {
+			get('raiseIncident', function(xhttp) {
 				var containerBody = document.getElementsByClassName('container-body')[0];
 				containerBody.innerHTML = xhttp.responseText;
+				raiseIncidentInit();
 			});
 		}
 	}
 	var yourIncidentsBtn = document.getElementById('yourIncidentsBtn');
 	var yourRequestsBtn = document.getElementById('yourRequestsBtn');
+}
+
+function raiseIncidentInit() {
+	var incidentTitle = document.getElementById('incidentTitle');
+	var incidentDescription = document.getElementById('incidentDescription');
+	var incidentIdentification = document.getElementById('incidentIdentification');
+	var incidentImplementation = document.getElementById('incidentImplementation');
+	var impactSelect = document.getElementById('impactSelect');
+	var systemSelect = document.getElementById('systemSelect');
+	var prioritySelect = document.getElementById('prioritySelect');
+	var departmentSelect = document.getElementById('departmentSelect');
+	var teamSelect = document.getElementById('teamSelect');
+	var submitBtn = document.getElementById('submitIncidentBtn');
+
+	/*console.log(incidentTitle);
+	console.log(incidentDescription);
+	console.log(incidentIdentification);
+	console.log(incidentImplementation);
+	console.log(impactSelect);
+	console.log(systemSelect);
+	console.log(prioritySelect);
+	console.log(departmentSelect);
+	console.log(teamSelect);
+	console.log(submitBtn);*/
+
+	if (incidentTitle == null || incidentDescription == null || incidentIdentification == null ||
+		incidentImplementation == null || impactSelect == null || systemSelect == null || prioritySelect == null ||
+		departmentSelect == null || teamSelect == null || submitBtn == null) {
+		return;
+	}
+	
+	submitBtn.onclick = function(event) {
+		var title = incidentTitle.value;
+		var description = incidentDescription.value;
+		var identificationTime = incidentIdentification.value;
+		var implementationTime = incidentImplementation.value;
+		var impact = impactSelect.value;
+		var system = systemSelect.value;
+		var priority = prioritySelect.value;
+		var team = teamSelect.value;
+
+		var data = {
+			title: title,
+			description: description,
+			identificationTime: identificationTime,
+			implementationTime: implementationTime,
+			impact: impact,
+			system: system,
+			priority: priority,
+			team: team
+		};
+		post(data, 'raiseIncident', function(xhttp) {
+			get('listIncidents', function(xhttp) {
+				var containerBody = document.getElementsByClassName('container-body')[0];
+				containerBody.innerHTML = xhttp.responseText;
+			});
+		});
+	}
 }
 
 function changeModeOnClick(btn, path)  {

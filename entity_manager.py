@@ -162,11 +162,27 @@ class EntityManager:
 				return department
 		return None
 
+	def get_all_departments(self):
+		return list(self.departments.values())
+
 	def create_team(self, name, department):
 		team = Team(name, department)
 		self.database.insert_team(team)
 		self.teams[team.id] = team
 		return team
+
+	def get_teams(self, department):
+		teams = []
+		for team in self.teams.values():
+			if team.department.id == department.id:
+				teams.append(team)
+		return teams
+
+	def get_team(self, name):
+		for team in self.teams.values():
+			if team.name == name:
+				return team
+		return None
 
 	def create_impact(self, level):
 		impact = Impact(level)
@@ -180,6 +196,9 @@ class EntityManager:
 				return impact
 		return None
 
+	def get_all_impacts(self):
+		return list(self.impacts.values())
+
 	def create_priority(self, code):
 		priority = Priority(code)
 		self.database.insert_priority(priority)
@@ -191,6 +210,9 @@ class EntityManager:
 			if priority.code == code:
 				return priority
 		return None
+
+	def get_all_priorities(self):
+		return list(self.priorities.values())
 
 	def create_stage(self, level):
 		stage = Stage(level)
@@ -216,6 +238,9 @@ class EntityManager:
 				return system_class
 		return None
 
+	def get_all_system_classes(self):
+		return list(self.system_classes.values())
+
 	def create_incident(self, title, description, author, \
 			sla_identification_time, sla_implementation_time, \
 			status, system, impact, priority):
@@ -226,6 +251,13 @@ class EntityManager:
 		incident.date_created = date_created
 		self.incidents[incident.id] = incident
 		return incident
+
+	def get_incidents(self, author):
+		incidents = []
+		for incident in list(self.incidents.values()):
+			if incident.author.id == author.id:
+				incidents.append(incident)
+		return incidents
 
 	def get_all_incidents(self):
 		return list(self.incidents.values())

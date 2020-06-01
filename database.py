@@ -57,9 +57,12 @@ class Database:
 			self.execute_query(query)
 
 	def execute_update(self, sql, obj):
-		cur = self.connection.cursor()
-		cur.execute(sql, obj.to_sql())
-		obj.id = cur.lastrowid
+		try:
+			cur = self.connection.cursor()
+			cur.execute(sql, obj.to_sql())
+			obj.id = cur.lastrowid
+		except Error as e:
+			print(e)
 
 	def insert_role(self, role):
 		self.execute_update("INSERT INTO Role(role_name, is_customer_facing) VALUES (?, ?)", role)
