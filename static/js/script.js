@@ -53,28 +53,75 @@ function init(event) {
 	var userModeBtn = document.getElementById('userModeBtn');
 	var managerModeBtn = document.getElementById('managerModeBtn');
 	if (userModeBtn != null) {
-		userModeBtn.onclick = changeModeOnClick(userModeBtn, 'userNavBar');
-	}
-	if (managerModeBtn != null) {
-		managerModeBtn.onclick = changeModeOnClick(managerModeBtn, 'managerNavBar');
-	}
-
-	navbarInit();
-}
-
-function navbarInit() {
-	var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
-	if (raiseIncidentBtn != null) {
-		raiseIncidentBtn.onclick = function(event) {
-			console.log('hello');
-			get('raiseIncident', function(xhttp) {
-				var containerBody = document.getElementsByClassName('container-body')[0];
-				containerBody.innerHTML = xhttp.responseText;
-				raiseIncidentInit();
+		userModeBtn.onclick = function(event) {
+			console.log('hello1');
+			changeModeOnClick(userModeBtn, 'userNavBar', function() {
+				var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
+				changeNavBarItem(raiseIncidentBtn);
+				raiseIncidentBtn.click();
 			});
 		}
 	}
+	if (managerModeBtn != null) {
+		managerModeBtn.onclick = function(event) {
+			console.log('hello1');
+			changeModeOnClick(managerModeBtn, 'managerNavBar', function() {
+				var allIncidentsBtn = document.getElementById('allIncidentsBtn');
+				changeNavBarItem(allIncidentsBtn);
+				allIncidentsBtn.click();
+			});
+		}
+	}
+
+	navbarInit();
+	listIncidentsInit();
+}
+
+function switchBody(path, init) {
+	get(path, function(xhttp) {
+		var containerBody = document.getElementsByClassName('container-body')[0];
+		containerBody.innerHTML = xhttp.responseText;
+		init();
+	});
+}
+
+function changeNavBarItem(btn) {
+	if (btn.classList.contains('navbar-selected')) {
+		return;
+	}
+
+	var ul = document.querySelector('.navbar-items ul');
+	var selectedItem = domUtil.getElementByClassName(ul, 'navbar-selected');
+	selectedItem.classList.remove('navbar-selected');
+	btn.classList.add('navbar-selected');
+}
+
+function navbarInit() {
+	var allIncidentsBtn = document.getElementById('allIncidentsBtn');
+	if (allIncidentsBtn != null) {
+		allIncidentsBtn.onclick = function(event) {
+			switchBody('allIncidents', listIncidentsInit);
+			changeNavBarItem(allIncidentsBtn);
+		}
+	}
+
+	var allRequestsBtn = document.getElementById('allRequestsBtn');
+
+	var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
+	if (raiseIncidentBtn != null) {
+		raiseIncidentBtn.onclick = function(event) {
+			switchBody('raiseIncident', raiseIncidentInit);
+			changeNavBarItem(raiseIncidentBtn);
+		}
+	}
 	var yourIncidentsBtn = document.getElementById('yourIncidentsBtn');
+	if (yourIncidentsBtn != null) {
+		yourIncidentsBtn.onclick = function(event) {
+			switchBody('listIncidents', listIncidentsInit);
+			changeNavBarItem(yourIncidentsBtn);
+		}
+	}
+
 	var yourRequestsBtn = document.getElementById('yourRequestsBtn');
 }
 
@@ -120,35 +167,46 @@ function raiseIncidentInit() {
 		var data = {
 			title: title,
 			description: description,
-			identificationTime: identificationTime,
-			implementationTime: implementationTime,
+			identificationDeadline: identificationTime,
+			implementationDeadline: implementationTime,
 			impact: impact,
 			system: system,
 			priority: priority,
 			team: team
 		};
 		post(data, 'raiseIncident', function(xhttp) {
-			get('listIncidents', function(xhttp) {
-				var containerBody = document.getElementsByClassName('container-body')[0];
-				containerBody.innerHTML = xhttp.responseText;
-			});
+			switchBody('listIncidents', listIncidentsInit);
 		});
 	}
 }
 
-function changeModeOnClick(btn, path)  {
-	return function(event) {
-		get(path, function(xhttp) {
-			var ul = document.querySelector('.navbar-items ul');
-			ul.innerHTML = xhttp.responseText;
+function viewIncidentInit() {
+}
 
-			var selectedItem = domUtil.getElementByClassName(btn.parentNode, 'selected');
-			selectedItem.classList.remove('selected');
-			btn.classList.add('selected');
-
-			navbarInit();
-		});
+function listIncidentsInit() {
+	var incidentItems = document.getElementsByClassName('incident-item');
+	if (incidentItems.length == 1 && incidentItems[0].children.length == 1) {
+		return;
 	}
+
+	domUtil.onClick(incidentItems, function(event) {
+		var incidentId = this.dataset.incident;
+		switchBody('viewIncident/' + incidentId, viewIncidentInit);
+	});
+}
+
+function changeModeOnClick(btn, path, callback)  {
+	get(path, function(xhttp) {
+		var ul = document.querySelector('.navbar-items ul');
+		ul.innerHTML = xhttp.responseText;
+
+		var selectedItem = domUtil.getElementByClassName(btn.parentNode, 'selected');
+		selectedItem.classList.remove('selected');
+		btn.classList.add('selected');
+
+		navbarInit();
+		callback();
+	});
 }
 
 window.onload = function(event) {

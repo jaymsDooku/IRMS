@@ -413,6 +413,11 @@ th, td {
 	background-color: white;
 }
 
+.request-item:hover, .incident-item:hover {
+	background-color: #adadad;
+	cursor: pointer;
+}
+
 .request-item:last-child, .incident-item:last-child {
 	align-self: flex-end;
 }

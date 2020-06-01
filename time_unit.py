@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import datetime
 
 class TimeUnit(Enum):
 
@@ -20,6 +21,20 @@ class TimeUtil:
 			return time * 1000 * 60 * 60
 		elif unit == TimeUnit.DAY:
 			return time * 1000 * 60 * 60 * 24
+
+	@staticmethod
+	def from_millis(millis):
+		pass
+
+	@staticmethod
+	def to_datetime(input):
+		datetime_obj = datetime.strptime(input, '%d-%m-%Y %H:%M:%S')
+		return datetime_obj
+
+	@staticmethod
+	def sqlite_to_datetime(input):
+		datetime_obj = datetime.strptime(input, '%Y-%m-%d %H:%M:%S')
+		return datetime_obj
 
 	@staticmethod
 	def sanitize_time_input(input):

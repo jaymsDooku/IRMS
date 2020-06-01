@@ -4,8 +4,9 @@
 <div class="container-body">
 {% if data.user is not defined %}
     {% include 'login.html' %}
-{% endif %}
-{% if data.user.role.name == 'Major Incident Manager' %}
-	{% include 'list_incidents.html' %}
+{% else %}
+	{% if data.user.role.name == 'Major Incident Manager' %}
+		{% include 'list_incidents.html' %}
+	{% endif %}
 {% endif %}
 </div>

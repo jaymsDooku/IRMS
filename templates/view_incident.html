@@ -9,34 +9,31 @@
 		<div class="irms-title">
 			<div class="irms-title-left">
 				<div class="incident-title irms-inline-container">
-					<h2>Incident #001 | Payroll Server #04 Crashed</h2>
+					<h2>Incident #{{ data.incident.id }} | {{ data.incident.title }}</h2>
 					<div class="incident-tag impact-1-tag">
-						<p>IMP1</p>
+						<p>{{ data.incident.impact.level }}</p>
 					</div>
 					<div class="incident-tag priority-1-tag">
 						<select name="priority">
-							<option>P1</option>
-							<option>P2</option>
-							<option>P3</option>
-							<option>S1</option>
-							<option>S2</option>
-							<option>S3</option>
+							{% for i in range(0, data.prioritiesLength) %}
+								<option>{{ data.priorities[i].code }}</option>
+							{% endfor %}
 						</select>
 						<span class="pending">*</span>
 					</div>
 				</div>
 				<div class="incident-issuer">
-					<h5>Issued By: Ronald McDonald</h5>
+					<h5>Issued By: {{ data.incident.author.forename }} {{ data.incident.author.surname }}</h5>
 				</div>
 			</div>
 			<div class="irms-title-right irms-inline-container">
 				<div class="incident-tag resolving-tag">
-					<p>Resolving</p>
+					<p>{{ data.incident.status.level }}</p>
 				</div>
 				<div class="creation-date irms-inline-container">
 					<h5>Created: </h5>
 					<div class="irms-text">
-						<p>28/05/2020 12:56</p>
+						<p>{{ data.incident.date_created }}</p>
 					</div>
 				</div>
 			</div>
@@ -51,7 +48,7 @@
 						<p>System: </p>
 					</div>
 					<div class="irms-text">
-						<p>Payroll system</p>
+						<p>{{ data.incident.system.name }}</p>
 					</div>
 				</div>
 			</div>
@@ -61,7 +58,7 @@
 						<p>SLA Identification Deadline: </p>
 					</div>
 					<div class="irms-text">
-						<p>28/05/2020 13:12</p>
+						<p>{{ data.incident.sla_identification_deadline }}</p>
 					</div>
 				</div>
 			</div>
@@ -71,7 +68,33 @@
 						<p>SLA Resolution Deadline: </p>
 					</div>
 					<div class="irms-text">
-						<p>30/05/2020 13:12</p>
+						<p>{{ data.incident.sla_implementation_deadline }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="incident-stats irms-inline-container">
+			<div class="incident-system-container">
+				<div class="incident-system irms-inline-container">
+				</div>
+			</div>
+			<div class="incident-sla-identification-container">
+				<div class="incident-sla-identification irms-inline-container">
+					<div class="irms-header">
+						<p>SLA Identification Time Left: </p>
+					</div>
+					<div class="irms-text">
+						<p>{{ data.incident.get_sla_identification_time_left() }}</p>
+					</div>
+				</div>
+			</div>
+			<div class="incident-sla-implementation-container">
+				<div class="incident-sla-implementation irms-inline-container">
+					<div class="irms-header">
+						<p>SLA Resolution Time Left: </p>
+					</div>
+					<div class="irms-text">
+						<p>{{ data.incident.get_sla_implementation_time_left() }}</p>
 					</div>
 				</div>
 			</div>
@@ -81,7 +104,7 @@
 				<p>Description: </p>
 			</div>
 			<div class="irms-text">
-				<p>Server number 4 for the payroll system crashed due to an OutOfMemoryException. It is suspected that this is due to the new release from the Internal Software Development Team</p>
+				<p>{{ data.incident.description }}</p>
 			</div>
 		</div>
 		<hr/>
@@ -106,18 +129,14 @@
 		                    <th>Assigned By</th>
 		                    <th>Status</th>
 		                </tr>
-		                <tr>
-		                	<td class="team-name">Networking</td>
-		                	<td>28/05/20 14:16</td>
-		                	<td>Ronald McDonald</td>
-		                	<td>Pending Review</td>
-		                </tr>
-		                <tr>
-		                	<td class="team-name">Maintenance</td>
-		                	<td>28/05/20 14:16</td>
-		                	<td>Ronald McDonald</td>
-		                	<td>Confirmed</td>
-		                </tr>
+		                {% for i in range(0, data.assignedTeamsLength) %}
+		                	<tr>
+			                	<td class="team-name">{{ data.assigned_teams[i].name }}</td>
+			                	<td>{{ data.assigned_teams[i].date_issued }}</td>
+			                	<td>{{ date.assigned_teams[i].assigner.name }}</td>
+			                	<td>{{ data.assigned_teams[i].approved }}</td>
+			                </tr>
+		                {% endfor %}
 		            </tbody>
 				</table>
 				<div class="assign-team-container">

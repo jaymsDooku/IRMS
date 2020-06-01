@@ -18,7 +18,7 @@ CREATE TABLE Stage
 
 CREATE TABLE SystemClassification
 (
-    system_clasification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    system_classification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     system_name TEXT,
     tier INTEGER
 );
@@ -29,12 +29,12 @@ CREATE TABLE Incident
     author INTEGER REFERENCES User(user_id),
     title TEXT,
     description TEXT,
-    sla_identification_time_frame NUMERIC,
-    sla_implementation_time_frame NUMERIC,
-    status INTEGER REFERENCES Stage(stage_id) ,
-    system INTEGER REFERENCES SystemClasification(system_clasification_id) ,
-    impact INTEGER REFERENCES Impact(impact_id) ,
-    priority INTEGER REFERENCES Priority(priority_id) ,
+    sla_identification_deadline DATETIME,
+    sla_implementation_deadline DATETIME,
+    status INTEGER REFERENCES Stage(stage_id),
+    system INTEGER REFERENCES SystemClasification(system_clasification_id),
+    impact INTEGER REFERENCES Impact(impact_id),
+    priority INTEGER REFERENCES Priority(priority_id),
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -147,38 +147,39 @@ CREATE TABLE Team
 CREATE TABLE UserTeam
 (
     user_team_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    team_id INTEGER REFERENCES Team(team_id) ,
+    team_id INTEGER REFERENCES Team(team_id),
     user_id INTEGER REFERENCES User(user_id) 
 );
 
 CREATE TABLE TaskTeamAssignment
 (
     task_team_assignment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    team_id INTEGER REFERENCES Team(team_id) ,
+    team_id INTEGER REFERENCES Team(team_id),
     task_id INTEGER REFERENCES Task(task_id) 
 );
 
 CREATE TABLE TaskTeamAssignmentRequest
 (
     task_team_assignment_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    team_id INTEGER REFERENCES Team(team_id) ,
-    task_id INTEGER REFERENCES Task(task_id) ,
-    request_issuer INTEGER REFERENCES Users(user_id) ,
+    team_id INTEGER REFERENCES Team(team_id),
+    task_id INTEGER REFERENCES Task(task_id),
+    request_issuer INTEGER REFERENCES User(user_id),
     approved BOOLEAN
 );
 
 CREATE TABLE IncidentTeamAssignmentRequest
 (
-    incident_team_assignment_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    team_id INTEGER REFERENCES Team(team_id) ,
-    incident_id INTEGER REFERENCES Incident(incident_id) ,
-    request_issuer INTEGER REFERENCES User(user_id) ,
-    approved BOOLEAN
+    team_id INTEGER REFERENCES Team(team_id),
+    incident_id INTEGER REFERENCES Incident(incident_id),
+    request_issuer INTEGER REFERENCES User(user_id),
+    approved BOOLEAN,
+    date_issued TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (team_id, incident_id)
 );
 
 CREATE TABLE IncidentTeamAssignment
 (
-    incident_assignment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    team_id INTEGER REFERENCES Team(team_id) ,
-    incident_id INTEGER REFERENCES Incident(incident_id) 
+    team_id INTEGER REFERENCES Team(team_id),
+    incident_id INTEGER REFERENCES Incident(incident_id),
+    PRIMARY KEY (team_id, incident_id)
 );

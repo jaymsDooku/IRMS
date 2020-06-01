@@ -20,7 +20,7 @@ app = Flask(__name__, static_url_path='/static', instance_relative_config=True)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 database = Database('irms.db')
-entity_manager = EntityManager(database, True)
+entity_manager = EntityManager(database, False)
 entity_manager.initialize()
 
 def handle_shutdown():
@@ -38,7 +38,7 @@ def index():
 	user = get_user()
 	
 	if user is None:
-		return render_template('irms.html')
+		return render_template('irms.html', data = {})
 	else:
 		incidents = entity_manager.get_all_incidents()
 		data = {
@@ -90,17 +90,50 @@ def logout():
 		entity_manager.logout(user)
 
 	session.pop('user_id', None)
+
+	data = {}
 	success_response = {
 		'status': 'logout',
-		'body': render_template('irms_body.html')
+		'body': render_template('irms_body.html', data = data)
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
+
+@app.route('/allIncidents')
+def all_incidents():
+	user = get_user()
+	incidents = entity_manager.get_all_incidents()
+	data = {
+		'pageTitle': 'All Incidents',
+		'user': user,
+		'incidents': incidents,
+		'incidentsLength': len(incidents)
+	}
+	return render_template('list_incidents.html', data = data)
+
+@app.route('/viewIncident/<incident_id>')
+def view_incident(incident_id):
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+
+	priorities = entity_manager.get_all_priorities()
+
+	assigned_teams = entity_manager.get_assigned_teams(incident)
+
+	data = {
+		'incident': incident,
+		'priorities': priorities,
+		'prioritiesLength': len(priorities),
+		'assigned_teams': assigned_teams,
+		'assignedTeamsLength': len(assigned_teams)
+	}
+	return render_template('view_incident.html', data = data)
 
 @app.route('/listIncidents')
 def list_incidents():
 	user = get_user()
 	incidents = entity_manager.get_incidents(user)
 	data = {
+		'pageTitle': 'Your Incidents',
 		'user': user,
 		'incidents': incidents,
 		'incidentsLength': len(incidents)
@@ -122,16 +155,16 @@ def raise_incident():
 
 		title = content['title']
 		description = content['description']
-		identificationTime = TimeUtil.sanitize_time_input(content['identificationTime'])
-		implementationTime = TimeUtil.sanitize_time_input(content['implementationTime'])
-		impact = entity_manager.get_impact(content['impact'])
-		system = entity_manager.get_system_class(content['system'])
-		priority = entity_manager.get_priority(content['priority'])
-		team = entity_manager.get_team(content['team'])
-		status = entity_manager.get_stage(Stage.IDENTIFYING)
+		identificationDeadline = TimeUtil.sanitize_time_input(content['identificationDeadline'])
+		implementationDeadline = TimeUtil.sanitize_time_input(content['implementationDeadline'])
+		impact = entity_manager.get_impact_by_level(content['impact'])
+		system = entity_manager.get_system_class_by_name(content['system'])
+		priority = entity_manager.get_priority_by_code(content['priority'])
+		team = entity_manager.get_team_by_name(content['team'])
+		status = entity_manager.get_stage_by_level(Stage.IDENTIFYING)
 
 		entity_manager.create_incident(title, description, author, \
-			identificationTime, implementationTime, status, system, \
+			identificationDeadline, implementationDeadline, status, system, \
 			impact, priority)
 		return app.response_class(status = HTTP_CREATED)
 

@@ -44,8 +44,7 @@ class Database:
 				cur.execute(query)
 			else:
 				cur.execute(query, obj)
-			rowcount = cur.rowcount
-			return rowcount
+			return len(cur.fetchall())
 		except Error as e:
 			print(e)
 
@@ -67,35 +66,103 @@ class Database:
 	def insert_role(self, role):
 		self.execute_update("INSERT INTO Role(role_name, is_customer_facing) VALUES (?, ?)", role)
 
+	def get_roles(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT role_id, role_name, is_customer_facing FROM Role")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_user(self, user):
 		self.execute_update("INSERT INTO User(forename, surname, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?)", user)
+
+	def get_users(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT user_id, forename, surname, email, username, password, role FROM User")
+		rows = cur.fetchall()
+		return rows
 
 	def insert_department(self, department):
 		self.execute_update("INSERT INTO Department(department_name) VALUES (?)", department)
 
+	def get_departments(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT department_id, department_name FROM Department")
+		rows = cur.fetchall()
+		return rows		
+
 	def insert_team(self, team):
 		self.execute_update("INSERT INTO Team(team_name, department_id) VALUES (?, ?)", team)
+
+	def get_teams(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT team_id, team_name, department_id FROM Team")
+		rows = cur.fetchall()
+		return rows
 
 	def insert_impact(self, impact):
 		self.execute_update("INSERT INTO Impact(impact_level) VALUES (?)", impact)
 
+	def get_impacts(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT impact_id, impact_level FROM Impact")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_priority(self, priority):
 		self.execute_update("INSERT INTO Priority(priority_code) VALUES (?)", priority)
+
+	def get_priorities(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT priority_id, priority_code FROM Priority")
+		rows = cur.fetchall()
+		return rows
 
 	def insert_stage(self, stage):
 		self.execute_update("INSERT INTO Stage(stage_level) VALUES (?)", stage)
 
+	def get_stages(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT stage_id, stage_level FROM Stage")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_system_class(self, system_class):
 		self.execute_update("INSERT INTO SystemClassification(system_name, tier) VALUES (?, ?)", system_class)
 
+	def get_system_classes(self) :
+		cur = self.connection.cursor()
+		cur.execute("SELECT system_classification_id, system_name, tier FROM SystemClassification")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_incident(self, incident):
 		self.execute_update("INSERT INTO Incident(title, description, author, \
-			sla_identification_time_frame, sla_implementation_time_frame, status, \
+			sla_identification_deadline, sla_implementation_deadline, status, \
 			system, impact, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", incident)
+
+	def get_incidents(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT author, title, description, sla_identification_deadline, \
+			sla_implementation_deadline, status, system, impact, priority, date_created \
+			FROM Incident")
+		rows = cur.fetchall()
+		return rows
 
 	def get_incident_create_date(self, incident):
 		cur = self.connection.cursor()
-		cur.execute("SELECT DATETIME(date_created, 'localtime') FROM incident WHERE incident_id = ?", (incident.id, ))
+		cur.execute("SELECT DATETIME(date_created, 'localtime') FROM Incident WHERE incident_id = ?", (incident.id, ))
+		row = cur.fetchone()
+		return row[0]
+
+	def get_assigned_teams(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT team_id FROM IncidentTeamAssignment WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_team_assignment_details(self, assigned_team):
+		cur = self.connection.cursor()
+		cur.execute("SELECT request_issuer, approved, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))
 		row = cur.fetchone()
 		return row[0]
 
@@ -106,5 +173,6 @@ class Database:
 		self.execute_update("UPDATE UserSession SET session_end = DATETIME('now') WHERE user_id = ?", user_session)
 
 	def table_empty(self, table):
-		return self.execute_query("SELECT * FROM " + table + " LIMIT 1") == -1
+		query = "SELECT * FROM " + table + " LIMIT 1"
+		return self.execute_query(query) == 0
 		

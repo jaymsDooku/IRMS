@@ -1,7 +1,7 @@
 <div class="irms-container incidents-container">
 	<div class="incidents-header">
 		<div class="irms-title">
-			<h2>Your Incidents</h2>
+			<h2>{{ data.pageTitle }}</h2>
 		</div>
 		<div class="irms-inline-container">
 			<div class="checkbox-container irms-inline-container">
@@ -27,7 +27,7 @@
 		</div>
 	{% else %}
 		{% for i in range(0, data.incidentsLength) %}
-			<div class="incident-item">
+			<div class="incident-item" data-incident="{{ data.incidents[i].id }}">
 				<h3>Incident #{{ data.incidents[i].id }} | {{ data.incidents[i].title }}</h2>
 				<div class="tags">
 					<div class="incident-tag follow">
