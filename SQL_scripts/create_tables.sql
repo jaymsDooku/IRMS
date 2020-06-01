@@ -16,10 +16,10 @@ CREATE TABLE Stage
     stage_level TEXT
 );
 
-CREATE TABLE SystemClasification
+CREATE TABLE SystemClassification
 (
     system_clasification_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    syste_name TEXT,
+    system_name TEXT,
     tier INTEGER
 );
 
@@ -28,14 +28,14 @@ CREATE TABLE Incident
     incident_id INTEGER PRIMARY KEY AUTOINCREMENT,
     author INTEGER REFERENCES User(user_id),
     title TEXT,
-    desciption TEXT,
-    sla_resolution_identification_time_frame NUMERIC,
-    sla_resolution_implementation_time_frame NUMERIC,
+    description TEXT,
+    sla_identification_time_frame NUMERIC,
+    sla_implementation_time_frame NUMERIC,
     status INTEGER REFERENCES Stage(stage_id) ,
     system INTEGER REFERENCES SystemClasification(system_clasification_id) ,
     impact INTEGER REFERENCES Impact(impact_id) ,
     priority INTEGER REFERENCES Priority(priority_id) ,
-    date_created DATETIME
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Note
@@ -133,8 +133,8 @@ CREATE TABLE UserSession
 (
     user_session_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
-    session_start DATETIME,
-    session_end DATETIME
+    session_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    session_end TIMESTAMP
 );
 
 CREATE TABLE Team

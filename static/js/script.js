@@ -49,6 +49,24 @@ function init(event) {
 			});
 		}
 	}
+
+	var userModeBtn = document.getElementById('userModeBtn');
+	var managerModeBtn = document.getElementById('managerModeBtn');
+	if (userModeBtn != null) {
+		userModeBtn.onclick = changeModeOnClick('userNavBar');
+	}
+	if (managerModeBtn != null) {
+		managerModeBtn.onclick = changeModeOnClick('managerNavBar');
+	}
+}
+
+function changeModeOnClick(path)  {
+	return function(event) {
+		get(path, function(xhttp) {
+			var ul = document.querySelector('.navbar-items ul');
+			ul.innerHTML = xhttp.responseText;
+		});
+	}
 }
 
 window.onload = function(event) {

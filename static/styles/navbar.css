@@ -56,3 +56,33 @@
 .navbar-selected {
 	background-color: #0c4c85;
 }
+
+.navbar-admin {
+	border-top: 1px solid white;
+	margin-bottom: 15px;
+	padding-top: 15px;
+}
+
+.navbar-admin .irms-inline-container {
+	display: inline-flex;
+	margin-top: 5px;
+}
+
+.navbar-admin button {
+	padding: 3px 4px;
+	color: white;
+	background-color: #0b4485;
+}
+
+.navbar-admin button:hover, .navbar-admin .selected {
+	color: #0b4485;
+	background-color: white;
+}
+
+.navbar-admin button:first-child {
+	margin-right: 5px;
+}
+
+.navbar-admin button:last-child {
+	margin-left: 5px;
+}

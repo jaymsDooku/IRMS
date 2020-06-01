@@ -21,63 +21,35 @@
 			</div>
 		</div>
 	</div>
-	<div class="incident-item">
-		<h3>Incident #001 | Payroll Server #04 Crashed</h2>
-		<div class="tags">
-			<div class="incident-tag follow">
-				<p>Follow</p>
-			</div>
-			<div class="incident-tag impact-1-tag">
-				<p>IMP1</p>
-			</div>
-			<div class="incident-tag priority-1-tag">
-				<p>P1</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
+	{% if data.incidentsLength == 0 %}
+		<div class="incident-item no-incidents">
+			<p>No incidents.</p>
 		</div>
-	</div>
-	<div class="incident-item">
-		<h3>Incident #001 | Payroll Server #04 Crashed</h2>
-		<div class="tags">
-			<div class="incident-tag impact-1-tag">
-				<p>IMP1</p>
+	{% else %}
+		{% for i in range(0, data.incidentsLength) %}
+			<div class="incident-item">
+				<h3>Incident #{{ data.incidents[i].id }} | {{ data.incidents[i].title }}</h2>
+				<div class="tags">
+					<div class="incident-tag follow">
+							<p class="follow-text">
+								{% if data.incidents[i].is_following(data.user) %} 
+									Following
+								{% else %}
+									Follow
+								{% endif %}
+							</p>
+					</div>
+					<div class="incident-tag impact-1-tag">
+						<p>{{ data.incidents[i].impact.level }}</p>
+					</div>
+					<div class="incident-tag priority-1-tag">
+						<p>{{ data.incidents[i].priority.code }}</p>
+					</div>
+					<div class="incident-tag date-tag">
+						<p>{{ data.incidents[i].date_created }}</p>
+					</div>
+				</div>
 			</div>
-			<div class="incident-tag priority-1-tag">
-				<p>P1</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
-	<div class="incident-item">
-		<h3>Incident #001 | Payroll Server #04 Crashed</h2>
-		<div class="tags">
-			<div class="incident-tag impact-1-tag">
-				<p>IMP1</p>
-			</div>
-			<div class="incident-tag priority-1-tag">
-				<p>P1</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
-	<div class="incident-item">
-		<h3>Incident #001 | Payroll Server #04 Crashed</h2>
-		<div class="tags">
-			<div class="incident-tag impact-1-tag">
-				<p>IMP1</p>
-			</div>
-			<div class="incident-tag priority-1-tag">
-				<p>P1</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>
+		{% endfor %}
+	{% endif %}
 </div>

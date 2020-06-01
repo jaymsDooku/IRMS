@@ -1,8 +1,11 @@
-{% if user is defined %}
+{% if data.user is defined %}
 	{% include 'navbar.html' %}
 {% endif %}
 <div class="container-body">
-{% if user is not defined %}
+{% if data.user is not defined %}
     {% include 'login.html' %}
+{% endif %}
+{% if data.user.role.name == 'Major Incident Manager' %}
+	{% include 'list_incidents.html' %}
 {% endif %}
 </div>

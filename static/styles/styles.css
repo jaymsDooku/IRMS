@@ -624,3 +624,8 @@ th, td {
 	padding-left: 10px;
 	margin-left: 20px;
 }
+
+.no-incidents {
+	display: block;
+	text-align: center;
+}

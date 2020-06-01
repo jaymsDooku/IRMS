@@ -4,15 +4,19 @@
             <h3>IRMS</h3>
         </div>
         <div class="navbar-login">
-            <p>Logged in: <span>{{ user.forename }} {{ user.surname }}</span></p>
-            <p>Role: <span>{{ user.role.name }}</span></p>
+            <p>Logged in: <span>{{ data.user.forename }} {{ data.user.surname }}</span></p>
+            <p>Role: <span>{{ data.user.role.name }}</span></p>
+        </div>
+        <div class="navbar-admin">
+            <p>Mode: </p>
+            <div class="irms-inline-container">
+                <button id="userModeBtn">User</button>
+                <button id="managerModeBtn" class="selected">Manager</button>
+            </div>
         </div>
         <div class="navbar-items">
             <ul>
-                <li class="navbar-selected">Raise Incident</li>
-                <li>Your Incidents</li>
-                <li>Your Requests</li>
-                <li id="logoutBtn">Log out</li>
+                {% include 'manager_navbar.html' %}
             </ul>
         </div>
     </div>

@@ -34,7 +34,13 @@ def index():
 	if user is None:
 		return render_template('irms.html')
 	else:
-		return render_template('irms.html', user = user)
+		incidents = entity_manager.get_all_incidents()
+		data = {
+			'user': user,
+			'incidents': incidents,
+			'incidentsLength': len(incidents)
+		}
+		return render_template('irms.html', data = data)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,22 +61,42 @@ def login():
 		if user.password != password:
 			return Util.json_response({'status': 'invalid credential'}, HTTP_OKAY)
 
+		entity_manager.login(user)
 		session['user_id'] = str(user.id)
+
+		incidents = entity_manager.get_all_incidents()
+		data = {
+			'user': user,
+			'incidents': incidents,
+			'incidentsLength': len(incidents)
+		}
 		success_response = {
 			'status': 'success',
-			'body': render_template('irms_body.html', user = user)
+			'body': render_template('irms_body.html', data = data)
 		}
 		response = Util.json_response(success_response, HTTP_OKAY)
 		return response
 
 @app.route('/logout')
 def logout():
+	user_id = session['user_id']
+	user = entity_manager.get_user(user_id)
+	entity_manager.logout(user)
+
 	session.pop('user_id', None)
 	success_response = {
 		'status': 'logout',
 		'body': render_template('irms_body.html')
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
+
+@app.route('/userNavBar')
+def user_mode():
+	return render_template('user_navbar.html')
+
+@app.route('/managerNavBar')
+def manager_mode():
+	return render_template('manager_navbar.html')
 
 
 app.run()
