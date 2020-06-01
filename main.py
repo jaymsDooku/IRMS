@@ -90,6 +90,10 @@ def logout():
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
 
+@app.route('/raiseIncident')
+def raise_incident():
+	return render_template('raise_incident.html')
+
 @app.route('/userNavBar')
 def user_mode():
 	return render_template('user_navbar.html')

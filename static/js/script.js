@@ -53,18 +53,41 @@ function init(event) {
 	var userModeBtn = document.getElementById('userModeBtn');
 	var managerModeBtn = document.getElementById('managerModeBtn');
 	if (userModeBtn != null) {
-		userModeBtn.onclick = changeModeOnClick('userNavBar');
+		userModeBtn.onclick = changeModeOnClick(userModeBtn, 'userNavBar');
 	}
 	if (managerModeBtn != null) {
-		managerModeBtn.onclick = changeModeOnClick('managerNavBar');
+		managerModeBtn.onclick = changeModeOnClick(managerModeBtn, 'managerNavBar');
 	}
+
+	navbarInit();
 }
 
-function changeModeOnClick(path)  {
+function navbarInit() {
+	var raiseIncidentBtn = document.getElementById('raiseIncidentBtn');
+	if (raiseIncidentBtn != null) {
+		raiseIncidentBtn.onclick = function(event) {
+			console.log('hello');
+			get('/raiseIncident', function(xhttp) {
+				var containerBody = document.getElementsByClassName('container-body')[0];
+				containerBody.innerHTML = xhttp.responseText;
+			});
+		}
+	}
+	var yourIncidentsBtn = document.getElementById('yourIncidentsBtn');
+	var yourRequestsBtn = document.getElementById('yourRequestsBtn');
+}
+
+function changeModeOnClick(btn, path)  {
 	return function(event) {
 		get(path, function(xhttp) {
 			var ul = document.querySelector('.navbar-items ul');
 			ul.innerHTML = xhttp.responseText;
+
+			var selectedItem = domUtil.getElementByClassName(btn.parentNode, 'selected');
+			selectedItem.classList.remove('selected');
+			btn.classList.add('selected');
+
+			navbarInit();
 		});
 	}
 }
