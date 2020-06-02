@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Users</title>
+        <link rel="stylesheet" type="text/css" href="raise_report.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="container-header">
+                <h1>Generate a Report</h1>
+            </div>
+            <div class="combination-h2-div">
+            <h2 id="data-h2">Incident Data</h2>
+            <div class="search-incident">
+            <form action="">
+                <label>Incident</label>
+                <input type="text">
+                <input type="submit" value="Search">
+            </form>
+            </div>
+            </div>
+            <div class="table-container">
+                <table class="raise-report-table">
+                    <tbody>
+                        <thead>
+                    <tr>
+                        <th>Incident</th>
+                        <th>Priority</th>
+                        <th>SLA Indentification Deadline</th>
+                        <th>Actual Indentification Date</th>
+                        <th>SLA Implementation Deadline</th>
+                        <th>Actual Implementation Deadline</th>
+                        <th>Time to Resolve</th>
+                        <th>Reassigns</th>
+                    </tr>
+                        </thead>
+                    </tbody>            
+                </table>
+            </div>
+            <div>
+            <button id="report-gen">Generate report</button>
+            </div>
+        </div>
+    </body>
+</html>
