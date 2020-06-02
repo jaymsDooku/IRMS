@@ -100,6 +100,25 @@ def logout():
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
 
+@app.route('/requestIncidentTeam/<incident_id>/<team_id>')
+def request_incident_team(incident_id, team_id):
+	incident_id = int(incident_id)
+	team_id = int(team_id)
+
+	user = get_user()
+	incident = entity_manager.get_incident(incident_id)
+	team = entity_manager.get_team(team_id)
+
+	team_assignment = entity_manager.request_team_assignment(user, incident, team)
+	
+	team_assignment_obj = {
+		'name': team_assignment.team.name,
+		'date_issued': team_assignment.date_issued,
+		'assigner': (team_assignment.assigner.forename + ' ' + team_assignment.assigner.surname),
+		'status': IncidentValueChangeRequest.status_to_string(team_assignment.status)
+	}
+	return Util.json_response(team_assignment_obj, HTTP_OKAY)
+
 @app.route('/decideChangeRequest/<change_request_id>/<decision>')
 def decide_change_request(change_request_id, decision):
 	change_request_id = int(change_request_id)
@@ -181,13 +200,26 @@ def view_incident(incident_id):
 	priorities = entity_manager.get_all_priorities()
 
 	assigned_teams = entity_manager.get_assigned_teams(incident)
+	team_assignment_requests = entity_manager.get_team_assignment_requests(incident)
+	for team_assignment_request in team_assignment_requests:
+		assigned_teams.append(team_assignment_request)
+	print(assigned_teams)
+
+	departments = entity_manager.get_all_departments()
+
+	department = departments[0]
+	teams = entity_manager.get_teams(department)
 
 	data = {
 		'incident': incident,
 		'priorities': priorities,
 		'prioritiesLength': len(priorities),
 		'assigned_teams': assigned_teams,
-		'assignedTeamsLength': len(assigned_teams)
+		'assignedTeamsLength': len(assigned_teams),
+		'departmentsLength': len(departments),
+		'departments': departments,
+		'teamsLength': len(teams),
+		'teams': teams
 	}
 	return render_template('view_incident.html', data = data)
 
@@ -252,6 +284,15 @@ def raise_incident():
 		'teams': teams
 	}
 	return render_template('raise_incident.html', data = data)
+
+@app.route('/departmentTeams/<department_name>')
+def get_teams(department_name):
+	department = entity_manager.get_department_by_name(department_name)
+	teams = entity_manager.get_teams(department)
+	team_objects = []
+	for team in teams:
+		team_objects.append({ 'team_id': team.id, 'team_name': team.name})
+	return Util.json_response({ 'teams': team_objects }, HTTP_OKAY)
 
 @app.route('/userNavBar')
 def user_mode():

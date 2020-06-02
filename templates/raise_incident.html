@@ -63,7 +63,7 @@
 						<label>Assigned Team: </label>
 						<select id="teamSelect" name="team">
 							{% for i in range(0, data.teamsLength) %}
-								<option>{{ data.teams[i].name }}</option>
+								<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
 							{% endfor %}
 						</select>
 					</div>

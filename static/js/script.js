@@ -136,6 +136,26 @@ function navbarInit() {
 	}
 }
 
+function initDepartmentSelect(departmentSelect, teamSelect) {
+	departmentSelect.onchange = function(event) {
+		get('departmentTeams/' + departmentSelect.value, function(xhttp) {
+			var responseJson = JSON.parse(xhttp.responseText);
+
+			while (teamSelect.options.length) {
+				teamSelect.remove(0);
+			}
+
+			var newTeams = responseJson.teams;
+			for (var i = 0; i < newTeams.length; i++) {
+				var team = newTeams[i];
+				var teamOption = new Option(team.team_name, i);
+				teamOption.dataset.team = team.team_id
+				teamSelect.options.add(teamOption);
+			}
+		});
+	}
+}
+
 function raiseIncidentInit() {
 	var incidentTitle = document.getElementById('incidentTitle');
 	var incidentDescription = document.getElementById('incidentDescription');
@@ -164,6 +184,8 @@ function raiseIncidentInit() {
 		departmentSelect == null || teamSelect == null || submitBtn == null) {
 		return;
 	}
+
+	initDepartmentSelect(departmentSelect, teamSelect);
 	
 	submitBtn.onclick = function(event) {
 		var title = incidentTitle.value;
@@ -203,6 +225,28 @@ function viewIncidentInit() {
 		var newPriority = prioritySelect.value;
 		showJustificationOverlay(incidentId, oldPriority, newPriority, 'priority');
 		oldPriority = newPriority;
+	}
+
+	var departmentSelect = document.getElementById('departmentSelect');
+	var teamSelect = document.getElementById('teamSelect');
+	initDepartmentSelect(departmentSelect, teamSelect);
+
+	var assignTeamBtn = document.getElementById('assignTeamBtn');
+	assignTeamBtn.onclick = function(event) {
+		var incidentId = assignTeamBtn.dataset.incident;
+		var teamOption = teamSelect.options[teamSelect.selectedIndex];
+		var teamId = teamOption.dataset.team;
+		get('requestIncidentTeam/' + incidentId + '/' + teamId, function(xhttp) {
+			var responseJson = JSON.parse(xhttp.responseText);
+
+			var teamAssignedTable = document.getElementById('teamAssignedTableBody');
+			teamAssignedTable.innerHTML += ("<tr>" +
+				"<td>" + responseJson.name + "</td>" +
+				"<td>" + responseJson.date_issued + "</td>" +
+				"<td>" + responseJson.assigner + "</td>" +
+				"<td>" + responseJson.status + "</td>" +
+				"</tr>");
+		});
 	}
 }
 

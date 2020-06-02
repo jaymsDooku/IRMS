@@ -129,7 +129,7 @@
 					<h3>Teams Assigned</h3>
 				</div>
 				<table>
-					<tbody>
+					<tbody id="teamAssignedTableBody">
 		                <tr>
 		                    <th class="team-name">Team Name</th>
 		                    <th>Date Assigned</th>
@@ -138,10 +138,10 @@
 		                </tr>
 		                {% for i in range(0, data.assignedTeamsLength) %}
 		                	<tr>
-			                	<td class="team-name">{{ data.assigned_teams[i].name }}</td>
+			                	<td class="team-name">{{ data.assigned_teams[i].team.name }}</td>
 			                	<td>{{ data.assigned_teams[i].date_issued }}</td>
-			                	<td>{{ date.assigned_teams[i].assigner.name }}</td>
-			                	<td>{{ data.assigned_teams[i].approved }}</td>
+			                	<td>{{ data.assigned_teams[i].assigner.forename }} {{ data.assigned_teams[i].assigner.surname }}</td>
+			                	<td>{{ data.assigned_teams[i].get_status() }}</td>
 			                </tr>
 		                {% endfor %}
 		            </tbody>
@@ -149,16 +149,25 @@
 				<div class="assign-team-container">
 					<h4>Assign New Team</h4>
 					<div class="assign-team">
-						<div class="assign-team-fields">
-							<div class="irms-inline-container">
+						<div class="assign-team-fields irms-inline-container">
+							<div class="department-select-container irms-inline-container">
+								<label>Department: </label>
+								<select id="departmentSelect" name="department-name">
+									{% for i in range(0, data.departmentsLength) %}
+										<option>{{ data.departments[i].name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="team-select-container irms-inline-container">
 								<label>Team: </label>
-								<select name="team-name">
-									<option>Networking</option>
-									<option>Maintenance</option>
+								<select id="teamSelect" name="team-name">
+									{% for i in range(0, data.teamsLength) %}
+										<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
+									{% endfor %}
 								</select>
 							</div>
 						</div>
-						<img class="new-btn assign-team-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+						<img data-incident="{{ data.incident.id }}" class="new-btn assign-team-btn" id="assignTeamBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
 					</div>
 				</div>
 			</div>

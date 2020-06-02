@@ -1,29 +1,29 @@
-CREATE TABLE Impact
+CREATE TABLE IF NOT EXISTS Impact
 (
     impact_id INTEGER PRIMARY KEY AUTOINCREMENT,
     impact_level INTEGER
 );
 
-CREATE TABLE Priority
+CREATE TABLE IF NOT EXISTS Priority
 (
     priority_id INTEGER PRIMARY KEY AUTOINCREMENT,
     priority_code TEXT
 );
 
-CREATE TABLE Stage
+CREATE TABLE IF NOT EXISTS Stage
 (
     stage_id INTEGER PRIMARY KEY AUTOINCREMENT,
     stage_level TEXT
 );
 
-CREATE TABLE SystemClassification
+CREATE TABLE IF NOT EXISTS SystemClassification
 (
     system_classification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     system_name TEXT,
     tier INTEGER
 );
 
-CREATE TABLE Incident
+CREATE TABLE IF NOT EXISTS Incident
 (
     incident_id INTEGER PRIMARY KEY AUTOINCREMENT,
     author INTEGER REFERENCES User(user_id),
@@ -38,7 +38,7 @@ CREATE TABLE Incident
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Note
+CREATE TABLE IF NOT EXISTS Note
 (
     note_id INTEGER PRIMARY KEY AUTOINCREMENT,
     note_title TEXT,
@@ -46,27 +46,27 @@ CREATE TABLE Note
     note_content TEXT
 );
 
-CREATE TABLE Role
+CREATE TABLE IF NOT EXISTS Role
 (
     role_id INTEGER PRIMARY KEY AUTOINCREMENT,
     role_name TEXT,
     is_customer_facing BOOLEAN
 );
 
-CREATE TABLE Department
+CREATE TABLE IF NOT EXISTS Department
 (
     department_id INTEGER PRIMARY KEY AUTOINCREMENT,
     department_name TEXT
 );
 
-CREATE TABLE Task
+CREATE TABLE IF NOT EXISTS Task
 (
     task_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     content TEXT
 );
 
-CREATE TABLE IncidentValueChangeRequest
+CREATE TABLE IF NOT EXISTS IncidentValueChangeRequest
 (
     change_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
@@ -79,14 +79,14 @@ CREATE TABLE IncidentValueChangeRequest
     date_requested TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Follow
+CREATE TABLE IF NOT EXISTS Follow
 (
     follow_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
     incident_id INTEGER REFERENCES Incident(incident_id) 
 );
 
-CREATE TABLE Notification
+CREATE TABLE IF NOT EXISTS Notification
 (
     notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     notification_content TEXT,
@@ -94,14 +94,14 @@ CREATE TABLE Notification
     incident_id INTEGER REFERENCES Incident(incident_id) 
 );
 
-CREATE TABLE UserNotification
+CREATE TABLE IF NOT EXISTS UserNotification
 (
     user_notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
     notification_id INTEGER REFERENCES Notification(notification_id) 
 );
 
-CREATE TABLE Question
+CREATE TABLE IF NOT EXISTS Question
 (
     questiond_id INTEGER PRIMARY KEY AUTOINCREMENT,
     issuer INTEGER REFERENCES User(user_id) ,
@@ -110,7 +110,7 @@ CREATE TABLE Question
     question_content TEXT
 );
 
-CREATE TABLE Answer
+CREATE TABLE IF NOT EXISTS Answer
 (
     answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
     question_id INTEGER REFERENCES Question(question_id) ,
@@ -118,7 +118,7 @@ CREATE TABLE Answer
     answer_content TEXT
 );
 
-CREATE TABLE User
+CREATE TABLE IF NOT EXISTS User
 (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     forename TEXT,
@@ -129,7 +129,7 @@ CREATE TABLE User
     role INTEGER REFERENCES Role(role_id) 
 );
 
-CREATE TABLE UserSession
+CREATE TABLE IF NOT EXISTS UserSession
 (
     user_session_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
@@ -137,47 +137,48 @@ CREATE TABLE UserSession
     session_end TIMESTAMP
 );
 
-CREATE TABLE Team
+CREATE TABLE IF NOT EXISTS Team
 (
     team_id INTEGER PRIMARY KEY AUTOINCREMENT,
     team_name TEXT,
     department_id INTEGER REFERENCES Department(department_id)
 );
 
-CREATE TABLE UserTeam
+CREATE TABLE IF NOT EXISTS UserTeam
 (
     user_team_id INTEGER PRIMARY KEY AUTOINCREMENT,
     team_id INTEGER REFERENCES Team(team_id),
     user_id INTEGER REFERENCES User(user_id) 
 );
 
-CREATE TABLE TaskTeamAssignment
+CREATE TABLE IF NOT EXISTS TaskTeamAssignment
 (
     task_team_assignment_id INTEGER PRIMARY KEY AUTOINCREMENT,
     team_id INTEGER REFERENCES Team(team_id),
     task_id INTEGER REFERENCES Task(task_id) 
 );
 
-CREATE TABLE TaskTeamAssignmentRequest
+CREATE TABLE IF NOT EXISTS TaskTeamAssignmentRequest
 (
-    task_team_assignment_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
     team_id INTEGER REFERENCES Team(team_id),
     task_id INTEGER REFERENCES Task(task_id),
     request_issuer INTEGER REFERENCES User(user_id),
-    approved BOOLEAN
+    approved BOOLEAN,
+    date_issued TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (team_id, task_id)
 );
 
-CREATE TABLE IncidentTeamAssignmentRequest
+CREATE TABLE IF NOT EXISTS IncidentTeamAssignmentRequest
 (
     team_id INTEGER REFERENCES Team(team_id),
     incident_id INTEGER REFERENCES Incident(incident_id),
     request_issuer INTEGER REFERENCES User(user_id),
-    approved BOOLEAN,
+    status INTEGER,
     date_issued TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (team_id, incident_id)
 );
 
-CREATE TABLE IncidentTeamAssignment
+CREATE TABLE IF NOT EXISTS IncidentTeamAssignment
 (
     team_id INTEGER REFERENCES Team(team_id),
     incident_id INTEGER REFERENCES Incident(incident_id),

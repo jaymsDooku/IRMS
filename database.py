@@ -170,6 +170,22 @@ class Database:
 		row = cur.fetchone()
 		return row[0]
 
+	def insert_team_assignment_request(self, team_assignment_request):
+		self.execute_update("INSERT INTO IncidentTeamAssignmentRequest(team_id, incident_id, request_issuer, status) VALUES (?, ?, ?, ?)", team_assignment_request)
+
+	def get_assignment_date_requested(self, team_assignment_request):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_issued, 'localtime') FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (team_assignment_request.team.id, team_assignment_request.assigned_to.id))
+		row = cur.fetchone()
+		return row[0]
+
+	def get_all_team_assignment_requests(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT team_id, incident_id, request_issuer, status, date_issued \
+			FROM IncidentTeamAssignmentRequest")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_change_request(self, change_request):
 		self.execute_update("INSERT INTO IncidentValueChangeRequest(user_id, incident_id, old_value, new_value, value_type, justification) VALUES (?, ?, ?, ?, ?, ?)", change_request)
 

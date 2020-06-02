@@ -9,6 +9,7 @@ from system_class import SystemClass
 from incident import Incident
 from user_session import UserSession
 from incident_value_change_request import IncidentValueChangeRequest
+from team_assignment_request import TeamAssignmentRequest
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -26,6 +27,7 @@ class EntityManager:
 		self.incidents = {}
 		self.sessions = {}
 		self.change_requests = {}
+		self.team_assignment_requests = {}
 		self.database = database
 		self.clearOnStartUp = clearOnStartUp
 
@@ -42,7 +44,8 @@ class EntityManager:
 		if self.clearOnStartUp:
 			print('Cleaning')
 			execute_script("SQL_scripts/drop_tables.sql")
-			execute_script("SQL_scripts/create_tables.sql")
+
+		execute_script("SQL_scripts/create_tables.sql")
 
 		if self.database.table_empty("Impact"):
 			print("Initializing Impact Table")
@@ -164,6 +167,9 @@ class EntityManager:
 
 		if not self.database.table_empty("IncidentValueChangeRequest"):
 			self.load_change_requests()
+
+		if not self.database.table_empty("IncidentTeamAssignmentRequest"):
+			self.load_team_assignment_requests()
 
 		self.database.commit()
 
@@ -415,6 +421,39 @@ class EntityManager:
 			incident.id = incident_row[0]
 			incident.date_created = incident_row[10]
 			self.incidents[incident.id] = incident
+
+	def request_team_assignment(self, assigner, incident, team):
+		team_assignment_request = TeamAssignmentRequest(team, incident, assigner, IncidentValueChangeRequest.STATUS_PENDING)
+		self.database.insert_team_assignment_request(team_assignment_request)
+		team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
+
+		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
+
+		self.database.commit()
+		return team_assignment_request
+
+	def get_team_assignment_requests(self, assigned_to):
+		team_assignment_requests = []
+		for team_assignment_request in list(self.team_assignment_requests.values()):
+			if team_assignment_request.assigned_to.id == assigned_to.id:
+				team_assignment_requests.append(team_assignment_request)
+		return team_assignment_requests
+
+	def get_all_team_assignment_requests(self):
+		return list(self.team_assignment_requests.values())
+
+	def load_team_assignment_requests(self):
+		team_assignment_rows = self.database.get_all_team_assignment_requests()
+		for team_assignment_row in team_assignment_rows:
+			team = self.get_team(team_assignment_row[0])
+			incident = self.get_incident(team_assignment_row[1])
+			assigner = self.get_user(team_assignment_row[2])
+			status = team_assignment_row[3]
+			date_issued = team_assignment_row[4]
+			team_assignment_request = TeamAssignmentRequest(team, incident, assigner, status)
+			team_assignment_request.date_issued = date_issued
+
+			self.team_assignment_requests[(team.id, incident.id)] = team_assignment_request
 
 	def request_value_change(self, user, incident, old_value, new_value, value_type, justification):
 		change_request = IncidentValueChangeRequest(user, incident, old_value, new_value, value_type, justification)

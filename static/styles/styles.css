@@ -683,3 +683,7 @@ th, td {
 	display: block;
 	text-align: center;
 }
+
+.department-select-container {
+	margin-right: 20px;
+}
