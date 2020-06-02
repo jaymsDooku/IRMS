@@ -22,29 +22,37 @@
 		</div>
 	{% else %}
 		{% for i in range(0, data.requestsLength) %}
-		<div class="request-item" data-user="{{ data.requests[i].user.id }}" data-incident="{{ data.requests[i].incident.id }}">
-			<div class="request-title irms-inline-container">
-				<h3>{{ data.requests[i].get_value_type() }} Change | </h3>
-				<h4 class="old-value">{{ data.requests[i].old_value }}</h4>
-				<p>→</p>
-				<h4 class="new-value">{{ data.requests[i].new_value }}</h4>
-				<div class="incident-tag pending-tag">
-					<p>{{ data.requests[i].get_status() }}</p>
+		<div class="request-item" data-changerequest="{{ data.requests[i].id }}" data-user="{{ data.requests[i].user.id }}" data-incident="{{ data.requests[i].incident.id }}">
+			<div class="request-title-container irms-inline-container">
+				<div class="request-title irms-inline-container">
+					<h3>{{ data.requests[i].get_value_type() }} Change | </h3>
+					<h4 class="old-value">{{ data.requests[i].old_value }}</h4>
+					<p>→</p>
+					<h4 class="new-value">{{ data.requests[i].new_value }}</h4>
+					<div class="request-status incident-tag {% if data.requests[i].get_status() == 'Approved' %} approved-tag {% elif data.requests[i].get_status() == 'Denied' %} denied-tag {% else %} pending-tag {% endif %}">
+						<p>{{ data.requests[i].get_status() }}</p>
+					</div>
+				</div>
+				<div class="tags">
+					<div class="incident-tag view-incident-btn">
+						<p>View</p>
+					</div>
+					{% if data.requests[i].get_status() == "Pending Review" %}
+						<div class="incident-tag approve-btn">
+							<p>Approve</p>
+						</div>
+						<div class="incident-tag deny-btn">
+							<p>Deny</p>
+						</div>
+					{% endif %}
+					<div class="incident-tag date-tag">
+						<p>{{ data.requests[i].date_requested }}</p>
+					</div>
 				</div>
 			</div>
-			<div class="tags">
-				<div class="incident-tag view-incident-btn">
-					<p>View</p>
-				</div>
-				<div class="incident-tag approve-btn">
-					<p>Approve</p>
-				</div>
-				<div class="incident-tag deny-btn">
-					<p>Deny</p>
-				</div>
-				<div class="incident-tag date-tag">
-					<p>{{ data.requests[i].date_requested }}</p>
-				</div>
+			<div class="request-justification">
+				<h4>Justification</h4>
+				<p>{{ data.requests[i].justification }}</p>
 			</div>
 		</div>
 		{% endfor %}

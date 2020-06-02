@@ -17,33 +17,42 @@ class IncidentValueChangeRequest:
 		self.justification = justification
 
 	def get_value_type(self):
-		return IncidentValueChangeRequest.get_value_type(self.value_type)
+		return IncidentValueChangeRequest.value_type_to_string(self.value_type)
 
 	def get_status(self):
 		if self.status is None:
 			return None
 
-		return IncidentValueChangeRequest.get_status(self.status)
+		return IncidentValueChangeRequest.status_to_string(self.status)
 
 	def to_sql(self):
 		return (self.user.id, self.incident.id, self.old_value, self.new_value, self.value_type, self.justification)
 
 	@staticmethod
-	def get_status(status):
-		if status == STATUS_PENDING:
+	def status_to_string(status):
+		if status == IncidentValueChangeRequest.STATUS_PENDING:
 			return "Pending Review"
-		elif status == STATUS_DENIED:
+		elif status == IncidentValueChangeRequest.STATUS_DENIED:
 			return "Denied"
-		elif status == STATUS_APPROVED:
+		elif status == IncidentValueChangeRequest.STATUS_APPROVED:
 			return "Approved"
 		else:
 			return None
 
 	@staticmethod
-	def get_value_type(value_type):
-		if value_type == TYPE_PRIORITY:
+	def value_type_to_string(value_type):
+		if value_type == IncidentValueChangeRequest.TYPE_PRIORITY:
 			return "Priority"
-		elif value_type == TYPE_IMPACT:
+		elif value_type == IncidentValueChangeRequest.TYPE_IMPACT:
 			return "Impact"
+		else:
+			return None
+
+	@staticmethod
+	def string_to_value_type(string):
+		if string.lower() == "priority":
+			return IncidentValueChangeRequest.TYPE_PRIORITY
+		elif string.lower() == "impact":
+			return IncidentValueChangeRequest.TYPE_IMPACT
 		else:
 			return None

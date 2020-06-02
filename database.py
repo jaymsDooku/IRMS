@@ -140,6 +140,10 @@ class Database:
 			sla_identification_deadline, sla_implementation_deadline, status, \
 			system, impact, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", incident)
 
+	def update_incident(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE Incident SET priority = ?, impact = ?, status = ? WHERE incident_id = ?", (incident.priority.id, incident.impact.id, incident.status.id, incident.id))
+
 	def get_incidents(self):
 		cur = self.connection.cursor()
 		cur.execute("SELECT incident_id, author, title, description, sla_identification_deadline, \
@@ -169,9 +173,18 @@ class Database:
 	def insert_change_request(self, change_request):
 		self.execute_update("INSERT INTO IncidentValueChangeRequest(user_id, incident_id, old_value, new_value, value_type, justification) VALUES (?, ?, ?, ?, ?, ?)", change_request)
 
+	def update_change_request_status(self, change_request):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE IncidentValueChangeRequest SET status = ? WHERE change_request_id = ?", (change_request.status, change_request.id))
+
+	def update_change_request_content(self, change_request):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE IncidentValueChangeRequest SET new_value = ?, justification = ? WHERE user_id = ? AND incident_id = ? AND value_type = ?", (change_request.new_value, change_request.justification, \
+			change_request.user.id, change_request.incident.id, change_request.value_type))
+
 	def get_all_change_requests(self):
 		cur = self.connection.cursor()
-		cur.execute("SELECT user_id, incident_id, old_value, new_value, value_type, justification, status, date_requested \
+		cur.execute("SELECT change_request_id, user_id, incident_id, old_value, new_value, value_type, justification, status, date_requested \
 			FROM IncidentValueChangeRequest")
 		rows = cur.fetchall()
 		return rows

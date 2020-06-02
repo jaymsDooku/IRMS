@@ -413,13 +413,62 @@ th, td {
 	background-color: white;
 }
 
+.request-item {
+	flex-direction: column;
+	justify-content: none;
+}
+
 .request-item:hover, .incident-item:hover {
 	background-color: #adadad;
 	cursor: pointer;
 }
 
-.request-item:last-child, .incident-item:last-child {
+.request-title-container {
+	justify-content: space-between;
+}
+
+.request-title-container:last-child, .incident-item:last-child {
 	align-self: flex-end;
+}
+
+.request-item .request-justification {
+	display: none;
+	opacity: 0;
+	margin-top: 15px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	text-align: left;
+	padding: 10px;
+	padding-bottom: 15px;
+}
+
+.request-item .request-justification h4 {
+	padding-left: 10px;
+}
+
+.request-item .request-justification p {
+	margin-top: 5px;
+	border: 1px solid black;
+	border-radius: 3px;
+	padding: 10px;
+}
+
+.request-title h3 {
+	margin-right: 10px;
+}
+
+.old-value {
+	color: white;
+	background-color: red;
+	padding: 3px;
+	border-radius: 3px;
+}
+
+.new-value {
+	color: white;
+	background-color: green;
+	padding: 3px;
+	border-radius: 3px;
 }
 
 .request-title > p  {

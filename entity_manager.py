@@ -426,6 +426,23 @@ class EntityManager:
 
 		self.database.commit()
 
+	def get_change_requests(self, user):
+		change_requests = []
+		for change_request in list(self.change_requests.values()):
+			if change_request.user.id == user.id:
+				change_requests.append(change_request)
+		return change_requests
+
+	def get_incident_change_requests(self, incident):
+		change_requests = []
+		for change_request in list(self.change_requests.values()):
+			if change_request.incident.id == incident.id:
+				change_requests.append(change_request)
+		return change_requests
+
+	def get_change_request(self, change_request_id):
+		return self.change_requests[change_request_id]
+
 	def get_all_change_requests(self):
 		return list(self.change_requests.values())
 
@@ -442,10 +459,28 @@ class EntityManager:
 			date_requested = change_request_row[8]
 			change_request = IncidentValueChangeRequest(user, incident, old_value, new_value, \
 				value_type, justification)
+			change_request.id = change_request_row[0]
 			change_request.status = status
 			change_request.date_requested = date_requested
 
 			self.change_requests[change_request.id] = change_request
+
+	def decide_change_request(self, change_request, new_status):
+		if change_request.value_type == IncidentValueChangeRequest.TYPE_PRIORITY:
+			change_request.incident.priority = self.get_priority_by_code(change_request.new_value)
+		elif change_request.value_type == IncidentValueChangeRequest.TYPE_IMPACT:
+			change_request.incident.impact = self.get_impact_by_level(change_request.new_value)
+		self.database.update_incident(change_request.incident)
+
+		change_request.status = new_status
+		self.change_requests[change_request.id] = change_request
+		self.database.update_change_request_status(change_request)
+
+		self.database.commit()
+
+	def update_change_request_content(self, change_request, new_value, justification):
+		change_request.new_value = new_value
+		change_request.justification = justification
 
 	def get_incident(self, incident_id):
 		return self.incidents[incident_id]

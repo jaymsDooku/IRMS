@@ -21,10 +21,12 @@
 					<div class="incident-tag priority-1-tag">
 						<select id="prioritySelect" data-incident="{{ data.incident.id }}">
 							{% for i in range(0, data.prioritiesLength) %}
-								<option>{{ data.priorities[i].code }}</option>
+								<option {% if data.incident.priority.code == data.priorities[i].code %}selected="selected"{% endif %}>{{ data.priorities[i].code }}</option>
 							{% endfor %}
 						</select>
-						<span class="pending">*</span>
+						{% if data.incident.has_priority_change_request() %}
+							<span class="pending">*</span>
+						{% endif %}
 					</div>
 				</div>
 				<div class="incident-issuer">

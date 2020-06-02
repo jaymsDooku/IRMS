@@ -55,3 +55,40 @@ span.pending {
 	background-color: #4582d1;
 	color: white;
 }
+
+.view-incident-btn {
+	color: white;
+	background-color: #807d7d;
+}
+
+.view-incident-btn:hover {
+	background-color: #a8a5a5;
+}
+
+.approved-tag, .approve-btn {
+	color: white;
+	background-color: #148516;
+}
+
+.approve-btn:hover {
+	background-color: lightgreen;
+}
+
+.denied-tag, .deny-btn {
+	color: white;
+	background-color: #851614;
+}
+
+.deny-btn:hover {
+	background-color: red;
+}
+
+.export-csv {
+	color: white;
+	background-color: #f542e0;
+}
+
+.export-csv:hover {
+	background-color: #942186;
+	cursor: pointer;
+}

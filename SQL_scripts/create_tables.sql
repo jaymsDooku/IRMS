@@ -68,6 +68,7 @@ CREATE TABLE Task
 
 CREATE TABLE IncidentValueChangeRequest
 (
+    change_request_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES User(user_id) ,
     incident_id INTEGER REFERENCES Incident(incident_id) ,
     old_value INTEGER,
@@ -75,8 +76,7 @@ CREATE TABLE IncidentValueChangeRequest
     value_type INTEGER,
     justification TEXT,
     status INTEGER DEFAULT -1,
-    date_requested TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, incident_id)
+    date_requested TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Follow

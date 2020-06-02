@@ -7,6 +7,7 @@ from entity_manager import EntityManager
 from util import Util
 from time_unit import TimeUtil, TimeUnit
 from stage import Stage
+from incident_value_change_request import IncidentValueChangeRequest
 
 HTTP_OKAY = 200
 HTTP_CREATED = 201
@@ -42,6 +43,7 @@ def index():
 	else:
 		incidents = entity_manager.get_all_incidents()
 		data = {
+			'pageTitle': 'All Incidents',
 			'user': user,
 			'incidents': incidents,
 			'incidentsLength': len(incidents)
@@ -98,6 +100,22 @@ def logout():
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
 
+@app.route('/decideChangeRequest/<change_request_id>/<decision>')
+def decide_change_request(change_request_id, decision):
+	change_request_id = int(change_request_id)
+	change_request = entity_manager.get_change_request(change_request_id)
+
+	if decision == 'approve':
+		new_status = IncidentValueChangeRequest.STATUS_APPROVED
+	elif decision == 'deny':
+		new_status = IncidentValueChangeRequest.STATUS_DENIED
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	entity_manager.decide_change_request(change_request, new_status)
+
+	return app.response_class(status = HTTP_OKAY)
+
 @app.route('/changeIncidentValue/<incident_id>/<value_type>', methods=['POST'])
 def request_incident_value_change(incident_id, value_type):
 	if request.is_json:
@@ -116,7 +134,7 @@ def request_incident_value_change(incident_id, value_type):
 	new_value = content['newValue']
 	justification = content['justification']
 
-	entity_manager.request_value_change(user, incident, old_value, new_value, value_type, justification)
+	entity_manager.request_value_change(user, incident, old_value, new_value, IncidentValueChangeRequest.string_to_value_type(value_type), justification)
 	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/allChangeRequests')
@@ -125,6 +143,18 @@ def all_change_requests():
 	change_requests = entity_manager.get_all_change_requests()
 	data = {
 		'pageTitle': 'All Requests',
+		'user': user,
+		'requests': change_requests,
+		'requestsLength': len(change_requests)
+	}
+	return render_template('list_requests.html', data = data)
+
+@app.route('/listChangeRequests')
+def list_change_requests():
+	user = get_user()
+	change_requests = entity_manager.get_change_requests(user)
+	data = {
+		'pageTitle': 'Your Requests',
 		'user': user,
 		'requests': change_requests,
 		'requestsLength': len(change_requests)

@@ -1,4 +1,5 @@
 from datetime import datetime
+from incident_value_change_request import IncidentValueChangeRequest
 
 class Incident:
 
@@ -42,6 +43,13 @@ class Incident:
 
 		sla_implementation_time = date_created_obj + datetime.timedelta(milliseconds=self.sla_implementation_time)
 		return sla_implementation_time'''
+
+	def has_priority_change_request(self):
+		change_requests = self.entity_manager.get_incident_change_requests(self)
+		for change_request in change_requests:
+			if change_request.value_type == IncidentValueChangeRequest.TYPE_PRIORITY and change_request.status == IncidentValueChangeRequest.STATUS_PENDING:
+				return True
+		return False
 
 	def get_sla_identification_time_left(self):
 		date_created_obj = self.get_date_created()

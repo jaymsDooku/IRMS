@@ -84,14 +84,16 @@ function switchBody(path, init) {
 }
 
 function changeNavBarItem(btn) {
-	if (btn.classList.contains('navbar-selected')) {
+	if (btn != null && btn.classList.contains('navbar-selected')) {
 		return;
 	}
 
 	var ul = document.querySelector('.navbar-items ul');
 	var selectedItem = domUtil.getElementByClassName(ul, 'navbar-selected');
 	selectedItem.classList.remove('navbar-selected');
-	btn.classList.add('navbar-selected');
+	if (btn != null) {
+		btn.classList.add('navbar-selected');
+	}
 }
 
 function navbarInit() {
@@ -217,6 +219,7 @@ function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {
 		};
 
 		post(data, 'changeIncidentValue/' + incidentId + '/' + valueType, function(xhttp) {
+			console.log('hiding overlay');
 			hideOverlay();
 		});
 	}
@@ -236,6 +239,8 @@ function listIncidentsInit() {
 	});
 }
 
+var justificationVisible = {};
+
 function listRequestsInit() {
 	var requestItems = document.getElementsByClassName('request-item');
 	if (requestItems.length == 1 && requestItems[0].classList.contains('no-requests')) {
@@ -244,26 +249,63 @@ function listRequestsInit() {
 
 	for (var i = 0; i < requestItems.length; i++) {
 		var requestItem = requestItems[i];
-		var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-btn');
-		viewIncidentBtn.onclick = function(event) {
-			var incidentId = requestItem.dataset.incident;
-			switchBody('viewIncident/' + incidentId, viewIncidentInit);
+		var changeRequestId = requestItem.dataset.changerequest;
+
+		requestItem.onclick = function(event) {
+			var justificationEl = domUtil.getElementByClassName(requestItem, 'request-justification');
+			if (!(changeRequestId in justificationVisible) || !justificationVisible[changeRequestId])  {
+				justificationEl.style.display = "block";
+	            justificationEl.animate([
+	                    { opacity: 0 },
+	                    { opacity: 1 }
+	                ], { duration: 1000, iterations: 1 });
+	            justificationEl.style.opacity = "1";
+	            justificationVisible[changeRequestId] = true;
+	        } else {
+	            justificationEl.animate([
+	                    { opacity: 1 },
+	                    { opacity: 0 }
+	                ], { duration: 1000, iterations: 1 });
+	            justificationEl.style.opacity = "0";
+	            justificationEl.style.display = "none";
+	            justificationVisible[changeRequestId] = false;
+	        }
+		}
+
+		var requestStatus = domUtil.getElementByClassName(requestItem, 'request-status');
+
+		var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-incident-btn');
+		if (viewIncidentBtn != null) {
+			viewIncidentBtn.onclick = function(event) {
+				var incidentId = requestItem.dataset.incident;
+				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			}
 		}
 
 		var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
-		approveBtn.onclick = function(event) {
-			console.log('dab');
+		if (approveBtn != null) {
+			approveBtn.onclick = function(event) {
+				requestStatus.classList.remove('pending-tag');
+				requestStatus.classList.add('approved-tag');
+				requestStatus.innerText = "Approved";
+
+				get('decideChangeRequest/' + changeRequestId + '/approve', function(xhttp) {
+				}); //TODO
+			}
 		}
 
 		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
-		denyBtn.onclick = function(event) {
-			console.log('dab');
+		if (denyBtn != null) {
+			denyBtn.onclick = function(event) {
+				requestStatus.classList.remove('pending-tag');
+				requestStatus.classList.add('denied-tag');
+				requestStatus.innerText = "Denied";
+
+				get('decideChangeRequest/' + changeRequestId + '/deny', function(xhttp) {
+				});
+			}
 		}
 	}
-
-	domUtil.onClick(requestItems, function(event) {
-
-	});	
 }
 
 function showOverlay() {
