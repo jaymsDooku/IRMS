@@ -1,13 +1,13 @@
 <div class="irms-container requests-container">
 	<div class="requests-header">
 		<div class="irms-title irms-inline-container">
-			<h2>{{ data.pageTitle }}</h2>
+			<h2 id="pageTitle">{{ data.pageTitle }}</h2>
 			<div class="request-types">
-				<div class="tab team-assignments-tab">
+				<div class="tab team-assignments-tab {% if data.requestType == 'team' %} selected-tab {% endif %}" id="teamAssignmentsBtn">
 					<p>Team Assignments</p>
 				</div>
-				<div class="tab priority-changes-tab selected-tab">
-					<p>Priority Changes</p>
+				<div class="tab priority-changes-tab {% if data.requestType == 'value' %} selected-tab {% endif %}" id="valueChangesBtn">
+					<p>Value Changes</p>
 				</div>
 			</div>
 		</div>
@@ -16,27 +16,62 @@
 			<input type="checkbox" name="unresolved">
 		</div>
 	</div>
-	{% if data.requestsLength == 0 %}
-		<div class="request-item  no-requests">
-			<p>No Requests.</p>
-		</div>
+	{% if data.requestType == "value" %}
+		{% if data.requestsLength == 0 %}
+			<div class="request-item  no-requests">
+				<p>No Requests.</p>
+			</div>
+		{% else %}
+			{% for i in range(0, data.requestsLength) %}
+			<div class="request-item" data-changerequest="{{ data.requests[i].id }}" data-user="{{ data.requests[i].user.id }}" data-incident="{{ data.requests[i].incident.id }}">
+				<div class="request-title-container irms-inline-container">
+					<div class="request-title irms-inline-container">
+						<h3>Incident #{{ data.requests[i].incident.id }} | {{ data.requests[i].incident.title }} > </h3>
+						<h3>{{ data.requests[i].get_value_type() }} Change | </h3>
+						<h4 class="old-value">{{ data.requests[i].old_value }}</h4>
+						<p>→</p>
+						<h4 class="new-value">{{ data.requests[i].new_value }}</h4>
+						<div class="request-status incident-tag {% if data.requests[i].get_status() == 'Approved' %} approved-tag {% elif data.requests[i].get_status() == 'Denied' %} denied-tag {% else %} pending-tag {% endif %}">
+							<p>{{ data.requests[i].get_status() }}</p>
+						</div>
+					</div>
+					<div class="tags">
+						<div class="incident-tag view-incident-btn">
+							<p>View</p>
+						</div>
+						{% if data.requests[i].get_status() == "Pending Review" %}
+							<div class="incident-tag approve-btn">
+								<p>Approve</p>
+							</div>
+							<div class="incident-tag deny-btn">
+								<p>Deny</p>
+							</div>
+						{% endif %}
+						<div class="incident-tag date-tag">
+							<p>{{ data.requests[i].date_requested }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="request-justification">
+					<h4>Justification</h4>
+					<p>{{ data.requests[i].justification }}</p>
+				</div>
+			</div>
+			{% endfor %}
+		{% endif %}
 	{% else %}
 		{% for i in range(0, data.requestsLength) %}
-		<div class="request-item" data-changerequest="{{ data.requests[i].id }}" data-user="{{ data.requests[i].user.id }}" data-incident="{{ data.requests[i].incident.id }}">
+		<div class="request-item">
 			<div class="request-title-container irms-inline-container">
 				<div class="request-title irms-inline-container">
-					<h3>{{ data.requests[i].get_value_type() }} Change | </h3>
-					<h4 class="old-value">{{ data.requests[i].old_value }}</h4>
+					<h4>{{ data.requests[i].team.name }}</h4>
 					<p>→</p>
-					<h4 class="new-value">{{ data.requests[i].new_value }}</h4>
-					<div class="request-status incident-tag {% if data.requests[i].get_status() == 'Approved' %} approved-tag {% elif data.requests[i].get_status() == 'Denied' %} denied-tag {% else %} pending-tag {% endif %}">
+					<h4>Incident #{{ data.requests[i].assigned_to.id }} | {{ data.requests[i].assigned_to.title }}</h4>
+					<div class="request-status incident-tag  {% if data.requests[i].get_status() == 'Approved' %} approved-tag {% elif data.requests[i].get_status() == 'Denied' %} denied-tag {% else %} pending-tag {% endif %}">
 						<p>{{ data.requests[i].get_status() }}</p>
 					</div>
 				</div>
 				<div class="tags">
-					<div class="incident-tag view-incident-btn">
-						<p>View</p>
-					</div>
 					{% if data.requests[i].get_status() == "Pending Review" %}
 						<div class="incident-tag approve-btn">
 							<p>Approve</p>
@@ -46,33 +81,12 @@
 						</div>
 					{% endif %}
 					<div class="incident-tag date-tag">
-						<p>{{ data.requests[i].date_requested }}</p>
+						<p>{{ data.requests[i].date_issued }}</p>
 					</div>
 				</div>
 			</div>
-			<div class="request-justification">
-				<h4>Justification</h4>
-				<p>{{ data.requests[i].justification }}</p>
-			</div>
+			<div></div>
 		</div>
 		{% endfor %}
 	{% endif %}
-	<!--<div class="request-item">
-		<div class="request-title irms-inline-container">
-			<h4>Networking Team</h4>
-			<p>→</p>
-			<h4>Incident #001 | Payroll Server #04 Crashed</h4>
-			<div class="incident-tag pending-tag">
-				<p>Pending Review</p>
-			</div>
-		</div>
-		<div class="tags">
-			<div class="incident-tag resolving-tag">
-				<p>Resolving</p>
-			</div>
-			<div class="incident-tag date-tag">
-				<p>28/05/2020 16:53</p>
-			</div>
-		</div>
-	</div>-->
 </div>

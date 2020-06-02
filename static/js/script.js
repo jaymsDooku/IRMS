@@ -132,6 +132,7 @@ function navbarInit() {
 	if (yourRequestsBtn != null) {
 		yourRequestsBtn.onclick = function(event) {
 			switchBody('listChangeRequests', listRequestsInit);	
+			changeNavBarItem(yourRequestsBtn);
 		}
 	}
 }
@@ -209,6 +210,7 @@ function raiseIncidentInit() {
 		};
 		post(data, 'raiseIncident', function(xhttp) {
 			switchBody('listIncidents', listIncidentsInit);
+			changeNavBarItem(document.getElementById('yourIncidentsBtn'))
 		});
 	}
 }
@@ -348,6 +350,26 @@ function listRequestsInit() {
 				get('decideChangeRequest/' + changeRequestId + '/deny', function(xhttp) {
 				});
 			}
+		}
+	}
+
+	var teamAssignmentsBtn = document.getElementById('teamAssignmentsBtn');
+	teamAssignmentsBtn.onclick = function(event) {
+		var pageTitle = document.getElementById('pageTitle');
+		if (pageTitle.innerText == "Your Incidents") {
+			switchBody('listTeamAssignmentRequests', listRequestsInit);
+		} else {
+			switchBody('allTeamAssignmentRequests', listRequestsInit);
+		}
+	}
+
+	var valueChangesBtn = document.getElementById('valueChangesBtn');
+	valueChangesBtn.onclick = function(event) {
+		var pageTitle = document.getElementById('pageTitle');
+		if (pageTitle.innerText == "Your Incidents") {
+			switchBody('listChangeRequests', listRequestsInit);
+		} else {
+			switchBody('allChangeRequests', listRequestsInit);
 		}
 	}
 }

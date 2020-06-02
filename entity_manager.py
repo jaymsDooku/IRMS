@@ -465,6 +465,15 @@ class EntityManager:
 
 		self.database.commit()
 
+	def update_change_request(self, change_request, new_value, justification):
+		change_request.new_value = new_value
+		change_request.justification = justification
+
+		self.change_requests[change_request.id] = change_request
+		self.database.update_change_request_content(change_request)
+
+		self.database.commit()
+
 	def get_change_requests(self, user):
 		change_requests = []
 		for change_request in list(self.change_requests.values()):
@@ -481,6 +490,12 @@ class EntityManager:
 
 	def get_change_request(self, change_request_id):
 		return self.change_requests[change_request_id]
+
+	def get_existing_change_request(self, user, incident):
+		for change_request in list(self.change_requests.values()):
+			if change_request.user.id == user.id and change_request.incident.id == incident.id:
+				return change_request
+		return None
 
 	def get_all_change_requests(self):
 		return list(self.change_requests.values())

@@ -74,6 +74,7 @@ def login():
 
 		incidents = entity_manager.get_all_incidents()
 		data = {
+			'pageTitle': 'All Incidents',
 			'user': user,
 			'incidents': incidents,
 			'incidentsLength': len(incidents)
@@ -153,8 +154,40 @@ def request_incident_value_change(incident_id, value_type):
 	new_value = content['newValue']
 	justification = content['justification']
 
-	entity_manager.request_value_change(user, incident, old_value, new_value, IncidentValueChangeRequest.string_to_value_type(value_type), justification)
+	change_request = entity_manager.get_existing_change_request(user, incident)
+
+	if change_request is not None:
+		entity_manager.update_change_request(change_request, new_value, justification)
+	else:
+		entity_manager.request_value_change(user, incident, old_value, new_value, IncidentValueChangeRequest.string_to_value_type(value_type), justification)
 	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/allTeamAssignmentRequests')
+def all_team_assignment_requests():
+	user = get_user()
+	team_assignment_requests = entity_manager.get_all_team_assignment_requests()
+	data = {
+		'pageTitle': 'All Requests',
+		'user': user,
+		'requests': team_assignment_requests,
+		'requestsLength': len(team_assignment_requests),
+		'requestType': 'team'
+	}
+	return render_template('list_requests.html', data = data)
+
+@app.route('/listTeamAssignmentRequests')
+def list_team_assignment_requests():
+	user = get_user()
+	team_assignment_requests = entity_manager.get_team_assignment_requests()
+	data = {
+		'pageTitle': 'Your Requests',
+		'user': user,
+		'requests': team_assignment_requests,
+		'requestsLength': len(team_assignment_requests),
+		'requestType': 'team',
+		'tab': 'team'
+	}
+	return render_template('list_requests.html', data = data)
 
 @app.route('/allChangeRequests')
 def all_change_requests():
@@ -164,7 +197,8 @@ def all_change_requests():
 		'pageTitle': 'All Requests',
 		'user': user,
 		'requests': change_requests,
-		'requestsLength': len(change_requests)
+		'requestsLength': len(change_requests),
+		'requestType': 'value'
 	}
 	return render_template('list_requests.html', data = data)
 
@@ -176,7 +210,8 @@ def list_change_requests():
 		'pageTitle': 'Your Requests',
 		'user': user,
 		'requests': change_requests,
-		'requestsLength': len(change_requests)
+		'requestsLength': len(change_requests),
+		'requestType': 'value'
 	}
 	return render_template('list_requests.html', data = data)
 
@@ -250,8 +285,11 @@ def raise_incident():
 
 		title = content['title']
 		description = content['description']
-		identificationDeadline = TimeUtil.to_datetime(TimeUtil.sanitize_time_input(content['identificationDeadline']))
-		implementationDeadline = TimeUtil.to_datetime(TimeUtil.sanitize_time_input(content['implementationDeadline']))
+
+		sanitizedIdentificationDeadline = TimeUtil.sanitize_time_input(content['identificationDeadline'])
+		sanitizedImplementationDeadline = TimeUtil.sanitize_time_input(content['implementationDeadline'])
+		identificationDeadline = TimeUtil.sqlite_to_datetime(sanitizedIdentificationDeadline)
+		implementationDeadline = TimeUtil.sqlite_to_datetime(sanitizedImplementationDeadline)
 		impact = entity_manager.get_impact_by_level(content['impact'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
