@@ -61,7 +61,7 @@
 		{% endif %}
 	{% else %}
 		{% for i in range(0, data.requestsLength) %}
-		<div class="request-item">
+		<div class="request-item" data-assignedto="{{ data.requests[i].assigned_to.id }}" data-team="{{ data.requests[i].team.id }}">
 			<div class="request-title-container irms-inline-container">
 				<div class="request-title irms-inline-container">
 					<h4>{{ data.requests[i].team.name }}</h4>

@@ -101,6 +101,27 @@ def logout():
 	}
 	return Util.json_response(success_response, HTTP_OKAY)
 
+@app.route('/decideIncidentTeam/<incident_id>/<team_id>/<decision>')
+def decide_incident_team(incident_id, team_id, decision):
+	incident_id = int(incident_id)
+	team_id = int(team_id)
+
+	incident = entity_manager.get_incident(incident_id)
+	team = entity_manager.get_team(team_id)
+
+	team_assignment_request = entity_manager.get_team_assignment_request(incident, team)
+
+	if decision == 'approve':
+		new_status = IncidentValueChangeRequest.STATUS_APPROVED
+	elif decision == 'deny':
+		new_status = IncidentValueChangeRequest.STATUS_DENIED
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	entity_manager.decide_team_assignment_request(team_assignment_request, new_status)
+
+	return app.response_class(status = HTTP_OKAY)
+
 @app.route('/requestIncidentTeam/<incident_id>/<team_id>')
 def request_incident_team(incident_id, team_id):
 	incident_id = int(incident_id)
@@ -237,8 +258,8 @@ def view_incident(incident_id):
 	assigned_teams = entity_manager.get_assigned_teams(incident)
 	team_assignment_requests = entity_manager.get_team_assignment_requests(incident)
 	for team_assignment_request in team_assignment_requests:
-		assigned_teams.append(team_assignment_request)
-	print(assigned_teams)
+		if team_assignment_request.status == IncidentValueChangeRequest.STATUS_PENDING:
+			assigned_teams.append(team_assignment_request)
 
 	departments = entity_manager.get_all_departments()
 

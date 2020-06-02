@@ -158,6 +158,9 @@ class Database:
 		row = cur.fetchone()
 		return row[0]
 
+	def insert_assigned_team(self, assigned_team):
+		self.execute_update("INSERT INTO IncidentTeamAssignment(team_id, incident_id) VALUES (?, ?)", assigned_team)
+
 	def get_assigned_teams(self, incident):
 		cur = self.connection.cursor()
 		cur.execute("SELECT team_id FROM IncidentTeamAssignment WHERE incident_id = ?", (incident.id, ))
@@ -166,9 +169,9 @@ class Database:
 
 	def get_team_assignment_details(self, assigned_team):
 		cur = self.connection.cursor()
-		cur.execute("SELECT request_issuer, approved, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))
+		cur.execute("SELECT request_issuer, status, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))
 		row = cur.fetchone()
-		return row[0]
+		return row
 
 	def insert_team_assignment_request(self, team_assignment_request):
 		self.execute_update("INSERT INTO IncidentTeamAssignmentRequest(team_id, incident_id, request_issuer, status) VALUES (?, ?, ?, ?)", team_assignment_request)
@@ -185,6 +188,10 @@ class Database:
 			FROM IncidentTeamAssignmentRequest")
 		rows = cur.fetchall()
 		return rows
+
+	def update_team_assignment_request_status(self, team_assignment_request):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE IncidentTeamAssignmentRequest SET status = ? WHERE team_id = ? AND incident_id = ?", (team_assignment_request.status, team_assignment_request.team.id, team_assignment_request.assigned_to.id))
 
 	def insert_change_request(self, change_request):
 		self.execute_update("INSERT INTO IncidentValueChangeRequest(user_id, incident_id, old_value, new_value, value_type, justification) VALUES (?, ?, ?, ?, ?, ?)", change_request)

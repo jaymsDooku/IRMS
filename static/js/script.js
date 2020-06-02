@@ -298,7 +298,10 @@ function listRequestsInit() {
 		var changeRequestId = requestItem.dataset.changerequest;
 
 		requestItem.onclick = function(event) {
-			var justificationEl = domUtil.getElementByClassName(requestItem, 'request-justification');
+			var justificationEl = domUtil.getElementByClassName(this, 'request-justification');
+			if (justificationEl == null) {
+				return;
+			}
 			if (!(changeRequestId in justificationVisible) || !justificationVisible[changeRequestId])  {
 				justificationEl.style.display = "block";
 	            justificationEl.animate([
@@ -318,8 +321,6 @@ function listRequestsInit() {
 	        }
 		}
 
-		var requestStatus = domUtil.getElementByClassName(requestItem, 'request-status');
-
 		var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-incident-btn');
 		if (viewIncidentBtn != null) {
 			viewIncidentBtn.onclick = function(event) {
@@ -331,24 +332,14 @@ function listRequestsInit() {
 		var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
 		if (approveBtn != null) {
 			approveBtn.onclick = function(event) {
-				requestStatus.classList.remove('pending-tag');
-				requestStatus.classList.add('approved-tag');
-				requestStatus.innerText = "Approved";
-
-				get('decideChangeRequest/' + changeRequestId + '/approve', function(xhttp) {
-				}); //TODO
+				decideRequest(requestItem, 'approve');
 			}
 		}
 
 		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
 		if (denyBtn != null) {
 			denyBtn.onclick = function(event) {
-				requestStatus.classList.remove('pending-tag');
-				requestStatus.classList.add('denied-tag');
-				requestStatus.innerText = "Denied";
-
-				get('decideChangeRequest/' + changeRequestId + '/deny', function(xhttp) {
-				});
+				decideRequest(requestItem, 'deny')
 			}
 		}
 	}
@@ -372,6 +363,33 @@ function listRequestsInit() {
 			switchBody('allChangeRequests', listRequestsInit);
 		}
 	}
+}
+
+function decideRequest(requestItem, decision) {
+	var requestTypesEl = document.getElementsByClassName('request-types')[0];
+	var selectedTab = domUtil.getElementByClassName(requestTypesEl, 'selected-tab');
+	var requestStatus = domUtil.getElementByClassName(requestItem, 'request-status');
+
+	requestStatus.classList.remove('pending-tag');
+	if (decision == 'approve') {
+		requestStatus.classList.add('approved-tag');
+		requestStatus.innerText = "Approved";
+	} else {
+		requestStatus.classList.add('denied-tag');
+		requestStatus.innerText = "Denied";
+	}
+
+	var path;
+	if (selectedTab.id == "teamAssignmentsBtn") {
+		var incidentId = requestItem.dataset.assignedto;
+		var teamId = requestItem.dataset.team;
+		path = 'decideIncidentTeam/' + incidentId + '/' + teamId;
+	} else if (selectedTab.id == "valueChangesBtn") {
+		path = 'decideChangeRequest/' + changeRequestId;
+	}
+
+	get(path + '/' + decision, function(xhttp) {
+	});
 }
 
 function showOverlay() {

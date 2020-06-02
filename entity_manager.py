@@ -10,6 +10,7 @@ from incident import Incident
 from user_session import UserSession
 from incident_value_change_request import IncidentValueChangeRequest
 from team_assignment_request import TeamAssignmentRequest
+from assigned_team import AssignedTeam
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -439,6 +440,9 @@ class EntityManager:
 				team_assignment_requests.append(team_assignment_request)
 		return team_assignment_requests
 
+	def get_team_assignment_request(self, incident, team):
+		return self.team_assignment_requests[(team.id, incident.id)]
+
 	def get_all_team_assignment_requests(self):
 		return list(self.team_assignment_requests.values())
 
@@ -546,16 +550,26 @@ class EntityManager:
 		assigned_teams = []
 		assigned_team_rows = self.database.get_assigned_teams(incident)
 		for assigned_team_row in assigned_team_rows:
-			assigned_team = self.get_team(assigned_team_row)
+			assigned_team = self.get_team(assigned_team_row[0])
 			assigned_team_obj = AssignedTeam(assigned_team, incident)
 
-			team_assigment_details = self.database.get_team_assignment_details(assigned_team_obj)
-			assigned_team_obj.assigner = self.get_user(team_assigment_details[0])
-			assigned_team_obj.approved = team_assigment_details[1]
-			assigned_team_obj.date_issued = team_assigment_details[2]
+			team_assignment_details = self.database.get_team_assignment_details(assigned_team_obj)
+			assigned_team_obj.assigner = self.get_user(team_assignment_details[0])
+			assigned_team_obj.status = team_assignment_details[1]
+			assigned_team_obj.date_issued = team_assignment_details[2]
 
 			assigned_teams.append(assigned_team_obj)
 		return assigned_teams
+
+	def decide_team_assignment_request(self, team_assignment_request, new_status):
+		assigned_team = AssignedTeam(team_assignment_request.team, team_assignment_request.assigned_to)
+		self.database.insert_assigned_team(assigned_team)
+
+		team_assignment_request.status = new_status
+		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
+		self.database.update_team_assignment_request_status(team_assignment_request)
+
+		self.database.commit()
 
 	def is_following(self, user, incident):
 		return self.database.execute_query("SELECT * FROM Follow WHERE user_id = ? and incident_id = ?", (user.id, incident.id)) != 0
