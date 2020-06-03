@@ -135,6 +135,13 @@ function navbarInit() {
 			changeNavBarItem(yourRequestsBtn);
 		}
 	}
+	var SeeUserRolesBtn = document.getElementById('SeeUserRolesBtn');
+	if (SeeUserRolesBtn != null) {
+		SeeUserRolesBtn.onclick = function(event) {
+			switchBody('listUsers', listUsersInit);	
+			changeNavBarItem(SeeUserRolesBtn);
+		}
+	}
 }
 
 function initDepartmentSelect(departmentSelect, teamSelect) {
@@ -455,6 +462,9 @@ function listRequestsInit() {
 			switchBody('allChangeRequests', listRequestsInit);
 		}
 	}
+}
+function listUsersInit(){
+
 }
 
 function decideRequest(requestItem, decision) {
