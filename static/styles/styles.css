@@ -304,8 +304,21 @@ button:hover {
 	letter-spacing: 0;
 }
 
-.incident-task-header-meta h5, .incident-question-meta > h5, .incident-note-meta > h5 {
+.incident-task-status > h5, .incident-question-meta > h5, .incident-note-meta > h5 {
+	align-self: center;
+}
+
+.incident-task-status {
+	justify-content: center;
 	align-self: flex-end;
+}
+
+.incident-task-status .incident-tag {
+	margin-right: 15px;
+}
+
+.incident-task-status > * {
+	align-self: center;
 }
 
 .incident-question {

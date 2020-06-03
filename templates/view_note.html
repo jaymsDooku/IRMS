@@ -1,0 +1,12 @@
+<div class="note-view-container">
+	<div class="note-header irms-inline-container">
+		<h3>{{ data.note.title }}</h3>
+		<div class="note-meta irms-inline-container">
+			<p>{{ data.note.author.forename }} {{ data.note.author.surname}}</p>
+			<p class="incident-tag date-tag">{{ data.note.date_created }}</p>
+		</div>
+	</div>
+	<div class="note-content">
+		<p>{{ data.note.content }}</p>
+	</div>
+</div>

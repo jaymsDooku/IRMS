@@ -1,0 +1,13 @@
+<div class="task-view-container">
+	<div class="task-header irms-inline-container">
+		<h3>{{ data.task.title }}</h3>
+		<div class="task-meta irms-inline-container">
+			<p>{{ data.task.author.forename }} {{ data.task.author.surname}}</p>
+			<p class="incident-tag todo-tag">{{ data.task.status }}</p>
+			<p class="incident-tag date-tag">{{ data.task.date_created }}</p>
+		</div>
+	</div>
+	<div class="task-content">
+		<p>{{ data.task.content }}</p>
+	</div>
+</div>

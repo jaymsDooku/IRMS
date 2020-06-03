@@ -4,7 +4,7 @@
 	</div>
 	<div class="irms-body">
 		{% for i in range(0, data.notesLength) %}
-			<div class="incident-note">
+			<div class="incident-note" data-note="{{ data.notes[i].id }}">
 				<div class="irms-header">
 					<div class="incident-note-meta irms-inline-container">
 						<div>

@@ -258,6 +258,32 @@ function viewIncidentInit() {
 		});
 	}
 
+	var noteItems = document.getElementsByClassName('incident-note');
+	domUtil.onClick(noteItems, function(event) {
+		var noteId = this.dataset.note;
+		get('viewNote/' + noteId, function(xhttp) {
+			var overlayViewContainer = document.getElementsByClassName('overlay-view-container')[0];
+			overlayViewContainer.innerHTML = xhttp.responseText;
+			showOverlay('overlay-view-container');
+		});
+	});
+
+	var questionItems = document.getElementsByClassName('incident-question');
+	domUtil.onClick(questionItems, function(event) {
+		var questionId = this.dataset.question;
+		get('viewQuestion/' + questionId, function(xhttp) {
+			var overlayViewContainer = document.getElementsByClassName('overlay-view-container')[0];
+			overlayViewContainer.innerHTML = xhttp.responseText;
+			showOverlay('overlay-view-container');
+		});
+	});
+
+	var taskItems = document.getElementsByClassName('incident-task');
+	for (var i = 0; i < taskItems.length; i++) {
+		var taskItem = taskItems[i];
+
+	}
+
 	var newNoteBtn = document.getElementById('newNoteBtn');
 	newNoteBtn.onclick = function(event) {
 		var addNoteBtn = document.getElementById('addNoteBtn');
@@ -339,6 +365,15 @@ function viewIncidentInit() {
 	overlayBody.onclick = function(event) {
 		event.stopPropagation();
 	}
+}
+
+function viewIncidentPageItem() {
+	var noteId = this.dataset.note;
+	get('viewNote/' + noteId, function(xhttp) {
+		var overlayViewContainer = document.getElementsByClassName('overlay-view-container')[0];
+		overlayViewContainer.innerHTML = xhttp.responseText;
+		showOverlay('overlay-view-container');
+	});
 }
 
 function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {

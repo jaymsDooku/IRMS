@@ -43,12 +43,13 @@
 	border: 1px solid black;
 }
 
+.task-view-container, .question-view-container, .note-view-container, 
 .task-form-container, .question-form-container, .note-form-container {
 	padding: 15px;
 	border-radius: 5px;
 }
 
-.note-form-container {
+.note-view-container, .note-form-container {
 	background-color: #32ad67;
 }
 
@@ -56,10 +57,22 @@
 	margin: 10px 0;
 }
 
-.question-form-container {
+.question-view-container, .question-form-container {
 	background-color: #edbb55;
 }
 
-.task-form-container {
+.task-view-container, .task-form-container {
 	background-color: #d9615d;
+}
+
+.note-header {
+	justify-content: space-between;
+}
+
+.note-meta {
+	align-self: flex-end;
+}
+
+.note-meta .date-tag {
+	border: 1px solid white;
 }

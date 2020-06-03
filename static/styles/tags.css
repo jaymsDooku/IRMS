@@ -92,3 +92,7 @@ span.pending {
 	background-color: #942186;
 	cursor: pointer;
 }
+
+.todo-tag {
+	background-color: #42eff5;
+}

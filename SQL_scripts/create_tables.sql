@@ -35,7 +35,9 @@ CREATE TABLE IF NOT EXISTS Incident
     system INTEGER REFERENCES SystemClasification(system_clasification_id),
     impact INTEGER REFERENCES Impact(impact_id),
     priority INTEGER REFERENCES Priority(priority_id),
-    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_resolution_identified TIMESTAMP,
+    date_resolution_implemented TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS Note

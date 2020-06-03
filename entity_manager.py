@@ -29,9 +29,15 @@ class EntityManager:
 		self.departments = {}
 		self.teams = {}
 		self.incidents = {}
+
 		self.sessions = {}
 		self.change_requests = {}
 		self.team_assignment_requests = {}
+
+		self.notes = {}
+		self.questions = {}
+		self.tasks = {}
+
 		self.database = database
 		self.clearOnStartUp = clearOnStartUp
 
@@ -440,6 +446,7 @@ class EntityManager:
 				note.date_created = date_created
 
 				incident.notes.append(note)
+				self.notes[note.id] = note
 
 			question_rows = self.database.get_questions(incident)
 			for question_row in question_rows:
@@ -453,6 +460,7 @@ class EntityManager:
 				question.date_asked = date_asked
 
 				incident.questions.append(question)
+				self.questions[question.id] = question
 
 			task_rows = self.database.get_tasks(incident)
 			for task_row in task_rows:
@@ -467,6 +475,7 @@ class EntityManager:
 				task.date_created = date_created
 
 				incident.tasks.append(task)
+				self.tasks[task.id] = task
 
 			self.incidents[incident.id] = incident
 
@@ -628,8 +637,12 @@ class EntityManager:
 		note.date_created = self.database.get_note_date_created(note)
 
 		incident.notes.append(note)
+		self.notes[note.id] = note
 		self.database.commit()
 		return note
+
+	def get_note(self, note_id):
+		return self.notes[note_id]
 
 	def create_question(self, author, incident, title, content):
 		question = Question(title, author, content)
@@ -638,8 +651,12 @@ class EntityManager:
 		question.date_asked = self.database.get_question_date_asked(question)
 
 		incident.questions.append(question)
+		self.questions[question.id] = question
 		self.database.commit()
 		return question
+
+	def get_question(self, question_id):
+		return self.questions[question_id]
 
 	def create_task(self, author, incident, title, content):
 		task = Task(title, author, content, "To Do")
@@ -650,6 +667,9 @@ class EntityManager:
 		incident.tasks.append(task)
 		self.database.commit()
 		return task
+
+	def get_task(self, task_id):
+		return self.tasks[task_id]
 
 	def dump(self):
 		print('Roles: ' + str(self.roles))

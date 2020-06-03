@@ -390,6 +390,17 @@ def add_note(incident_id):
 	entity_manager.create_note(user, incident, title, noteContent)
 	return app.response_class(status = HTTP_OKAY)
 
+@app.route('/viewNote/<note_id>')
+def view_note(note_id):
+	note_id = int(note_id)
+
+	note = entity_manager.get_note(note_id)
+	
+	data = {
+		'note': note
+	}
+	return render_template('view_note.html', data = data)
+
 @app.route('/askQuestion/<incident_id>', methods=['POST'])
 def ask_question(incident_id):
 	incident_id = int(incident_id)
@@ -407,6 +418,10 @@ def ask_question(incident_id):
 
 	entity_manager.create_question(user, incident, title, questionContent)
 	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/viewQuestion/<question_id>')
+def view_question(question_id):
+	question_id = int(question_id)
 
 @app.route('/addTask/<incident_id>', methods=['POST'])
 def add_task(incident_id):
