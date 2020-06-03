@@ -214,6 +214,9 @@ class EntityManager:
 			user.id = user_row[0]
 			self.users[user.id] = user
 
+	def get_users(self):
+		return list(self.users.values())
+
 	def get_user_by_username(self, username):
 		for user in self.users.values():
 			if user.username == username:

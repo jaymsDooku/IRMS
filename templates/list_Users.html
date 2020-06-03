@@ -15,7 +15,11 @@
                 </tr>
             </thead>
             <tbody>
-
+                {% for i in range(0, data.usersLength) %}
+                    <tr>
+                        <td>{{ data.users[i].forename }}</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

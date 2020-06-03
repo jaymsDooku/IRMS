@@ -263,7 +263,12 @@ def all_incidents():
 
 @app.route('/listUsers') 
 def list_users():
-	return render_template('list_Users.html')
+	users = entity_manager.get_users()
+	data = {
+		'usersLength': len(users),
+		'users': users
+	}
+	return render_template('list_Users.html', data = data)
 
 @app.route('/viewIncident/<incident_id>')
 def view_incident(incident_id):
