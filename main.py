@@ -212,12 +212,12 @@ def all_team_assignment_requests():
 @app.route('/listTeamAssignmentRequests')
 def list_team_assignment_requests():
 	user = get_user()
-	team_assignment_requests = entity_manager.get_team_assignment_requests()
+	#team_assignment_requests = entity_manager.get_team_assignment_requests()
 	data = {
 		'pageTitle': 'Your Requests',
 		'user': user,
-		'requests': team_assignment_requests,
-		'requestsLength': len(team_assignment_requests),
+		#'requests': team_assignment_requests,
+		#'requestsLength': len(team_assignment_requests),
 		'requestType': 'team',
 		'tab': 'team'
 	}
@@ -260,6 +260,10 @@ def all_incidents():
 		'incidentsLength': len(incidents)
 	}
 	return render_template('list_incidents.html', data = data)
+
+@app.route('/listUsers') 
+def list_users():
+	return render_template('list_Users.html')
 
 @app.route('/viewIncident/<incident_id>')
 def view_incident(incident_id):
@@ -333,7 +337,7 @@ def raise_incident():
 		impact = entity_manager.get_impact_by_level(content['impact'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
-		team = entity_manager.get_team_by_name(content['team'])
+		#team = entity_manager.get_team_by_name(content['team'])
 		status = entity_manager.get_stage_by_level(Stage.IDENTIFYING)
 
 		entity_manager.create_incident(title, description, author, \
