@@ -75,6 +75,10 @@ class Database:
 	def insert_user(self, user):
 		self.execute_update("INSERT INTO User(forename, surname, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?)", user)
 
+	def update_user_role(self, user):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE User SET role = ? WHERE user_id = ?", (user.role.id, user.id))
+
 	def get_users(self):
 		cur = self.connection.cursor()
 		cur.execute("SELECT user_id, forename, surname, email, username, password, role FROM User")

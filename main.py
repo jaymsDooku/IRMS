@@ -263,12 +263,32 @@ def all_incidents():
 
 @app.route('/listUsers') 
 def list_users():
+	roles = entity_manager.get_all_roles()
 	users = entity_manager.get_users()
 	data = {
 		'usersLength': len(users),
-		'users': users
+		'users': users,
+		'rolesLength': len(roles),
+		'roles': roles
 	}
 	return render_template('list_Users.html', data = data)
+
+@app.route('/updateRole/<user_id>', methods=['POST'])
+def update_user_role(user_id):
+	user_id = int(user_id)
+
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = entity_manager.get_user(user_id)
+	role_name = content['role']
+	new_role = entity_manager.get_role_by_name(role_name)
+
+	entity_manager.update_user_role(user, new_role)
+
+	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/viewIncident/<incident_id>')
 def view_incident(incident_id):
@@ -395,7 +415,7 @@ def view_note(note_id):
 	note_id = int(note_id)
 
 	note = entity_manager.get_note(note_id)
-	
+
 	data = {
 		'note': note
 	}

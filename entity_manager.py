@@ -202,8 +202,18 @@ class EntityManager:
 				return role
 		return None
 
+	def update_user_role(self, user, new_role):
+		user.role = new_role
+		self.database.update_user_role(user)
+		self.users[user.id] = user
+
+		self.database.commit()
+
 	def get_role(self, role_id):
 		return self.roles[role_id]
+
+	def get_all_roles(self):
+		return list(self.roles.values())
 
 	def create_user(self, forename, surname, email, username, password, role):
 		user = User(forename, surname, email, username, password, role)

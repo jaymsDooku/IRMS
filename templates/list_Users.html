@@ -1,37 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <link rel="stylesheet" type="text/css" href="list_Users.css">
-    </head>
-    <body id="list_Users_Body">
-        <div class="users-header">
-            <h1>Users</h1>
-        </div>
-        <div class="users-body">
-            <table class="w3-table w3-centered w3-card-4" id="user_table">
-                <thead>
-                    <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody id="table_Body">
-                    {% for i in range(0, data.usersLength) %}
-                        <tr>
-                            <td>{{ data.users[i].forename }}</td>
-                            <td>{{ data.users[i].surname }}</td>
-                            <td>{{ data.users[i].email }}</td>
-                            <td>{{ data.users[i].username }}</td>
-                            <td>{{ data.users[i].password }}</td>
-                            <td>{{ data.users[i].role.name }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </body>
-</html>
+<div class="users-header">
+    <h1>Users</h1>
+</div>
+<div class="users-body">
+    <table class="" id="user_table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody id="table_Body">
+            {% for i in range(0, data.usersLength) %}
+                <tr>
+                    <td>{{ data.users[i].forename }}</td>
+                    <td>{{ data.users[i].surname }}</td>
+                    <td>{{ data.users[i].email }}</td>
+                    <td>{{ data.users[i].username }}</td>
+                    <td>{{ data.users[i].password }}</td>
+                    <td><select class="role-dropdown" data-user="{{ data.users[i].id }}">
+                        {% for j in range(0, data.rolesLength) %}
+                            <option {% if data.users[i].role.name == data.roles[j].name %}selected="selected"{% endif %}>{{ data.roles[j].name }}</option>
+                        {% endfor %}
+                    </select></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
