@@ -1,0 +1,61 @@
+
+.container{
+    background-color: #bbc5f2;
+    height: 25%;
+    width: 60%;
+    position: relative;
+    top: 10%;
+    left: 20%;
+}
+
+.center-table{
+    text-align: center;
+}
+
+#data-h2{
+    margin-left: 10px;
+    margin-bottom: 0px;
+    margin-top: 5px;
+    display: inline-block
+}
+
+.container-header{
+    text-align: center;
+}
+
+.search-incident{
+    display: inline-block;
+    margin-left: 60%;
+}
+
+.table-container{
+    overflow-x: auto;    
+}
+
+.raise-report-table{
+    border-collapse: collapse;
+    border-color: black;
+    margin: 10px;
+    font-size: 1em;
+}
+
+.raise-report-table thead tr{
+    background-color: aliceblue;
+    border: solid 2px black;
+    text-align: left;
+    font-weight: bold;
+    border-radius: 5px;
+    font-family: Jost;
+}
+
+.raise-report-table th,.raise-report-table td{
+    padding: 12px 15px;
+    text-align: left;
+    border: solid 2px black;
+    font-family: Jost;
+}
+
+#report-gen{
+    margin: 10px;
+    margin-left: 88%;
+}
