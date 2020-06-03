@@ -408,7 +408,7 @@ function listRequestsInit() {
 			viewIncidentBtn.onclick = function(event) {
 				var incidentId = requestItem.dataset.incident;
 				switchBody('viewIncident/' + incidentId, viewIncidentInit);
-				
+
 				event.stopPropagation();
 			}
 		}
@@ -473,8 +473,11 @@ function decideRequest(requestItem, decision) {
 		var teamId = requestItem.dataset.team;
 		path = 'decideIncidentTeam/' + incidentId + '/' + teamId;
 	} else if (selectedTab.id == "valueChangesBtn") {
+		var changeRequestId = requestItem.dataset.changerequest;
 		path = 'decideChangeRequest/' + changeRequestId;
 	}
+
+	console.log('path: ' + path);
 
 	get(path + '/' + decision, function(xhttp) {
 	});

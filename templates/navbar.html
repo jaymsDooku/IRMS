@@ -7,6 +7,7 @@
             <p>Logged in: <span>{{ data.user.forename }} {{ data.user.surname }}</span></p>
             <p>Role: <span>{{ data.user.role.name }}</span></p>
         </div>
+        {% if data.user.role.name == 'Major Incident Manager' %}
         <div class="navbar-admin">
             <p>Mode: </p>
             <div class="irms-inline-container">
@@ -14,6 +15,7 @@
                 <button id="managerModeBtn" class="selected">Manager</button>
             </div>
         </div>
+        {% endif %}
         <div class="navbar-items">
             <ul>
                 {% include 'manager_navbar.html' %}
