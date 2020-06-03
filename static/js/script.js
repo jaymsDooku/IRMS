@@ -414,19 +414,23 @@ function listRequestsInit() {
 		}
 
 		var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
+		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
 		if (approveBtn != null) {
 			approveBtn.onclick = function(event) {
 				decideRequest(requestItem, 'approve');
 
+				approveBtn.remove();
+				denyBtn.remove();
 				event.stopPropagation();
 			}
 		}
 
-		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
 		if (denyBtn != null) {
 			denyBtn.onclick = function(event) {
 				decideRequest(requestItem, 'deny')
 
+				approveBtn.remove();
+				denyBtn.remove();
 				event.stopPropagation();
 			}
 		}

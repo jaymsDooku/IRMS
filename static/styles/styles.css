@@ -279,10 +279,16 @@ button:hover {
 	text-align: center;
 }
 
-.incident-questions .irms-body, .incident-notes .irms-body, .incident-tasks .irms-body {
+.incident-questions .irms-body, .incident-notes .irms-body {
 	display: flex;
 	justify-content: flex-start space-around;
 	flex-flow: row wrap;
+}
+
+.incident-tasks .irms-body {
+	display: flex;
+	justify-content: flex-start space-around;
+	flex-direction: column;
 }
 
 .incident-note {

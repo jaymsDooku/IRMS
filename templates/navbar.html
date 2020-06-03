@@ -18,7 +18,11 @@
         {% endif %}
         <div class="navbar-items">
             <ul>
-                {% include 'manager_navbar.html' %}
+                {% if data.user.role.name == 'Major Incident Manager' %}
+                    {% include 'manager_navbar.html' %}
+                {% else %}
+                    {% include 'user_navbar.html' %}
+                {% endif %}
             </ul>
         </div>
     </div>
