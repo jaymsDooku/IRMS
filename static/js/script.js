@@ -481,8 +481,6 @@ function decideRequest(requestItem, decision) {
 		path = 'decideChangeRequest/' + changeRequestId;
 	}
 
-	console.log('path: ' + path);
-
 	get(path + '/' + decision, function(xhttp) {
 	});
 }

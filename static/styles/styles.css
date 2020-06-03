@@ -295,25 +295,21 @@ button:hover {
 	background-color: var(--note-bg-color);
 }
 
-.incident-note-meta, .incident-question-meta {
+.incident-task-header-meta, .incident-note-meta, .incident-question-meta {
 	justify-content: space-between;
 }
 
-.incident-question-meta h5, .incident-note-meta h5 {
+.incident-task-header-meta h5, .incident-question-meta h5, .incident-note-meta h5 {
 	font-size: 12px;
 	letter-spacing: 0;
 }
 
-.incident-question-meta > h5, .incident-note-meta > h5 {
+.incident-task-header-meta h5, .incident-question-meta > h5, .incident-note-meta > h5 {
 	align-self: flex-end;
 }
 
 .incident-question {
 	background-color: var(--question-bg-color);
-}
-
-.incident-task:first-child {
-	margin-left: 20px;
 }
 
 .incident-task {
@@ -344,6 +340,18 @@ button:hover {
 	cursor: pointer;
 }
 
+.incident-note:hover {
+	background-color: var(--note-new-color);
+}
+
+.incident-question:hover {
+	background-color: var(--question-new-color);
+}
+
+.incident-task:hover {
+	background-color: var(--task-new-color);
+}
+
 .incident-question .irms-header, .incident-note .irms-header, .incident-task .irms-header {
 	text-align: left;
 	border-bottom: 1px solid black;
@@ -351,6 +359,38 @@ button:hover {
 
 .incident-question .irms-body, .incident-note .irms-body, .incident-task .irms-body {
 	padding: 10px;
+}
+
+.incident-note .irms-body p {
+}
+
+html {
+	--lh: 1.4rem;
+	line-height: var(--lh);
+}
+
+.truncate-overflow {
+	--max-lines: 9;
+	position: relative;
+	max-height: calc(var(--lh) * var(--max-lines));
+	overflow: hidden;
+	padding-right: 1rem;
+}
+
+.truncate-overflow::before {
+	position: absolute;
+	content: "...";
+	inset-block-end: 0;
+	inset-inline-end: 0;
+}
+
+.truncate-overflow::after {
+	content: "";
+	position: absolute;
+	inset-inline-end: 0;
+	width: 1rem;
+	height: 1rem;
+	background: white;
 }
 
 .incident-task {

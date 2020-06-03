@@ -5,8 +5,6 @@
 {% if data.user is not defined %}
     {% include 'login.html' %}
 {% else %}
-	{% if data.user.role.name == 'Major Incident Manager' %}
-		{% include 'list_incidents.html' %}
-	{% endif %}
+	{% include 'list_incidents.html' %}
 {% endif %}
 </div>

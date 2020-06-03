@@ -17,7 +17,15 @@
 				</div>
 				<div class="incident-task-body">
 					<div class="irms-header">
-						<h3>{{ data.tasks[i].title }}</h3>
+						<div class="incident-task-header-meta irms-inline-container">
+							<div>
+								<h5>{{ data.tasks[i].author.forename }} {{ data.tasks[i].author.surname }}</h5>
+							</div>
+							<h5>{{ data.tasks[i].date_created }}</h5>
+						</div>
+						<div class="incident-task-title">
+							<h3>{{ data.tasks[i].title }}</h3>
+						</div>
 					</div>
 					<div class="irms-body">
 						<p>{{ data.tasks[i].content }}</p>

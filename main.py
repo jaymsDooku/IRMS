@@ -7,6 +7,7 @@ from entity_manager import EntityManager
 from util import Util
 from time_unit import TimeUtil, TimeUnit
 from stage import Stage
+from role import Role
 from incident_value_change_request import IncidentValueChangeRequest
 
 HTTP_OKAY = 200
@@ -41,9 +42,15 @@ def index():
 	if user is None:
 		return render_template('irms.html', data = {})
 	else:
-		incidents = entity_manager.get_all_incidents()
+		if user.role.name == Role.MAJOR_INCIDENT_MANAGER:
+			incidents = entity_manager.get_all_incidents()
+			pageTitle = 'All Incidents'
+		else:
+			incidents = entity_manager.get_incidents(user)
+			pageTitle = 'Your Incidents'
+
 		data = {
-			'pageTitle': 'All Incidents',
+			'pageTitle': pageTitle,
 			'user': user,
 			'incidents': incidents,
 			'incidentsLength': len(incidents)
@@ -72,9 +79,15 @@ def login():
 		entity_manager.login(user)
 		session['user_id'] = str(user.id)
 
-		incidents = entity_manager.get_all_incidents()
+		if user.role.name == Role.MAJOR_INCIDENT_MANAGER:
+			incidents = entity_manager.get_all_incidents()
+			pageTitle = 'All Incidents'
+		else:
+			incidents = entity_manager.get_incidents(user)
+			pageTitle = 'Your Incidents'
+
 		data = {
-			'pageTitle': 'All Incidents',
+			'pageTitle': pageTitle,
 			'user': user,
 			'incidents': incidents,
 			'incidentsLength': len(incidents)

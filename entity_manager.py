@@ -463,6 +463,8 @@ class EntityManager:
 				task.id = task_id
 				task.date_created = date_created
 
+				incident.tasks.append(task)
+
 			self.incidents[incident.id] = incident
 
 	def request_team_assignment(self, assigner, incident, team):
