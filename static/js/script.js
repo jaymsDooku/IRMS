@@ -408,6 +408,8 @@ function listRequestsInit() {
 			viewIncidentBtn.onclick = function(event) {
 				var incidentId = requestItem.dataset.incident;
 				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+				
+				event.stopPropagation();
 			}
 		}
 
@@ -415,6 +417,8 @@ function listRequestsInit() {
 		if (approveBtn != null) {
 			approveBtn.onclick = function(event) {
 				decideRequest(requestItem, 'approve');
+
+				event.stopPropagation();
 			}
 		}
 
@@ -422,6 +426,8 @@ function listRequestsInit() {
 		if (denyBtn != null) {
 			denyBtn.onclick = function(event) {
 				decideRequest(requestItem, 'deny')
+
+				event.stopPropagation();
 			}
 		}
 	}

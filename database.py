@@ -198,6 +198,8 @@ class Database:
 
 	def update_change_request_status(self, change_request):
 		cur = self.connection.cursor()
+		print('status: ' + str(change_request.status))
+		print('id: ' + str(change_request.id))
 		cur.execute("UPDATE IncidentValueChangeRequest SET status = ? WHERE change_request_id = ?", (change_request.status, change_request.id))
 
 	def update_change_request_content(self, change_request):
