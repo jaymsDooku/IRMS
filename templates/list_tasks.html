@@ -1,0 +1,32 @@
+<div class="incident-tasks">
+	<div class="irms-header">
+		<h3>Tasks</h3>
+	</div>
+	<div class="irms-body">
+		{% for i in range(0, data.tasksLength) %}
+			<div class="incident-task">
+				<div class="incident-task-meta">
+					<h5>Assigned Teams</h5>
+					<div class="teams-assigned irms-inline-container">
+						{% for j in range(0, data.tasks[i].teams_count()) %}
+							<div class="incident-tag">
+								<p>{{ data.tasks[i].teams[j].name }}</p>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="incident-task-body">
+					<div class="irms-header">
+						<h3>{{ data.tasks[i].title }}</h3>
+					</div>
+					<div class="irms-body">
+						<p>{{ data.tasks[i].content }}</p>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	<div class="add-incident-task-container">
+		<img class="new-btn new-task-btn" id="newTaskBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+	</div>
+</div>

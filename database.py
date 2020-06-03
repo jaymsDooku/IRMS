@@ -224,6 +224,57 @@ class Database:
 	def update_user_session(self, user_session):
 		self.execute_update("UPDATE UserSession SET session_end = DATETIME('now') WHERE user_id = ?", user_session)
 
+	def insert_note(self, incident, note):
+		cur = self.connection.cursor()
+		cur.execute("INSERT INTO Note(incident_id, note_title, author, note_content) VALUES (?, ?, ?, ?)", (incident.id, note.title, note.author.id, note.content))
+		note.id = cur.lastrowid
+
+	def insert_question(self, incident, question):
+		cur = self.connection.cursor()
+		cur.execute("INSERT INTO Question(incident_id, question_title, issuer, question_content) VALUES (?, ?, ?, ?)", (incident.id, question.title, question.author.id, question.content))
+		question.id = cur.lastrowid
+
+	def insert_task(self, incident, task):
+		cur = self.connection.cursor()
+		cur.execute("INSERT INTO Task(incident_id, name, author, content, status) VALUES (?, ?, ?, ?, ?)", (incident.id, task.title, task.author.id, task.content, task.status))
+		task.id = cur.lastrowid
+
+	def get_notes(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT note_id, note_title, author, date_created, note_content FROM Note WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_note_date_created(self, note):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_created, 'localtime') FROM Note WHERE note_id = ?", (note.id, ))
+		row = cur.fetchone()
+		return row[0]
+
+	def get_questions(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT question_id, question_title, issuer, date_asked, question_content FROM Question WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_question_date_asked(self, question):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_asked, 'localtime') FROM Question WHERE question_id = ?", (question.id, ))
+		row = cur.fetchone()
+		return row[0]
+
+	def get_tasks(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT task_id, name, author, date_created, content, status FROM Task WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_task_date_created(self, task):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_created, 'localtime') FROM Task WHERE task_id = ?", (task.id, ))
+		row = cur.fetchone()
+		return row[0]
+
 	def table_empty(self, table):
 		query = "SELECT * FROM " + table + " LIMIT 1"
 		return self.execute_query(query) == 0

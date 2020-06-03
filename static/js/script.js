@@ -250,6 +250,88 @@ function viewIncidentInit() {
 				"</tr>");
 		});
 	}
+
+	var newNoteBtn = document.getElementById('newNoteBtn');
+	newNoteBtn.onclick = function(event) {
+		var addNoteBtn = document.getElementById('addNoteBtn');
+		addNoteBtn.onclick = function(event) {
+			var incidentId = addNoteBtn.dataset.incident;
+
+			var noteTitle = document.getElementById('noteTitle');
+			var title = noteTitle.value;
+
+			var noteContent = document.getElementById('noteContent');
+			var content = noteContent.value;
+
+			var data = {
+				title: title,
+				content: content
+			};
+			post(data, 'addNote/' + incidentId, function(xhttp) {
+				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			});
+		}
+
+		showOverlay('note-form-container');
+	}
+
+	var newQuestionBtn = document.getElementById('newQuestionBtn');
+	newQuestionBtn.onclick = function(event) {
+		var askQuestionBtn = document.getElementById('askQuestionBtn');
+		askQuestionBtn.onclick = function(event) {
+			var incidentId = askQuestionBtn.dataset.incident;
+
+			var questionTitle = document.getElementById('questionTitle');
+			var title = questionTitle.value;
+
+			var questionContent = document.getElementById('questionContent');
+			var content = questionContent.value;
+
+			var data = {
+				title: title,
+				content: content
+			};
+			post(data, 'askQuestion/' + incidentId, function(xhttp) {
+				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			});
+		}
+
+		showOverlay('question-form-container');
+	}
+
+	var newTaskBtn = document.getElementById('newTaskBtn');
+	newTaskBtn.onclick = function(event) {
+		var addTaskBtn = document.getElementById('addTaskBtn');
+		addTaskBtn.onclick = function(event) {
+			var incidentId = addTaskBtn.dataset.incident;
+
+			var taskTitle = document.getElementById('taskTitle');
+			var title = taskTitle.value;
+
+			var taskContent = document.getElementById('taskContent');
+			var content = taskContent.value;
+
+			var data = {
+				title: title,
+				content: content
+			};
+			post(data, 'addTask/' + incidentId, function(xhttp) {
+				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			});
+		}
+
+		showOverlay('task-form-container');
+	}
+
+	var overlay = document.getElementById('overlay');
+	overlay.onclick = function(event) {
+		hideOverlay();
+	}
+
+	var overlayBody = document.getElementById('overlay-body');
+	overlayBody.onclick = function(event) {
+		event.stopPropagation();
+	}
 }
 
 function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {
@@ -270,7 +352,7 @@ function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {
 		});
 	}
 
-	showOverlay();
+	showOverlay('request-justification-container');
 }
 
 function listIncidentsInit() {
@@ -392,7 +474,18 @@ function decideRequest(requestItem, decision) {
 	});
 }
 
-function showOverlay() {
+function showOverlay(content_class) {
+	var overlayBody = document.getElementById('overlay-body');
+	var children = overlayBody.children;
+	for (var i = 0; i < children.length; i++) {
+		var child = children[i];
+		if (child.classList.contains(content_class)) {
+			child.style.display = "block";
+		} else {
+			child.style.display = "none";
+		}
+	}
+
 	document.getElementById("overlay").style.display = "block";
 }
 

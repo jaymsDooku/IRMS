@@ -289,6 +289,19 @@ button:hover {
 	background-color: var(--note-bg-color);
 }
 
+.incident-note-meta, .incident-question-meta {
+	justify-content: space-between;
+}
+
+.incident-question-meta h5, .incident-note-meta h5 {
+	font-size: 12px;
+	letter-spacing: 0;
+}
+
+.incident-question-meta > h5, .incident-note-meta > h5 {
+	align-self: flex-end;
+}
+
 .incident-question {
 	background-color: var(--question-bg-color);
 }

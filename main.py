@@ -275,7 +275,13 @@ def view_incident(incident_id):
 		'departmentsLength': len(departments),
 		'departments': departments,
 		'teamsLength': len(teams),
-		'teams': teams
+		'teams': teams,
+		'notesLength': len(incident.notes),
+		'notes': incident.notes,
+		'questionsLength': len(incident.questions),
+		'questions': incident.questions,
+		'tasksLength': len(incident.tasks),
+		'tasks': incident.tasks
 	}
 	return render_template('view_incident.html', data = data)
 
@@ -343,6 +349,60 @@ def raise_incident():
 		'teams': teams
 	}
 	return render_template('raise_incident.html', data = data)
+
+@app.route('/addNote/<incident_id>', methods=['POST'])
+def add_note(incident_id):
+	incident_id = int(incident_id)
+
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	incident = entity_manager.get_incident(incident_id)
+
+	title = content['title']
+	noteContent = content['content']
+
+	entity_manager.create_note(user, incident, title, noteContent)
+	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/askQuestion/<incident_id>', methods=['POST'])
+def ask_question(incident_id):
+	incident_id = int(incident_id)
+
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	incident = entity_manager.get_incident(incident_id)
+
+	title = content['title']
+	questionContent = content['content']
+
+	entity_manager.create_question(user, incident, title, questionContent)
+	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/addTask/<incident_id>', methods=['POST'])
+def add_task(incident_id):
+	incident_id = int(incident_id)
+
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	incident = entity_manager.get_incident(incident_id)
+
+	title = content['title']
+	taskContent = content['content']
+
+	entity_manager.create_task(user, incident, title, taskContent)
+	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/departmentTeams/<department_name>')
 def get_teams(department_name):

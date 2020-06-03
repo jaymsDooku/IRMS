@@ -16,6 +16,9 @@ class Incident:
 		self.system = system
 		self.impact = impact
 		self.priority = priority
+		self.notes = []
+		self.questions = []
+		self.tasks = []
 
 	def is_following(self, user):
 		return self.entity_manager.is_following(user, self)
@@ -25,24 +28,6 @@ class Incident:
 			return None
 
 		return datetime.strptime(self.date_created, '%Y-%m-%d %H:%M:%S')
-
-	'''def get_sla_identification_deadline(self):
-		date_created_obj = self.get_date_created()
-
-		if self.date_created is None:
-			return None
-
-		sla_identification_deadline = date_created_obj + datetime.timedelta(milliseconds=self.sla_identification_time)
-		return sla_identification_deadline
-
-	def get_sla_implementation_deadline(self):
-		date_created_obj = self.get_date_created()
-
-		if self.date_created is None:
-			return
-
-		sla_implementation_time = date_created_obj + datetime.timedelta(milliseconds=self.sla_implementation_time)
-		return sla_implementation_time'''
 
 	def has_priority_change_request(self):
 		change_requests = self.entity_manager.get_incident_change_requests(self)

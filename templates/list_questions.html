@@ -1,0 +1,28 @@
+<div class="incident-questions">
+	<div class="irms-header">
+		<h3>Questions</h3>
+	</div>
+	<div class="irms-body">
+		{% for i in range(0, data.questionsLength) %}
+			<div class="incident-question">
+				<div class="irms-header">
+					<div class="incident-question-meta irms-inline-container">
+						<div>
+							<h5>{{ data.questions[i].author.forename }} {{ data.notes[i].author.surname }}</h5>
+						</div>
+						<h5>{{ data.questions[i].date_asked }}</h5>
+					</div>
+					<div class="incident-question-title">
+						<h3>{{ data.questions[i].title }}</h3>
+					</div>
+				</div>
+				<div class="irms-body">
+					<p>{{ data.questions[i].content }}</p>
+				</div>
+			</div>
+		{% endfor %}
+		<div class="incident-question add-incident-question">
+			<img class="new-btn new-question-btn" id="newQuestionBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+		</div>
+	</div>
+</div>

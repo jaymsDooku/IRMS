@@ -1,0 +1,61 @@
+<div class="incident-assigned">
+	<div class="incident-manager irms-inline-container">
+		<div class="irms-header">
+			<p>Team Manager: </p>
+		</div>
+		<div class="irms-text">
+			<p>{% if data.incident.manager is not defined %}
+				None
+			{% else %}
+				{{ data.incident.manager.forename }} {{ data.incident.manager.surname }}
+			{% endif %}</p>
+		</div>
+	</div>
+	<div class="incident-teams">
+		<div class="irms-header">
+			<h3>Teams Assigned</h3>
+		</div>
+		<table>
+			<tbody id="teamAssignedTableBody">
+                <tr>
+                    <th class="team-name">Team Name</th>
+                    <th>Date Assigned</th>
+                    <th>Assigned By</th>
+                    <th>Status</th>
+                </tr>
+                {% for i in range(0, data.assignedTeamsLength) %}
+                	<tr>
+	                	<td class="team-name">{{ data.assigned_teams[i].team.name }}</td>
+	                	<td>{{ data.assigned_teams[i].date_issued }}</td>
+	                	<td>{{ data.assigned_teams[i].assigner.forename }} {{ data.assigned_teams[i].assigner.surname }}</td>
+	                	<td>{{ data.assigned_teams[i].get_status() }}</td>
+	                </tr>
+                {% endfor %}
+            </tbody>
+		</table>
+		<div class="assign-team-container">
+			<h4>Assign New Team</h4>
+			<div class="assign-team">
+				<div class="assign-team-fields irms-inline-container">
+					<div class="department-select-container irms-inline-container">
+						<label>Department: </label>
+						<select id="departmentSelect" name="department-name">
+							{% for i in range(0, data.departmentsLength) %}
+								<option>{{ data.departments[i].name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="team-select-container irms-inline-container">
+						<label>Team: </label>
+						<select id="teamSelect" name="team-name">
+							{% for i in range(0, data.teamsLength) %}
+								<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<img data-incident="{{ data.incident.id }}" class="new-btn assign-team-btn" id="assignTeamBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+			</div>
+		</div>
+	</div>
+</div>

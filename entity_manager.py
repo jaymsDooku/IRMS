@@ -11,6 +11,9 @@ from user_session import UserSession
 from incident_value_change_request import IncidentValueChangeRequest
 from team_assignment_request import TeamAssignmentRequest
 from assigned_team import AssignedTeam
+from note import Note
+from question import Question
+from task import Task
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -421,6 +424,45 @@ class EntityManager:
 				impact, priority)
 			incident.id = incident_row[0]
 			incident.date_created = incident_row[10]
+
+			note_rows = self.database.get_notes(incident)
+			for note_row in note_rows:
+				note_id = note_row[0]
+				note_title = note_row[1]
+				note_author = self.get_user(note_row[2])
+				date_created = note_row[3]
+				note_content = note_row[4]
+				note = Note(note_title, note_author, note_content)
+				note.id = note_id
+				note.date_created = date_created
+
+				incident.notes.append(note)
+
+			question_rows = self.database.get_questions(incident)
+			for question_row in question_rows:
+				question_id = question_row[0]
+				question_title = question_row[1]
+				question_issuer = self.get_user(question_row[2])
+				date_asked = question_row[3]
+				question_content = question_row[4]
+				question = Question(question_title, question_issuer, question_content)
+				question.id = question_id
+				question.date_asked = date_asked
+
+				incident.questions.append(question)
+
+			task_rows = self.database.get_tasks(incident)
+			for task_row in task_rows:
+				task_id = task_row[0]
+				task_name = task_row[1]
+				task_author = self.get_user(task_row[2])
+				date_created = task_row[3]
+				task_content = task_row[4]
+				task_status = task_row[5]
+				task = Task(task_name, task_author, task_content, task_status)
+				task.id = task_id
+				task.date_created = date_created
+
 			self.incidents[incident.id] = incident
 
 	def request_team_assignment(self, assigner, incident, team):
@@ -574,9 +616,38 @@ class EntityManager:
 	def is_following(self, user, incident):
 		return self.database.execute_query("SELECT * FROM Follow WHERE user_id = ? and incident_id = ?", (user.id, incident.id)) != 0
 
+	def create_note(self, author, incident, title, content):
+		note = Note(title, author, content)
+		self.database.insert_note(incident, note)
+
+		note.date_created = self.database.get_note_date_created(note)
+
+		incident.notes.append(note)
+		self.database.commit()
+		return note
+
+	def create_question(self, author, incident, title, content):
+		question = Question(title, author, content)
+		self.database.insert_question(incident, question)
+
+		question.date_asked = self.database.get_question_date_asked(question)
+
+		incident.questions.append(question)
+		self.database.commit()
+		return question
+
+	def create_task(self, author, incident, title, content):
+		task = Task(title, author, content, "To Do")
+		self.database.insert_task(incident, task)
+
+		task.date_created = self.database.get_task_date_created(task)
+
+		incident.tasks.append(task)
+		self.database.commit()
+		return task
+
 	def dump(self):
 		print('Roles: ' + str(self.roles))
 		print('Users: ' + str(self.users))
 		print('Departments: ' + str(self.departments))
 		print('Teams: ' + str(self.teams))
-		print('')

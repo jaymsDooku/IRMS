@@ -41,8 +41,10 @@ CREATE TABLE IF NOT EXISTS Incident
 CREATE TABLE IF NOT EXISTS Note
 (
     note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id INTEGER REFERENCES Incident(incident_id),
     note_title TEXT,
-    date_created DATETIME,
+    author INTEGER REFERENCES User(user_id),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     note_content TEXT
 );
 
@@ -62,8 +64,12 @@ CREATE TABLE IF NOT EXISTS Department
 CREATE TABLE IF NOT EXISTS Task
 (
     task_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id INTEGER REFERENCES Incident(incident_id),
     name TEXT,
-    content TEXT
+    content TEXT,
+    status TEXT,
+    author INTEGER REFERENCES User(user_id),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS IncidentValueChangeRequest
@@ -103,10 +109,11 @@ CREATE TABLE IF NOT EXISTS UserNotification
 
 CREATE TABLE IF NOT EXISTS Question
 (
-    questiond_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    issuer INTEGER REFERENCES User(user_id) ,
+    question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id INTEGER REFERENCES Incident(incident_id),
+    issuer INTEGER REFERENCES User(user_id),
     question_title TEXT,
-    date_created DATETIME,
+    date_asked TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     question_content TEXT
 );
 
@@ -115,7 +122,8 @@ CREATE TABLE IF NOT EXISTS Answer
     answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
     question_id INTEGER REFERENCES Question(question_id) ,
     answerer INTEGER REFERENCES User(user_id) ,
-    answer_content TEXT
+    answer_content TEXT,
+    date_answered TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS User

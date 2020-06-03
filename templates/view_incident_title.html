@@ -1,0 +1,34 @@
+<div class="irms-title">
+	<div class="irms-title-left">
+		<div class="incident-title irms-inline-container">
+			<h2>Incident #{{ data.incident.id }} | {{ data.incident.title }}</h2>
+			<div class="incident-tag impact-1-tag">
+				<p>{{ data.incident.impact.level }}</p>
+			</div>
+			<div class="incident-tag priority-1-tag">
+				<select id="prioritySelect" data-incident="{{ data.incident.id }}">
+					{% for i in range(0, data.prioritiesLength) %}
+						<option {% if data.incident.priority.code == data.priorities[i].code %}selected="selected"{% endif %}>{{ data.priorities[i].code }}</option>
+					{% endfor %}
+				</select>
+				{% if data.incident.has_priority_change_request() %}
+					<span class="pending">*</span>
+				{% endif %}
+			</div>
+		</div>
+		<div class="incident-issuer">
+			<h5>Issued By: {{ data.incident.author.forename }} {{ data.incident.author.surname }}</h5>
+		</div>
+	</div>
+	<div class="irms-title-right irms-inline-container">
+		<div class="incident-tag resolving-tag">
+			<p>{{ data.incident.status.level }}</p>
+		</div>
+		<div class="creation-date irms-inline-container">
+			<h5>Created: </h5>
+			<div class="irms-text">
+				<p>{{ data.incident.date_created }}</p>
+			</div>
+		</div>
+	</div>
+</div>
