@@ -6,8 +6,14 @@
 				<div class="incident-tag export-csv">
 					<p>Export CSV</p>
 				</div>
-				<div class="incident-tag follow">
-					<p>Follow</p>
+				<div class="incident-tag {% if data.incident.is_following(data.user) %} following {% else %} follow {% endif %}" data-incident="{{ data.incident.id }}">
+						<p class="follow-text" id="followText">
+							{% if data.incident.is_following(data.user) %} 
+								Following
+							{% else %}
+								Follow
+							{% endif %}
+						</p>
 				</div>
 			</div>
 		</div>

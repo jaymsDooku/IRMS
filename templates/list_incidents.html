@@ -30,7 +30,7 @@
 			<div class="incident-item" data-incident="{{ data.incidents[i].id }}">
 				<h3>Incident #{{ data.incidents[i].id }} | {{ data.incidents[i].title }}</h3>
 				<div class="tags">
-					<div class="incident-tag follow">
+					<div class="incident-tag {% if data.incidents[i].is_following(data.user) %} following {% else %} follow {% endif %}">
 							<p class="follow-text">
 								{% if data.incidents[i].is_following(data.user) %} 
 									Following
@@ -39,10 +39,16 @@
 								{% endif %}
 							</p>
 					</div>
-					<div class="incident-tag impact-1-tag">
+					<div class="incident-tag {{ data.incidents[i].status.get_class() }}">
+						<p>{{ data.incidents[i].status.level }}</p>
+					</div>
+					<div class="incident-tag {{ data.incidents[i].impact.get_class() }}">
 						<p>{{ data.incidents[i].impact.level }}</p>
 					</div>
-					<div class="incident-tag priority-1-tag">
+					<div class="incident-tag {{ data.incidents[i].severity.get_class() }}">
+						<p>{{ data.incidents[i].severity.code }}</p>
+					</div>
+					<div class="incident-tag {{ data.incidents[i].priority.get_class() }}">
 						<p>{{ data.incidents[i].priority.code }}</p>
 					</div>
 					<div class="incident-tag date-tag">

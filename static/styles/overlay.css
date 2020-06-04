@@ -65,14 +65,14 @@
 	background-color: #d9615d;
 }
 
-.note-header {
+.question-header, .note-header {
 	justify-content: space-between;
 }
 
-.note-meta {
+.question-meta, .note-meta {
 	align-self: flex-end;
 }
 
-.note-meta .date-tag {
+.question-meta .date-tag, .note-meta .date-tag {
 	border: 1px solid white;
 }

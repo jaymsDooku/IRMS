@@ -3,6 +3,7 @@ class IncidentValueChangeRequest:
 
 	TYPE_PRIORITY = 1
 	TYPE_IMPACT = 2
+	TYPE_SEVERITY = 3
 
 	STATUS_PENDING = -1
 	STATUS_DENIED = 0
@@ -45,6 +46,8 @@ class IncidentValueChangeRequest:
 			return "Priority"
 		elif value_type == IncidentValueChangeRequest.TYPE_IMPACT:
 			return "Impact"
+		elif value_type == IncidentValueChangeRequest.TYPE_SEVERITY:
+			return "Severity"
 		else:
 			return None
 
@@ -54,5 +57,7 @@ class IncidentValueChangeRequest:
 			return IncidentValueChangeRequest.TYPE_PRIORITY
 		elif string.lower() == "impact":
 			return IncidentValueChangeRequest.TYPE_IMPACT
+		elif string.lower() == "severity":
+			return IncidentValueChangeRequest.TYPE_SEVERITY
 		else:
 			return None

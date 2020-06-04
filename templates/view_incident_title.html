@@ -2,18 +2,29 @@
 	<div class="irms-title-left">
 		<div class="incident-title irms-inline-container">
 			<h2>Incident #{{ data.incident.id }} | {{ data.incident.title }}</h2>
-			<div class="incident-tag impact-1-tag">
-				<p>{{ data.incident.impact.level }}</p>
+			<div class="incident-tag {{ data.incident.impact.get_class() }}">
+				<select id="impactSelect" data-incident="{{ data.incident.id }}">
+					{% for i in range(0, data.impactsLength) %}
+						<option {% if data.incident.impact.level == data.impacts[i].level %}selected="selected"{% endif %}>{{ data.impacts[i].level }}</option>
+					{% endfor %}
+				</select>
+				<span class="pending">{% if data.incident.has_impact_change_request() %}*{% endif %}</span>
 			</div>
-			<div class="incident-tag priority-1-tag">
+			<div class="incident-tag {{ data.incident.priority.get_class() }}">
 				<select id="prioritySelect" data-incident="{{ data.incident.id }}">
 					{% for i in range(0, data.prioritiesLength) %}
 						<option {% if data.incident.priority.code == data.priorities[i].code %}selected="selected"{% endif %}>{{ data.priorities[i].code }}</option>
 					{% endfor %}
 				</select>
-				{% if data.incident.has_priority_change_request() %}
-					<span class="pending">*</span>
-				{% endif %}
+				<span class="pending">{% if data.incident.has_priority_change_request() %}*{% endif %}</span>
+			</div>
+			<div class="incident-tag {{ data.incident.severity.get_class() }}">
+				<select id="severitySelect" data-incident="{{ data.incident.id }}">
+					{% for i in range(0, data.severitiesLength) %}
+						<option {% if data.incident.severity.code == data.severities[i].code %}selected="selected"{% endif %}>{{ data.severities[i].code }}</option>
+					{% endfor %}
+				</select>
+				<span class="pending">{% if data.incident.has_severity_change_request() %}*{% endif %}</span>
 			</div>
 		</div>
 		<div class="incident-issuer">
@@ -21,7 +32,7 @@
 		</div>
 	</div>
 	<div class="irms-title-right irms-inline-container">
-		<div class="incident-tag resolving-tag">
+		<div class="incident-tag {{ data.incident.status.get_class() }}">
 			<p>{{ data.incident.status.level }}</p>
 		</div>
 		<div class="creation-date irms-inline-container">

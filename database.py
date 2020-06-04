@@ -121,6 +121,15 @@ class Database:
 		rows = cur.fetchall()
 		return rows
 
+	def insert_severity(self, severity):
+		self.execute_update("INSERT INTO Severity(severity_code) VALUES (?)", severity)
+
+	def get_severities(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT severity_id, severity_code FROM Severity")
+		rows = cur.fetchall()
+		return rows
+
 	def insert_stage(self, stage):
 		self.execute_update("INSERT INTO Stage(stage_level) VALUES (?)", stage)
 
@@ -142,16 +151,16 @@ class Database:
 	def insert_incident(self, incident):
 		self.execute_update("INSERT INTO Incident(title, description, author, \
 			sla_identification_deadline, sla_implementation_deadline, status, \
-			system, impact, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", incident)
+			system, impact, severity, priority) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", incident)
 
 	def update_incident(self, incident):
 		cur = self.connection.cursor()
-		cur.execute("UPDATE Incident SET priority = ?, impact = ?, status = ? WHERE incident_id = ?", (incident.priority.id, incident.impact.id, incident.status.id, incident.id))
+		cur.execute("UPDATE Incident SET priority = ?, impact = ?, severity = ?, status = ? WHERE incident_id = ?", (incident.priority.id, incident.impact.id, incident.status.id, incident.id))
 
 	def get_incidents(self):
 		cur = self.connection.cursor()
 		cur.execute("SELECT incident_id, author, title, description, sla_identification_deadline, \
-			sla_implementation_deadline, status, system, impact, priority, date_created \
+			sla_implementation_deadline, status, system, impact, severity, priority, date_created \
 			FROM Incident")
 		rows = cur.fetchall()
 		return rows
@@ -278,6 +287,33 @@ class Database:
 		cur.execute("SELECT DATETIME(date_created, 'localtime') FROM Task WHERE task_id = ?", (task.id, ))
 		row = cur.fetchone()
 		return row[0]
+
+	def insert_answer(self, answer):
+		self.execute_update("INSERT INTO Answer(question_id, answerer, answer_content) VALUES (?, ?, ?)", answer)
+
+	def insert_notification(self, notification):
+		self.execute_update("INSERT INTO Notification(notification_content, incident_id) VALUES (?, ?)", notification)
+
+	def get_notifications(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT notification_id, notification_content, date_issued, incident_id FROM Notification")
+		rows = cur.fetchall()
+		return rows
+
+	def insert_follow(self, follow):
+		self.execute_update("INSERT INTO Follow(user_id, incident_id) VALUES (?, ?)", follow)
+
+	def get_followers(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT user_id FROM Follow WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_incidents_following(self, user):
+		cur = self.connection.cursor()
+		cur.execute("SELECT incident_id FROM Follow WHERE user_id = ?", (user.id, ))
+		rows = cur.fetchall()
+		return rows
 
 	def table_empty(self, table):
 		query = "SELECT * FROM " + table + " LIMIT 1"

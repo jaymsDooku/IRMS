@@ -1,19 +1,23 @@
-<aside class="sidebar">
-    <div class="sidebar-header" align="left">
+<div class="sidebar">
+    <div class="sidebar-header irms-inline-container" align="left">
+        <img class="close-view-btn" id="closeSideBar" src="{{ url_for('static', filename='img/delete icon.svg') }}">
         <h1 id="sidebar-h1">Notifications</h1>
     </div>
     <div class="sidebar-body">
         <hr>
-        <div class="note-box">
-            <div class="note-date-time" align="left">
-                <h6>2020, March 31, Monday, 12:00</h6>
-                <div class="note-content">
-                This contains notification content.
-                This contains notification content.
-                This contains notification content.
+        {% for i in range(0, data.notificationsLength) %}
+            <div class="notification-box">
+                <div class="notification-date-time" align="left">
+                    <div class="notification-title">
+                        <h6>{{ data.notifications[i].date_sent }}</h6>
+                        <h6 class="notification">{{ data.notifications[i].incident.title }}</h6>
+                    </div>
+                    <div class="notification-content">
+                        {{ data.notifications[i].content }}
+                    </div>
                 </div>
             </div>
-        </div>
-        <hr>
+            <hr>
+        {% endfor %}
     </div>
-</aside>
+</div>

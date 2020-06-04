@@ -5,7 +5,7 @@ class Incident:
 
 	def __init__(self, entity_manager, title, description, author, \
 			sla_identification_deadline, sla_implementation_deadline, \
-			status, system, impact, priority):
+			status, system, impact, priority, severity):
 		self.entity_manager = entity_manager
 		self.title = title
 		self.description = description
@@ -16,6 +16,7 @@ class Incident:
 		self.system = system
 		self.impact = impact
 		self.priority = priority
+		self.severity = severity
 		self.notes = []
 		self.questions = []
 		self.tasks = []
@@ -33,6 +34,20 @@ class Incident:
 		change_requests = self.entity_manager.get_incident_change_requests(self)
 		for change_request in change_requests:
 			if change_request.value_type == IncidentValueChangeRequest.TYPE_PRIORITY and change_request.status == IncidentValueChangeRequest.STATUS_PENDING:
+				return True
+		return False
+
+	def has_impact_change_request(self):
+		change_requests = self.entity_manager.get_incident_change_requests(self)
+		for change_request in change_requests:
+			if change_request.value_type == IncidentValueChangeRequest.TYPE_IMPACT and change_request.status == IncidentValueChangeRequest.STATUS_PENDING:
+				return True
+		return False
+
+	def has_severity_change_request(self):
+		change_requests = self.entity_manager.get_incident_change_requests(self)
+		for change_request in change_requests:
+			if change_request.value_type == IncidentValueChangeRequest.TYPE_SEVERITY and change_request.status == IncidentValueChangeRequest.STATUS_PENDING:
 				return True
 		return False
 
@@ -58,14 +73,16 @@ class Incident:
 		print('title: ' + str(self.title))
 		print('description: ' + str(self.description))
 		print('author: ' + str(self.author))
-		print('sla_identification_time: ' + str(self.sla_identification_time))
-		print('sla_implementation_time: ' + str(self.sla_implementation_time))
+		print('sla_identification_time: ' + str(self.sla_identification_deadline))
+		print('sla_implementation_time: ' + str(self.sla_implementation_deadline))
 		print('status: ' + str(self.status))
 		print('system: ' + str(self.system))
 		print('impact: ' + str(self.impact))
 		print('priority: ' + str(self.priority))
 
 	def to_sql(self):
-		return (self.title, self.description, self.author.id, \
+		result = (self.title, self.description, self.author.id, \
 			self.sla_identification_deadline, self.sla_implementation_deadline, \
-			self.status.id, self.system.id, self.impact.id, self.priority.id)
+			self.status.id, self.system.id, self.impact.id, self.severity.id, self.priority.id)
+		print(result)
+		return result

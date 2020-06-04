@@ -4,6 +4,7 @@ from department import Department
 from team import Team
 from impact import Impact
 from priority import Priority
+from severity import Severity
 from stage import Stage
 from system_class import SystemClass
 from incident import Incident
@@ -14,6 +15,7 @@ from assigned_team import AssignedTeam
 from note import Note
 from question import Question
 from task import Task
+from follow import Follow
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -22,8 +24,10 @@ class EntityManager:
 	def __init__(self, database, clearOnStartUp):
 		self.impacts = {}
 		self.priorities = {}
+		self.severities = {}
 		self.stages = {}
 		self.system_classes = {}
+
 		self.roles = {}
 		self.users = {}
 		self.departments = {}
@@ -37,6 +41,8 @@ class EntityManager:
 		self.notes = {}
 		self.questions = {}
 		self.tasks = {}
+
+		self.notifications = {}
 
 		self.database = database
 		self.clearOnStartUp = clearOnStartUp
@@ -72,13 +78,20 @@ class EntityManager:
 			self.create_priority(Priority.P1)
 			self.create_priority(Priority.P2)
 			self.create_priority(Priority.P3)
-			self.create_priority(Priority.S1)
-			self.create_priority(Priority.S2)
-			self.create_priority(Priority.S3)
 		else:
 			print("Loading Priority Table")
 			self.load_priorities()
 			#print(self.priorities)
+
+		if self.database.table_empty("Severity"):
+			print("Initializing Severity Table")
+			self.create_severity(Severity.S1)
+			self.create_severity(Severity.S2)
+			self.create_severity(Severity.S3)
+		else:
+			print("Loading Severity Table")
+			self.load_severities()
+			#print(self.severities)
 
 		if self.database.table_empty("Stage"):
 			print("Initializing Stage Table")
@@ -170,7 +183,7 @@ class EntityManager:
 			self.create_incident('Payroll Server Crashed', 'Server for the payroll system crashed due to an OutOfMemoryException. It is suspected that this is due to the new release from the Internal Software Development Team', \
 				self.get_user_by_username('dduck'), TimeUtil.to_datetime(sla_identification_deadline), TimeUtil.to_datetime(sla_implementation_deadline), \
 				self.get_stage_by_level(Stage.IDENTIFYING), self.get_system_class_by_name(SystemClass.PAYROLL), self.get_impact_by_level(Impact.IMP1), \
-				self.get_priority_by_code(Priority.P1))
+				self.get_priority_by_code(Priority.P1), self.get_severity_by_code(Severity.S1))
 		else:
 			print("Loading Incident Table")
 			self.load_incidents()
@@ -360,6 +373,32 @@ class EntityManager:
 	def get_all_priorities(self):
 		return list(self.priorities.values())
 
+	def create_severity(self, code):
+		severity = Severity(code)
+		self.database.insert_severity(severity)
+		self.severities[severity.id] = severity
+		print(severity.id)
+		return severity
+
+	def get_severity_by_code(self, code):
+		for severity in self.severities.values():
+			if severity.code == code:
+				return severity
+		return None
+
+	def get_severity(self, severity_id):
+		return self.severities[severity_id]
+
+	def load_severities(self):
+		severities_rows = self.database.get_severities()
+		for severity_row in severities_rows:
+			severity = Severity(severity_row[1])
+			severity.id = severity_row[0]
+			self.severities[severity.id] = severity
+
+	def get_all_severities(self):
+		return list(self.severities.values())
+
 	def create_stage(self, level):
 		stage = Stage(level)
 		self.database.insert_stage(stage)
@@ -409,9 +448,9 @@ class EntityManager:
 
 	def create_incident(self, title, description, author, \
 			sla_identification_time, sla_implementation_time, \
-			status, system, impact, priority):
+			status, system, impact, priority, severity):
 		incident = Incident(self, title, description, author, sla_identification_time, \
-			sla_implementation_time, status, system, impact, priority)
+			sla_implementation_time, status, system, impact, priority, severity)
 		self.database.insert_incident(incident)
 
 		date_created = self.database.get_incident_create_date(incident)
@@ -435,14 +474,15 @@ class EntityManager:
 			status = self.get_stage(incident_row[6])
 			system = self.get_system_class(incident_row[7])
 			impact = self.get_impact(incident_row[8])
-			priority = self.get_priority(incident_row[9])
+			severity = self.get_severity(incident_row[9])
+			priority = self.get_priority(incident_row[10])
 			sla_identification_deadline = TimeUtil.sqlite_to_datetime(incident_row[4])
 			sla_implementation_deadline = TimeUtil.sqlite_to_datetime(incident_row[5])
 			incident = Incident(self, incident_row[2], incident_row[3], author, \
 				sla_identification_deadline, sla_implementation_deadline, status, system, \
-				impact, priority)
+				impact, priority, severity)
 			incident.id = incident_row[0]
-			incident.date_created = incident_row[10]
+			incident.date_created = incident_row[11]
 
 			note_rows = self.database.get_notes(incident)
 			for note_row in note_rows:
@@ -561,9 +601,9 @@ class EntityManager:
 	def get_change_request(self, change_request_id):
 		return self.change_requests[change_request_id]
 
-	def get_existing_change_request(self, user, incident):
+	def get_existing_change_request(self, user, incident, value_type):
 		for change_request in list(self.change_requests.values()):
-			if change_request.user.id == user.id and change_request.incident.id == incident.id:
+			if change_request.user.id == user.id and change_request.incident.id == incident.id and change_request.value_type == value_type:
 				return change_request
 		return None
 
@@ -637,6 +677,12 @@ class EntityManager:
 
 		self.database.commit()
 
+	def follow(self, user, incident):
+		follow = Follow(user, incident)
+		self.database.insert_follow(follow)
+
+		self.database.commit()
+
 	def is_following(self, user, incident):
 		return self.database.execute_query("SELECT * FROM Follow WHERE user_id = ? and incident_id = ?", (user.id, incident.id)) != 0
 
@@ -680,6 +726,29 @@ class EntityManager:
 
 	def get_task(self, task_id):
 		return self.tasks[task_id]
+
+	def create_notification(self, incident, content):
+		notification = Notification(incident, content)
+		self.database.insert_notification(notification)
+		self.notifications[notification.id] = notification
+		return notification
+
+	def get_notifications_by_incident(self, incident):
+		result = []
+		for notification in self.notifications.values():
+			if notification.incident.id == incident.id:
+				result.append(notification)
+		return result
+
+	def get_notifications(self, user):
+		result = []
+		incident_following_rows = self.database.get_incidents_following(user)
+		for incident_following_row in incident_following_rows:
+			incident = self.get_incident(incident_following_row[0])
+			incident_notifications = self.get_notifications_by_incident(incident)
+			result.extend(incident_notifications)
+		return result
+
 
 	def dump(self):
 		print('Roles: ' + str(self.roles))

@@ -349,7 +349,7 @@ button:hover {
 	padding: 20px;
 }
 
-.incident-question:hover, .incident-note:hover, .incident-task:hover {
+.incident-question:hover, .incident-note:hover {
 	cursor: pointer;
 }
 
@@ -359,10 +359,6 @@ button:hover {
 
 .incident-question:hover {
 	background-color: var(--question-new-color);
-}
-
-.incident-task:hover {
-	background-color: var(--task-new-color);
 }
 
 .incident-question .irms-header, .incident-note .irms-header, .incident-task .irms-header {
@@ -636,6 +632,20 @@ th, td {
     left: 50%;
     margin: -24px 0 0 -24px;
     transition: background-color 0.3s linear;
+}
+
+.close-view-btn {
+	max-width: 24px;
+    max-height: 24px;
+    border-radius: 50%;
+    background-color: #cfd1d1;
+    width: 24px;
+    height: 24px;
+}
+
+.close-view-btn:hover {
+	background-color: #b0b5b5;
+	cursor: pointer;
 }
 
 .new-btn {

@@ -49,11 +49,15 @@ def index():
 			incidents = entity_manager.get_incidents(user)
 			pageTitle = 'Your Incidents'
 
+		notifications = entity_manager.get_notifications(user)
+
 		data = {
 			'pageTitle': pageTitle,
 			'user': user,
 			'incidents': incidents,
-			'incidentsLength': len(incidents)
+			'incidentsLength': len(incidents),
+			'notifications': notifications,
+			'notificationsLength': len(notifications)
 		}
 		return render_template('irms.html', data = data)
 
@@ -85,6 +89,8 @@ def login():
 		else:
 			incidents = entity_manager.get_incidents(user)
 			pageTitle = 'Your Incidents'
+
+		notifications = entity_manager.get_notifications(user)
 
 		data = {
 			'pageTitle': pageTitle,
@@ -188,12 +194,13 @@ def request_incident_value_change(incident_id, value_type):
 	new_value = content['newValue']
 	justification = content['justification']
 
-	change_request = entity_manager.get_existing_change_request(user, incident)
+	value_type = IncidentValueChangeRequest.string_to_value_type(value_type)
+	change_request = entity_manager.get_existing_change_request(user, incident, value_type)
 
 	if change_request is not None:
 		entity_manager.update_change_request(change_request, new_value, justification)
 	else:
-		entity_manager.request_value_change(user, incident, old_value, new_value, IncidentValueChangeRequest.string_to_value_type(value_type), justification)
+		entity_manager.request_value_change(user, incident, old_value, new_value, value_type, justification)
 	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/allTeamAssignmentRequests')
@@ -295,7 +302,9 @@ def view_incident(incident_id):
 	incident_id = int(incident_id)
 	incident = entity_manager.get_incident(incident_id)
 
+	impacts = entity_manager.get_all_impacts()
 	priorities = entity_manager.get_all_priorities()
+	severities = entity_manager.get_all_severities()
 
 	assigned_teams = entity_manager.get_assigned_teams(incident)
 	team_assignment_requests = entity_manager.get_team_assignment_requests(incident)
@@ -308,10 +317,17 @@ def view_incident(incident_id):
 	department = departments[0]
 	teams = entity_manager.get_teams(department)
 
+	user = get_user()
+
 	data = {
+		'user': user,
 		'incident': incident,
 		'priorities': priorities,
 		'prioritiesLength': len(priorities),
+		'impacts': impacts,
+		'impactsLength': len(impacts),
+		'severities': severities,
+		'severitiesLength': len(severities),
 		'assigned_teams': assigned_teams,
 		'assignedTeamsLength': len(assigned_teams),
 		'departmentsLength': len(departments),
@@ -360,6 +376,7 @@ def raise_incident():
 		identificationDeadline = TimeUtil.sqlite_to_datetime(sanitizedIdentificationDeadline)
 		implementationDeadline = TimeUtil.sqlite_to_datetime(sanitizedImplementationDeadline)
 		impact = entity_manager.get_impact_by_level(content['impact'])
+		severity = entity_manager.get_severity_code(content['severity'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
 		#team = entity_manager.get_team_by_name(content['team'])
@@ -367,9 +384,10 @@ def raise_incident():
 
 		entity_manager.create_incident(title, description, author, \
 			identificationDeadline, implementationDeadline, status, system, \
-			impact, priority)
+			impact, priority, severity)
 		return app.response_class(status = HTTP_CREATED)
 
+	severities = entity_manager.get_all_severities()
 	impacts = entity_manager.get_all_impacts()
 	system_classes = entity_manager.get_all_system_classes()
 	priorities = entity_manager.get_all_priorities()
@@ -383,6 +401,8 @@ def raise_incident():
 		'impacts': impacts,
 		'prioritiesLength': len(priorities),
 		'priorities': priorities,
+		'severitiesLength': len(severities),
+		'severities': severities,
 		'systemClassesLength': len(system_classes),
 		'system_classes': system_classes,
 		'departmentsLength': len(departments),
@@ -443,6 +463,13 @@ def ask_question(incident_id):
 def view_question(question_id):
 	question_id = int(question_id)
 
+	question = entity_manager.get_question(question_id)
+
+	data = {
+		'question': question
+	}
+	return render_template('view_question.html', data = data)
+
 @app.route('/addTask/<incident_id>', methods=['POST'])
 def add_task(incident_id):
 	incident_id = int(incident_id)
@@ -469,6 +496,17 @@ def get_teams(department_name):
 	for team in teams:
 		team_objects.append({ 'team_id': team.id, 'team_name': team.name})
 	return Util.json_response({ 'teams': team_objects }, HTTP_OKAY)
+
+@app.route('/followIncident/<incident_id>')
+def follow_incident(incident_id):
+	incident_id = int(incident_id)
+
+	user = get_user()
+	incident = entity_manager.get_incident(incident_id)
+
+	entity_manager.follow(user, incident)
+
+	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/userNavBar')
 def user_mode():

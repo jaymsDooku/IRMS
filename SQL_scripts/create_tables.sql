@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS Priority
     priority_code TEXT
 );
 
+CREATE TABLE IF NOT EXISTS Severity
+(
+    severity_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    severity_code TEXT
+);
+
 CREATE TABLE IF NOT EXISTS Stage
 (
     stage_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +40,7 @@ CREATE TABLE IF NOT EXISTS Incident
     status INTEGER REFERENCES Stage(stage_id),
     system INTEGER REFERENCES SystemClasification(system_clasification_id),
     impact INTEGER REFERENCES Impact(impact_id),
+    severity INTEGER REFERENCES Severity(severity_id),
     priority INTEGER REFERENCES Priority(priority_id),
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_resolution_identified TIMESTAMP,
@@ -98,15 +105,8 @@ CREATE TABLE IF NOT EXISTS Notification
 (
     notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     notification_content TEXT,
-    date_issued DATETIME,
+    date_issued TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     incident_id INTEGER REFERENCES Incident(incident_id) 
-);
-
-CREATE TABLE IF NOT EXISTS UserNotification
-(
-    user_notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES User(user_id) ,
-    notification_id INTEGER REFERENCES Notification(notification_id) 
 );
 
 CREATE TABLE IF NOT EXISTS Question

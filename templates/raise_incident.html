@@ -32,6 +32,14 @@
 					</select>
 				</div>
 				<div class="form-entry">
+					<label>Severity: </label>
+					<select id="severitySelect" name="severity">
+						{% for i in range(0, data.severitiesLength) %}
+							<option>{{ data.severities[i].level }} </option>
+						{% endfor %}
+					</select>
+				</div>
+				<div class="form-entry">
 					<label>System: </label>
 					<select id="systemSelect" name="system">
 						{% for i in range(0, data.systemClassesLength) %}
