@@ -543,7 +543,7 @@ class EntityManager:
 				task.id = task_id
 				task.date_created = date_created
 
-				task_team_rows = self.database.get_all_task_team_assignment_requests(task)
+				task_team_rows = self.database.get_task_team_assignment_requests(task)
 				for task_team_row in task_team_rows:
 					task_team = self.get_team(task_team_row[0])
 					assigner = self.get_user(task_team_row[1])
@@ -598,8 +598,12 @@ class EntityManager:
 				team_assignment_requests.append(team_assignment_request)
 		return team_assignment_requests
 
-	def get_team_assignment_request(self, incident, team):
-		return self.team_assignment_requests[(team.id, incident.id)]
+	def get_team_assignment_request(self, assigned_to, team):
+		if isinstance(assigned_to, Incident):
+			assignment_type = 'Incident'
+		else:
+			assignment_type = 'Task'
+		return self.team_assignment_requests[(team.id, assigned_to.id, assignment_type)]
 
 	def get_all_team_assignment_requests(self):
 		return list(self.team_assignment_requests.values())
@@ -615,7 +619,20 @@ class EntityManager:
 			team_assignment_request = TeamAssignmentRequest(team, incident, assigner, status)
 			team_assignment_request.date_issued = date_issued
 
-			self.team_assignment_requests[(team.id, incident.id)] = team_assignment_request
+			self.team_assignment_requests[(team.id, incident.id, 'Incident')] = team_assignment_request
+
+		task_team_assignment_rows = self.database.get_all_task_team_assignment_requests()
+		for task_team_assignment_row in task_team_assignment_rows:
+			print('task team request loaded')
+			team = self.get_team(task_team_assignment_row[0])
+			task = self.get_task(task_team_assignment_row[1])
+			assigner = self.get_user(task_team_assignment_row[2])
+			status = task_team_assignment_row[3]
+			date_issued = task_team_assignment_row[4]
+			team_assignment_request = TeamAssignmentRequest(team, task, assigner, status)
+			team_assignment_request.date_issued = date_issued
+
+			self.team_assignment_requests[(team.id, task.id, 'Task')] = team_assignment_request
 
 	def request_value_change(self, user, incident, old_value, new_value, value_type, justification):
 		change_request = IncidentValueChangeRequest(user, incident, old_value, new_value, value_type, justification)

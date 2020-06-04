@@ -190,10 +190,17 @@ class Database:
 		rows = cur.fetchall()
 		return rows
 
-	def get_all_task_team_assignment_requests(self, task):
+	def get_task_team_assignment_requests(self, task):
 		cur = self.connection.cursor()
 		cur.execute("SELECT team_id, request_issuer, status, date_issued \
 			FROM TaskTeamAssignmentRequest WHERE task_id = ?", (task.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_all_task_team_assignment_requests(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT team_id, task_id, request_issuer, status, date_issued \
+			FROM TaskTeamAssignmentRequest")
 		rows = cur.fetchall()
 		return rows
 

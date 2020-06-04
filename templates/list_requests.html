@@ -68,7 +68,7 @@
 				<div class="request-title irms-inline-container">
 					<h4>{{ data.requests[i].team.name }}</h4>
 					<p>→</p>
-					<h4>Incident #{{ data.requests[i].assigned_to.id }} | {{ data.requests[i].assigned_to.title }}</h4>
+					<h4>{{ data.requests[i].get_assigned_type() }} #{{ data.requests[i].assigned_to.id }} | {{ data.requests[i].assigned_to.title }}</h4>
 					<div class="request-status incident-tag  {% if data.requests[i].get_status() == 'Approved' %} approved-tag {% elif data.requests[i].get_status() == 'Denied' %} denied-tag {% else %} pending-tag {% endif %}">
 						<p>{{ data.requests[i].get_status() }}</p>
 					</div>

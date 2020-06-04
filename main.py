@@ -621,10 +621,7 @@ def export_csv(incident_id):
 
 	with open(reportsDir + '/' + filename, mode='w', newline='', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file, delimiter=",")
-		writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", \
-        	"SLA Implementation Deadline", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
-        	"Question Count", "Task Count"])
-		writer.writerow(incident.to_csv())
+		incident.to_csv(writer)
 
 	return send_from_directory(directory = reportsDir, filename = filename)
 
