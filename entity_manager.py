@@ -553,7 +553,7 @@ class EntityManager:
 		self.database.insert_team_assignment_request(team_assignment_request)
 		team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
 
-		if isinstance(assigned_to, incident):
+		if isinstance(assigned_to, Incident):
 			assignment_type = 'incident'
 		else:
 			assignment_type = 'task'
@@ -697,9 +697,12 @@ class EntityManager:
 			assigned_teams.append(assigned_team_obj)
 		return assigned_teams
 
-	def decide_team_assignment_request(self, team_assignment_request, new_status):
+	def decide_team_assignment_request(self, user, team_assignment_request, new_status):
 		assigned_team = AssignedTeam(team_assignment_request.team, team_assignment_request.assigned_to)
-		self.database.insert_assigned_team(assigned_team)
+		if isinstance(team_assignment_request.assigned_to, Incident):
+			self.database.insert_assigned_team(assigned_team)
+		else:
+			self.database.insert_task_assigned_team(assigned_team)
 
 		team_assignment_request.status = new_status
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request

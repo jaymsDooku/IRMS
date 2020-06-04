@@ -186,7 +186,7 @@ class Database:
 
 	def get_task_assigned_team(self, task):
 		cur = self.connection.cursor()
-		cur.execute("SELECT team_id FROM TaskTeamAssignment WHERE task_id = ?", (incident.id, ))
+		cur.execute("SELECT team_id FROM TaskTeamAssignment WHERE task_id = ?", (task.id, ))
 		rows = cur.fetchall()
 		return rows
 
