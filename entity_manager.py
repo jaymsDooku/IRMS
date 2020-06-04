@@ -17,6 +17,8 @@ from question import Question
 from answer import Answer
 from task import Task
 from follow import Follow
+from notification import Notification
+from user_notification import UserNotification
 
 from time_unit import TimeUtil, TimeUnit
 
@@ -194,6 +196,9 @@ class EntityManager:
 
 		if not self.database.table_empty("IncidentTeamAssignmentRequest"):
 			self.load_team_assignment_requests()
+
+		if not self.database.table_empty("Notification"):
+			self.load_notifications()
 
 		self.database.commit()
 
@@ -483,6 +488,8 @@ class EntityManager:
 				impact, priority, severity)
 			incident.id = incident_row[0]
 			incident.date_created = incident_row[11]
+			incident.date_identified = incident_row[12]
+			incident.date_implemented = incident_row[13]
 
 			note_rows = self.database.get_notes(incident)
 			for note_row in note_rows:
@@ -541,10 +548,13 @@ class EntityManager:
 
 			self.incidents[incident.id] = incident
 
-	def request_team_assignment(self, assigner, incident, team):
-		team_assignment_request = TeamAssignmentRequest(team, incident, assigner, IncidentValueChangeRequest.STATUS_PENDING)
+	def request_team_assignment(self, assigner, assigned_to, team):
+		team_assignment_request = TeamAssignmentRequest(team, assigned_to, assigner, IncidentValueChangeRequest.STATUS_PENDING)
 		self.database.insert_team_assignment_request(team_assignment_request)
 		team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
+
+		assignment_type = if isinstance(assigned_to, Incident) 'incident' else 'task'
+		self.create_notification(incident, assigner.forename + ' ' + assigner.surname + ' has request a team assignment on ' + assignment_type + assigned_to.title)
 
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
 
@@ -582,17 +592,20 @@ class EntityManager:
 		self.database.insert_change_request(change_request)
 		change_request.date_requested = self.database.get_date_requested(change_request)
 		change_request.status = IncidentValueChangeRequest.STATUS_PENDING
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has requested a ' + IncidentValueChangeRequest.value_type_to_string(value_type) + ' Change on ' + incident.title)
 
 		self.change_requests[change_request.id] = change_request
 
 		self.database.commit()
 
-	def update_change_request(self, change_request, new_value, justification):
+	def update_change_request(self, user, change_request, new_value, justification):
 		change_request.new_value = new_value
 		change_request.justification = justification
 
 		self.change_requests[change_request.id] = change_request
 		self.database.update_change_request_content(change_request)
+
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has updated ' + IncidentValueChangeRequest.value_type_to_string(value_type) + ' Change on ' + incident.title)
 
 		self.database.commit()
 
@@ -641,12 +654,13 @@ class EntityManager:
 
 			self.change_requests[change_request.id] = change_request
 
-	def decide_change_request(self, change_request, new_status):
+	def decide_change_request(self, user, change_request, new_status):
 		if change_request.value_type == IncidentValueChangeRequest.TYPE_PRIORITY:
 			change_request.incident.priority = self.get_priority_by_code(change_request.new_value)
 		elif change_request.value_type == IncidentValueChangeRequest.TYPE_IMPACT:
 			change_request.incident.impact = self.get_impact_by_level(change_request.new_value)
 		self.database.update_incident(change_request.incident)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has made a decision on ' + IncidentValueChangeRequest.value_type_to_string(change_request.value_type) + ' Change on ' + incident.title)
 
 		change_request.status = new_status
 		self.change_requests[change_request.id] = change_request
@@ -686,12 +700,14 @@ class EntityManager:
 		team_assignment_request.status = new_status
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
 		self.database.update_team_assignment_request_status(team_assignment_request)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has made a decision on a team assignment on ' + incident.title)
 
 		self.database.commit()
 
 	def follow(self, user, incident):
 		follow = Follow(user, incident)
 		self.database.insert_follow(follow)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' is now following ' + incident.title)
 
 		self.database.commit()
 
@@ -701,6 +717,7 @@ class EntityManager:
 	def create_note(self, author, incident, title, content):
 		note = Note(title, author, content)
 		self.database.insert_note(incident, note)
+		self.create_notification(incident, author.forename + ' ' + author.surname + ' added a note to ' + incident.title)
 
 		note.date_created = self.database.get_note_date_created(note)
 
@@ -715,6 +732,7 @@ class EntityManager:
 	def create_question(self, author, incident, title, content):
 		question = Question(title, author, content)
 		self.database.insert_question(incident, question)
+		self.create_notification(incident, author.forename + ' ' + author.surname + ' asked a question on ' + incident.title)
 
 		question.date_asked = self.database.get_question_date_asked(question)
 
@@ -729,6 +747,7 @@ class EntityManager:
 	def answer_question(self, answerer, question, answer_content):
 		answer = Answer(question, answerer, answer_content)
 		self.database.insert_answer(answer)
+		self.create_notification(incident, answerer.forename + ' ' + answerer.surname + ' answered a question on ' + incident.title)
 
 		answer.date_answered = self.database.get_date_answered(answer)
 
@@ -749,11 +768,45 @@ class EntityManager:
 	def get_task(self, task_id):
 		return self.tasks[task_id]
 
+	def get_followers(self, incident):
+		user_followers = []
+		follower_rows = self.database.get_followers(incident)
+		for follower in follower_rows:
+			user_followers.append(self.get_user(follower[0]))
+		return user_followers
+
+	def load_notifications(self):
+		notification_rows = self.database.get_notifications()
+		for notification_row in notification_rows:
+			notification_id = notification_row[0]
+			notification_content = notification_row[1]
+			date_issued = notification_row[2]
+			incident = self.get_incident(notification_row[3])
+
+			notification = Notification(incident, notification_content)
+			notification.id = notification_id
+			notification.date_issued = date_issued
+
+			self.notifications[notification.id] = notification
+
 	def create_notification(self, incident, content):
 		notification = Notification(incident, content)
 		self.database.insert_notification(notification)
 		self.notifications[notification.id] = notification
+
+		notification.date_issued = self.database.get_notification_date_issued(notification)
+
+		followers = self.get_followers(incident)
+		for follower in followers:
+			user_notification = UserNotification(follower, notification, False)
+			self.database.insert_user_notification(user_notification)
+
+		self.database.commit()
+
 		return notification
+
+	def get_notification(self, notification_id):
+		return self.notifications[notification_id]
 
 	def get_notifications_by_incident(self, incident):
 		result = []
@@ -771,10 +824,45 @@ class EntityManager:
 			result.extend(incident_notifications)
 		return result
 
+	def get_user_notifications(self, user):
+		user_notifications = []
+		user_notification_rows = self.database.get_user_notifications(user)
+		for user_notification_row in user_notification_rows:
+			notification = self.get_notification(user_notification_row[0])
+			seen = user_notification_row[1]
+			date_notified = user_notification_row[2]
+			user_notification = UserNotification(user, notification, seen)
+			user_notification.date_notified = date_notified
+
+			user_notifications.append(user_notification)
+		return user_notifications
+
+	def seen_user_notification(self, user_notification):
+		self.database.seen_user_notification(user_notification)
+
 	def get_on_behalf(self, incident):
 		on_behalf = self.database.get_on_behalf(incident)
+		if on_behalf is None:
+			return None
+
 		on_behalf_user = self.get_user(on_behalf)
 		return on_behalf_user
+
+	def update_incident_identified_date(self, incident):
+		incident.status = self.get_stage_by_level(Stage.RESOLVING)
+		self.database.update_incident_identified_date(incident)
+		incident.date_identified = self.database.get_incident_identified_date(incident)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has changed ' + incident.title + '\'s status to ' + incident.status.level)
+
+		self.database.commit()
+
+	def update_incident_implemented_date(self, incident):
+		incident.status = self.get_stage_by_level(Stage.RESOLVED)
+		self.database.update_incident_implemented_date(incident)
+		incident.date_implemented = self.database.get_incident_identified_date(incident)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has changed ' + incident.title + '\'s status to ' + incident.status.level)
+
+		self.database.commit()
 
 	def dump(self):
 		print('Roles: ' + str(self.roles))

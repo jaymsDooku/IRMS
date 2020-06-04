@@ -142,3 +142,13 @@ span.pending {
 .todo-tag {
 	background-color: #42eff5;
 }
+
+#identifiedBtn:hover {
+	cursor: pointer;
+	background-color: #edbe3b;
+}
+
+#implementedBtn:hover {
+	cursor: pointer;
+	background-color: #3bed6d;
+}

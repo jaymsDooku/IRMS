@@ -395,6 +395,40 @@ function viewIncidentInit() {
 	initViewIncidentSelect('impactSelect', 'impact');
 	initViewIncidentSelect('severitySelect', 'severity');
 
+	var identifiedBtn = document.getElementById('identifiedBtn');
+	if (identifiedBtn != null) {
+		identifiedBtn.onclick = function(event) {
+			var incidentId = identifiedBtn.dataset.incident;
+			get('resolutionIdentified/' + incidentId, function(xhttp) {
+				var responseJson = JSON.parse(xhttp.responseText);
+
+				identifiedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Identified</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
+
+				var incidentStatus = document.getElementById('incidentStatus');
+				incidentStatus.classList.remove(1);
+				incidentStatus.classList.add(responseJson.status_class);
+				incidentStatus.innerText = responseJson.status;
+			});
+		}
+	}
+
+	var implementedBtn = document.getElementById('implementedBtn');
+	if (implementedBtn) {
+		implementedBtn.onclick = function(event) {
+			var incidentId = implementedBtn.dataset.incident;
+			get('resolutionImplemented/' + incidentId, function(xhttp) {
+				var responseJson = JSON.parse(xhttp.responseText);
+
+				implementedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Implemented</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
+
+				var incidentStatus = document.getElementById('incidentStatus');
+				incidentStatus.classList.remove(1);
+				incidentStatus.classList.add(responseJson.status_class);
+				incidentStatus.innerText = responseJson.status;
+			});
+		}
+	}
+
 	var departmentSelect = document.getElementById('departmentSelect');
 	var teamSelect = document.getElementById('teamSelect');
 	initDepartmentSelect(departmentSelect, teamSelect);
@@ -746,8 +780,17 @@ function changeModeOnClick(btn, path, callback)  {
 window.onload = function(event) {
 	init(event);
 
-	/*setInterval(function() {
+	setInterval(function() {
 		get('notifications', function(xhttp) {
+			var responseJson = JSON.parse(xhttp.responseText);
+
+			var unseen = responseJson.unseen;
+			setOutstandingNotifications(parseInt(unseen));
+
+			var sidebarBody = document.getElementsByClassName('sidebar-body')[0];
+			console.log(responseJson);
+			sidebarBody.innerHTML = responseJson.body;
+			console.log('notification update');
 		})
-	}, 3000);*/
+	}, 5000);
 }

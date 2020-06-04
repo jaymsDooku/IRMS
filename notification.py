@@ -5,4 +5,4 @@ class Notification:
 		self.content = content
 
 	def to_sql(self):
-		return (self.incident.id, self.content)
+		return (self.content, self.incident.id)

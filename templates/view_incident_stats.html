@@ -63,32 +63,32 @@
 	</div>
 	<div class="incident-sla-identification-container">
 		<div class="incident-sla-identification irms-inline-container">
-			{% if data.incident.status.name == "Identifying Resolution" %}
-				<div class="incident-tag indentify-tag">
-					<p>Indentified Resolution</p>
+			{% if data.incident.status.level == "Identifying Resolution" %}
+				<div class="incident-tag identifying-tag" data-incident="{{ data.incident.id }}" id="identifiedBtn">
+					<p>Identified Resolution</p>
 				</div>
 			{% else %}
 				<div class="irms-header">
-					<p>SLA Identification Time Left: </p>
+					<p>Date Identified: </p>
 				</div>
 				<div class="irms-text">
-					<p>{{ data.incident.get_sla_identification_time_left() }}</p>
+					<p>{{ data.incident.date_identified }}</p>
 				</div>
 			{% endif %}
 		</div>
 	</div>
 	<div class="incident-sla-implementation-container">
 		<div class="incident-sla-implementation irms-inline-container">
-			{% if data.incident.status.name != "Resolved" %}
-				<div class="incident-tag resolved-tag">
+			{% if data.incident.status.level != "Resolved" %}
+				<div class="incident-tag resolved-tag" data-incident="{{ data.incident.id }}" id="implementedBtn">
 					<p>Implemented Resolution</p>
 				</div>
 			{% else %}
 				<div class="irms-header">
-					<p>SLA Resolution Time Left: </p>
+					<p>Date Implemented: </p>
 				</div>
 				<div class="irms-text">
-					<p>{{ data.incident.get_sla_implementation_time_left() }}</p>
+					<p>{{ data.incident.date_implemented }}</p>
 				</div>
 			{% endif %}
 		</div>

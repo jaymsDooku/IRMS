@@ -25,7 +25,7 @@ class Incident:
 		return self.entity_manager.is_following(user, self)
 
 	def get_on_behalf(self):
-		return self.entity_manager.get_on_behalf(incident)
+		return self.entity_manager.get_on_behalf(self)
 
 	def is_on_behalf(self):
 		return self.get_on_behalf() is not None

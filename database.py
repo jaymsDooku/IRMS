@@ -160,7 +160,8 @@ class Database:
 	def get_incidents(self):
 		cur = self.connection.cursor()
 		cur.execute("SELECT incident_id, author, title, description, sla_identification_deadline, \
-			sla_implementation_deadline, status, system, impact, severity, priority, date_created \
+			sla_implementation_deadline, status, system, impact, severity, priority, date_created, \
+			date_resolution_identified, date_resolution_implemented \
 			FROM Incident")
 		rows = cur.fetchall()
 		return rows
@@ -179,6 +180,9 @@ class Database:
 		cur.execute("SELECT team_id FROM IncidentTeamAssignment WHERE incident_id = ?", (incident.id, ))
 		rows = cur.fetchall()
 		return rows
+
+	def insert_task_assigned_team(self, assigned_team):
+		self.execute_update("INSERT INTO TaskTeamAssignment(team_id, task_id) VALUES (?, ?)", assigned_team)
 
 	def get_team_assignment_details(self, assigned_team):
 		cur = self.connection.cursor()
@@ -309,9 +313,28 @@ class Database:
 	def insert_notification(self, notification):
 		self.execute_update("INSERT INTO Notification(notification_content, incident_id) VALUES (?, ?)", notification)
 
+	def get_notification_date_issued(self, notification):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_issued, 'localtime') FROM Notification WHERE notification_id = ?", (notification.id, ))
+		row = cur.fetchone()
+		return row[0]
+
 	def get_notifications(self):
 		cur = self.connection.cursor()
 		cur.execute("SELECT notification_id, notification_content, date_issued, incident_id FROM Notification")
+		rows = cur.fetchall()
+		return rows
+
+	def insert_user_notification(self, user_notification):
+		self.execute_update("INSERT INTO UserNotification(user_id, notification_id) VALUES (?, ?)", user_notification)
+
+	def seen_user_notification(self, user_notification):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE UserNotification SET seen = 1 WHERE user_id = ? AND notification_id = ?", user_notification.to_sql())
+
+	def get_user_notifications(self, user):
+		cur = self.connection.cursor()
+		cur.execute("SELECT notification_id, seen, date_notified FROM UserNotification WHERE user_id = ? ORDER BY date_notified DESC", (user.id, ))
 		rows = cur.fetchall()
 		return rows
 
@@ -332,14 +355,40 @@ class Database:
 
 	def insert_on_behalf(self, incident, on_behalf):
 		cur = self.connection.cursor()
-		cur.execute("INSERT INTO OnBehalf(incident_id, on_behalf) VALUES (?, ?)", (incident.id, on_behalf.id))
+		cur.execute("INSERT INTO OnBehalf(incident_id, behalf_of) VALUES (?, ?)", (incident.id, on_behalf.id))
 		task.id = cur.lastrowid
 
 	def get_on_behalf(self, incident):
 		cur = self.connection.cursor()
-		cur.execute("SELECT on_behalf FROM OnBehalf WHERE incident_id = ?", (incident.id, ))
-		row = cur.fetchall()
-		return row[0]
+		cur.execute("SELECT behalf_of FROM OnBehalf WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		if len(rows) == 0:
+			return None
+		return rows[0][0]
+
+	def update_incident_identified_date(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE Incident SET date_resolution_identified = DATETIME('now'), status = ? WHERE incident_id = ?", (incident.status.id, incident.id))
+
+	def get_incident_identified_date(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT date_resolution_identified FROM Incident WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		if len(rows) == 0:
+			return None
+		return rows[0][0]
+
+	def update_incident_implemented_date(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("UPDATE Incident SET date_resolution_implemented = DATETIME('now'), status = ? WHERE incident_id = ?", (incident.status.id, incident.id))
+
+	def get_incident_implemented_date(self):
+		cur = self.connection.cursor()
+		cur.execute("SELECT date_resolution_implemented FROM Incident WHERE incident_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		if len(rows) == 0:
+			return None
+		return rows[0][0]
 
 	def table_empty(self, table):
 		query = "SELECT * FROM " + table + " LIMIT 1"

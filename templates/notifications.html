@@ -4,20 +4,6 @@
         <h1 id="sidebar-h1">Notifications</h1>
     </div>
     <div class="sidebar-body">
-        <hr>
-        {% for i in range(0, data.notificationsLength) %}
-            <div class="notification-box">
-                <div class="notification-date-time" align="left">
-                    <div class="notification-title">
-                        <h6>{{ data.notifications[i].date_sent }}</h6>
-                        <h6 class="notification">{{ data.notifications[i].incident.title }}</h6>
-                    </div>
-                    <div class="notification-content">
-                        {{ data.notifications[i].content }}
-                    </div>
-                </div>
-            </div>
-            <hr>
-        {% endfor %}
+        {% include 'notification-body.html' %}
     </div>
 </div>

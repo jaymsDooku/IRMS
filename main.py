@@ -51,7 +51,7 @@ def index():
 			incidents = entity_manager.get_incidents(user)
 			pageTitle = 'Your Incidents'
 
-		notifications = entity_manager.get_notifications(user)
+		notifications = entity_manager.get_user_notifications(user)
 
 		data = {
 			'pageTitle': pageTitle,
@@ -139,7 +139,8 @@ def decide_incident_team(incident_id, team_id, decision):
 	else:
 		return app.response_class(status = HTTP_BAD_REQUEST)
 
-	entity_manager.decide_team_assignment_request(team_assignment_request, new_status)
+	user = get_user()
+	entity_manager.decide_team_assignment_request(user, team_assignment_request, new_status)
 
 	return app.response_class(status = HTTP_OKAY)
 
@@ -174,7 +175,8 @@ def decide_change_request(change_request_id, decision):
 	else:
 		return app.response_class(status = HTTP_BAD_REQUEST)
 
-	entity_manager.decide_change_request(change_request, new_status)
+	user = get_user()
+	entity_manager.decide_change_request(user, change_request, new_status)
 
 	return app.response_class(status = HTTP_OKAY)
 
@@ -200,7 +202,7 @@ def request_incident_value_change(incident_id, value_type):
 	change_request = entity_manager.get_existing_change_request(user, incident, value_type)
 
 	if change_request is not None:
-		entity_manager.update_change_request(change_request, new_value, justification)
+		entity_manager.update_change_request(user, change_request, new_value, justification)
 	else:
 		entity_manager.request_value_change(user, incident, old_value, new_value, value_type, justification)
 	return app.response_class(status = HTTP_OKAY)
@@ -530,6 +532,29 @@ def follow_incident(incident_id):
 
 	return app.response_class(status = HTTP_OKAY)
 
+@app.route('/notifications')
+def notifications():
+	user = get_user()
+
+	notifications = entity_manager.get_user_notifications(user)
+
+	unseen = 0
+	for notification in notifications:
+		if not notification.seen:
+			unseen += 1
+			entity_manager.seen_user_notification(notification)
+
+	data = {
+		'notifications': notifications,
+		'notificationsLength': len(notifications)
+	}
+
+	json_response = {
+		'unseen': unseen,
+		'body': render_template('notification-body.html', data = data)
+	}
+	return Util.json_response(json_response, HTTP_OKAY)
+
 @app.route('/allUsers')
 def usernames():
 	users = entity_manager.get_users()
@@ -556,6 +581,28 @@ def export_csv(incident_id):
 		writer.writerow(incident.to_csv())
 
 	return send_from_directory(directory = reportsDir, filename = filename)
+
+@app.route('/resolutionIdentified/<incident_id>')
+def identified(incident_id):
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+
+	entity_manager.update_incident_identified_date(incident)
+	status = incident.status
+	date = incident.date_identified
+
+	return Util.json_response({ 'status': status.level, 'status_class': status.get_class(), 'date': date }, HTTP_OKAY)
+
+@app.route('/resolutionImplemented/<incident_id>')
+def implemented(incident_id):
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+
+	entity_manager.update_incident_implemented_date(incident)
+	status = incident.status
+	date = incident.date_implemented
+
+	return Util.json_response({ 'status': status.level, 'status_class': status.get_class(), 'date': date }, HTTP_OKAY)
 
 @app.route('/userNavBar')
 def user_mode():
