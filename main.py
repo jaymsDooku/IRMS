@@ -459,6 +459,23 @@ def ask_question(incident_id):
 	entity_manager.create_question(user, incident, title, questionContent)
 	return app.response_class(status = HTTP_OKAY)
 
+@app.route('/answerQuestion/<question_id>', methods=['POST'])
+def answer_question(question_id):
+	question_id = int(question_id)
+
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	question = entity_manager.get_question(question_id)
+
+	answer = content['answer']
+
+	entity_manager.answer_question(user, question, answer)
+	return app.response_class(status = HTTP_OKAY)
+
 @app.route('/viewQuestion/<question_id>')
 def view_question(question_id):
 	question_id = int(question_id)

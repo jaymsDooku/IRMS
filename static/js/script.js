@@ -299,16 +299,33 @@ function viewIncidentInit() {
 	var noteItems = document.getElementsByClassName('incident-note');
 	domUtil.onClick(noteItems, function(event) {
 		var noteId = this.dataset.note;
-		viewIncidentPageItem(noteId, 'Note');
+		viewIncidentPageItem(noteId, 'Note', function() {
+		});
 	});
 
 	var questionItems = document.getElementsByClassName('incident-question');
 	domUtil.onClick(questionItems, function(event) {
 		var questionId = this.dataset.question;
-		viewIncidentPageItem(questionId, 'Question');
+		viewIncidentPageItem(questionId, 'Question', function() {
+			var submitAnswerBtn = document.getElementById('submitAnswerBtn');
+			submitAnswerBtn.onclick = function(event) {
+				var questionId = submitAnswerBtn.dataset.question;
+				var answerContent = document.getElementById('answerContent');
+				var answer = answerContent.value;
+
+				var data = {
+					answer: answer
+				};
+
+				post(data, 'answerQuestion/' + questionId, function(xhttp) {
+					viewIncidentPageItem(questionId, 'Question', function() {
+					});
+				});
+			}
+		});
 	});
 
-	var newNoteBtn = document.getElementById('newNoteBtn');
+	var newNoteBtn = document.getElementById('newNoteBtn').parentNode;
 	newNoteBtn.onclick = function(event) {
 		var addNoteBtn = document.getElementById('addNoteBtn');
 		addNoteBtn.onclick = function(event) {
@@ -318,7 +335,7 @@ function viewIncidentInit() {
 		showOverlay('note-form-container');
 	}
 
-	var newQuestionBtn = document.getElementById('newQuestionBtn');
+	var newQuestionBtn = document.getElementById('newQuestionBtn').parentNode;
 	newQuestionBtn.onclick = function(event) {
 		var askQuestionBtn = document.getElementById('askQuestionBtn');
 		askQuestionBtn.onclick = function(event) {
@@ -328,7 +345,7 @@ function viewIncidentInit() {
 		showOverlay('question-form-container');
 	}
 
-	var newTaskBtn = document.getElementById('newTaskBtn');
+	var newTaskBtn = document.getElementById('newTaskBtn').parentNode;
 	newTaskBtn.onclick = function(event) {
 		var addTaskBtn = document.getElementById('addTaskBtn');
 		addTaskBtn.onclick = function(event) {
@@ -349,10 +366,12 @@ function viewIncidentInit() {
 	}
 }
 
-function viewIncidentPageItem(id, itemType) {
+function viewIncidentPageItem(id, itemType, callback) {
 	get('view' + itemType + '/' + id, function(xhttp) {
 		var overlayViewContainer = document.getElementsByClassName('overlay-view-container')[0];
 		overlayViewContainer.innerHTML = xhttp.responseText;
+
+		callback();
 		showOverlay('overlay-view-container');
 	});
 }
@@ -370,7 +389,8 @@ function addIncidentItem(itemType, item) {
 		title: title,
 		content: content
 	};
-	post(data, 'add' + item + '/' + incidentId, function(xhttp) {
+	var verb = itemType == 'question' ? 'ask' : 'add';
+	post(data, verb + item + '/' + incidentId, function(xhttp) {
 		switchBody('viewIncident/' + incidentId, viewIncidentInit);
 	});
 }

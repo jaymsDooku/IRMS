@@ -247,6 +247,9 @@ class Database:
 		cur.execute("INSERT INTO Question(incident_id, question_title, issuer, question_content) VALUES (?, ?, ?, ?)", (incident.id, question.title, question.author.id, question.content))
 		question.id = cur.lastrowid
 
+	def insert_answer(self, answer):
+		self.execute_update("INSERT INTO Answer(question_id, answerer, answer_content) VALUES (?, ?, ?)", answer)
+
 	def insert_task(self, incident, task):
 		cur = self.connection.cursor()
 		cur.execute("INSERT INTO Task(incident_id, name, author, content, status) VALUES (?, ?, ?, ?, ?)", (incident.id, task.title, task.author.id, task.content, task.status))
@@ -273,6 +276,18 @@ class Database:
 	def get_question_date_asked(self, question):
 		cur = self.connection.cursor()
 		cur.execute("SELECT DATETIME(date_asked, 'localtime') FROM Question WHERE question_id = ?", (question.id, ))
+		row = cur.fetchone()
+		return row[0]
+
+	def get_answers(self, question):
+		cur = self.connection.cursor()
+		cur.execute("SELECT answer_id, answerer, answer_content, date_answered FROM Answer WHERE question_id = ?", (question.id, ))
+		rows = cur.fetchall()
+		return rows
+
+	def get_date_answered(self, answer):
+		cur = self.connection.cursor()
+		cur.execute("SELECT DATETIME(date_answered, 'localtime') FROM Answer WHERE answer_id = ?", (answer.id, ))
 		row = cur.fetchone()
 		return row[0]
 

@@ -14,6 +14,7 @@ from team_assignment_request import TeamAssignmentRequest
 from assigned_team import AssignedTeam
 from note import Note
 from question import Question
+from answer import Answer
 from task import Task
 from follow import Follow
 
@@ -509,6 +510,18 @@ class EntityManager:
 				question.id = question_id
 				question.date_asked = date_asked
 
+				answer_rows = self.database.get_answers(question)
+				for answer_row in answer_rows:
+					answer_id = answer_row[0]
+					answer_answerer = self.get_user(answer_row[1])
+					answer_content = answer_row[2]
+					date_answered = answer_row[3]
+					answer = Answer(question, answer_answerer, answer_content)
+					answer.id = answer_id
+					answer.date_answered = date_answered
+
+					question.answers.append(answer)
+
 				incident.questions.append(question)
 				self.questions[question.id] = question
 
@@ -713,6 +726,16 @@ class EntityManager:
 
 	def get_question(self, question_id):
 		return self.questions[question_id]
+
+	def answer_question(self, answerer, question, answer_content):
+		answer = Answer(question, answerer, answer_content)
+		self.database.insert_answer(answer)
+
+		answer.date_answered = self.database.get_date_answered(answer)
+
+		question.answers.append(answer)
+
+		self.database.commit()
 
 	def create_task(self, author, incident, title, content):
 		task = Task(title, author, content, "To Do")

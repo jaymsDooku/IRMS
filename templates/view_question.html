@@ -9,4 +9,27 @@
 	<div class="question-content">
 		<p>{{ data.question.content }}</p>
 	</div>
+	<div class="answer-question">
+		<label>Write an Answer</label>
+		<textarea autocomplete="new-password" id="answerContent" name="content" placeholder="Enter answer" cols="100" rows="5" charswidth = "140"></textarea>
+		<button id="submitAnswerBtn" data-question="{{ data.question.id }}">Submit Answer</button>
+	</div>
+	<div class="question-answers">
+		<h3>Answers</h3>
+		{% if data.question.count_answers() == 0 %}
+			<p class="no-answers">There are currently no answers.</p>
+		{% else %}
+			{% for j in range(0, data.question.count_answers()) %}
+				<div class="question-answer">
+					<div class="question-answer-meta irms-inline-container">
+						<p>{{ data.question.answers[j].answerer.forename }} {{ data.question.answers[j].answerer.surname}}</p>
+						<p class="incident-tag date-tag">{{ data.question.answers[j].date_answered }}</p>
+					</div>
+					<div class="question-answer-content">
+						{{ data.question.answers[j].content }}
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
 </div>

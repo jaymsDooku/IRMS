@@ -65,14 +65,36 @@
 	background-color: #d9615d;
 }
 
-.question-header, .note-header {
+.question-answer-meta, .question-header, .note-header {
 	justify-content: space-between;
 }
 
-.question-meta, .note-meta {
+.question-answer-meta .date-tag, .question-meta, .note-meta {
 	align-self: flex-end;
 }
 
-.question-meta .date-tag, .note-meta .date-tag {
+.question-answer-meta .date-tag, .question-meta .date-tag, .note-meta .date-tag {
 	border: 1px solid white;
+}
+
+.question-answers h3, .question-answers .no-answers {
+	text-align: center;
+}
+
+.question-answers h3 {
+	margin-bottom: 10px;
+}
+
+.question-answer-meta {
+	padding-bottom: 5px;
+	border-bottom: 1px solid white;
+}
+
+.question-answer-content {
+	padding-top: 5px;
+}
+
+.question-answer {
+	background-color: #ebe07c77;
+	padding: 15px;
 }

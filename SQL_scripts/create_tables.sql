@@ -109,6 +109,15 @@ CREATE TABLE IF NOT EXISTS Notification
     incident_id INTEGER REFERENCES Incident(incident_id) 
 );
 
+CREATE TABLE IF NOT EXISTS UserNotification
+(
+    user_id INTEGER REFERENCES User(user_id),
+    notification_id INTEGER REFERENCES Notification(notification_id),
+    date_notified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    seen BOOLEAN DEFAULT 0,
+    PRIMARY KEY(user_id, notification_id)
+);
+
 CREATE TABLE IF NOT EXISTS Question
 (
     question_id INTEGER PRIMARY KEY AUTOINCREMENT,
