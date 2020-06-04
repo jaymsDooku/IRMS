@@ -39,13 +39,15 @@
 						<div class="incident-tag view-incident-btn">
 							<p>View</p>
 						</div>
-						{% if data.requests[i].get_status() == "Pending Review" %}
-							<div class="incident-tag approve-btn">
-								<p>Approve</p>
-							</div>
-							<div class="incident-tag deny-btn">
-								<p>Deny</p>
-							</div>
+						{% if data.user.role.name == 'Major Incident Manager' %}
+							{% if data.requests[i].get_status() == "Pending Review" %}
+								<div class="incident-tag approve-btn">
+									<p>Approve</p>
+								</div>
+								<div class="incident-tag deny-btn">
+									<p>Deny</p>
+								</div>
+							{% endif %}
 						{% endif %}
 						<div class="incident-tag date-tag">
 							<p>{{ data.requests[i].date_requested }}</p>

@@ -548,6 +548,14 @@ class EntityManager:
 
 			self.incidents[incident.id] = incident
 
+	def get_incident_of_task(self, task):
+		for incident in self.incidents.values():
+			tasks = incident.tasks
+			for incident_task in tasks:
+				if incident_task.id == task.id:
+					return incident
+		return None
+
 	def request_team_assignment(self, assigner, assigned_to, team):
 		team_assignment_request = TeamAssignmentRequest(team, assigned_to, assigner, IncidentValueChangeRequest.STATUS_PENDING)
 		self.database.insert_team_assignment_request(team_assignment_request)
@@ -557,6 +565,11 @@ class EntityManager:
 			assignment_type = 'incident'
 		else:
 			assignment_type = 'task'
+
+		if isinstance(assigned_to, Task):
+			incident = self.get_incident_of_task(assigned_to)
+		else:
+			incident = assigned_to
 
 		self.create_notification(incident, assigner.forename + ' ' + assigner.surname + ' has request a team assignment on ' + assignment_type + assigned_to.title)
 

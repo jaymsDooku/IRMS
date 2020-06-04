@@ -484,25 +484,19 @@ function viewIncidentInit() {
 	for (var i = 0; i < taskItems.length; i++) {
 		var taskItem = taskItems[i];
 
-		var departmentSelect = document.getElementById('departmentSelect');
-		var teamSelect = document.getElementById('teamSelect');
+		var departmentSelect = domUtil.getElementByClassName(taskItem, 'task-department-select');
+		var teamSelect = domUtil.getElementByClassName(taskItem, 'task-team-select');
 		initDepartmentSelect(departmentSelect, teamSelect);
 
-		var assignTeamBtn = domUtil.getElementBydocument.getElementById('assignTaskTeamBtn');
-		assignTeamBtn.onclick = function(event) {
-			var incidentId = assignTeamBtn.dataset.incident;
+		var assignTaskTeamBtn = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
+		assignTaskTeamBtn.onclick = function(event) {
+			var incidentId = assignTaskTeamBtn.dataset.incident;
 			var teamOption = teamSelect.options[teamSelect.selectedIndex];
 			var teamId = teamOption.dataset.team;
 			get('requestIncidentTeam/' + incidentId + '/' + teamId, function(xhttp) {
-				var responseJson = JSON.parse(xhttp.responseText);
-
-				var teamAssignedTable = document.getElementById('teamAssignedTableBody');
-				teamAssignedTable.innerHTML += ("<tr>" +
-					"<td>" + responseJson.name + "</td>" +
-					"<td>" + responseJson.date_issued + "</td>" +
-					"<td>" + responseJson.assigner + "</td>" +
-					"<td>" + responseJson.status + "</td>" +
-					"</tr>");
+				var teamsAssigned = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
+				teamsAssigned.innerHTML += '<div class="incident-tag"><p>' + teamOption.value + '</p></div>';
+				console.log('hello');
 			});
 		}
 	}
