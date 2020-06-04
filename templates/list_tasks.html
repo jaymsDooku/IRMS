@@ -15,8 +15,29 @@
 								</div>
 							{% endfor %}
 						{% else %}
-
+							<p>No teams assigned.</p>
 						{% endif %}
+					</div>
+					<div class="assign-team">
+						<div class="assign-team-fields irms-inline-container">
+							<div class="department-select-container irms-inline-container">
+								<label>Department: </label>
+								<select class="task-department-select" name="department-name">
+									{% for i in range(0, data.departmentsLength) %}
+										<option>{{ data.departments[i].name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="team-select-container irms-inline-container">
+								<label>Team: </label>
+								<select class="task-team-select" name="team-name">
+									{% for i in range(0, data.teamsLength) %}
+										<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<img data-incident="{{ data.incident.id }}" class="new-btn assign-team-btn assign-task-team-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
 					</div>
 				</div>
 				<div class="incident-task-body">
