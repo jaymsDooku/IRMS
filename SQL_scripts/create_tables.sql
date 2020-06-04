@@ -29,6 +29,13 @@ CREATE TABLE IF NOT EXISTS SystemClassification
     tier INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS OnBehalf
+(
+    on_behalf_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    incident_id INTEGER REFERENCES Incident(incident_id),
+    behalf_of INTEGER REFERENCES User(user_id)
+);
+
 CREATE TABLE IF NOT EXISTS Incident
 (
     incident_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -145,7 +152,7 @@ CREATE TABLE IF NOT EXISTS User
     email TEXT,
     username TEXT,
     password TEXT,
-    role INTEGER REFERENCES Role(role_id) 
+    role INTEGER REFERENCES Role(role_id)
 );
 
 CREATE TABLE IF NOT EXISTS UserSession

@@ -330,6 +330,17 @@ class Database:
 		rows = cur.fetchall()
 		return rows
 
+	def insert_on_behalf(self, incident, on_behalf):
+		cur = self.connection.cursor()
+		cur.execute("INSERT INTO OnBehalf(incident_id, on_behalf) VALUES (?, ?)", (incident.id, on_behalf.id))
+		task.id = cur.lastrowid
+
+	def get_on_behalf(self, incident):
+		cur = self.connection.cursor()
+		cur.execute("SELECT on_behalf FROM OnBehalf WHERE incident_id = ?", (incident.id, ))
+		row = cur.fetchall()
+		return row[0]
+
 	def table_empty(self, table):
 		query = "SELECT * FROM " + table + " LIMIT 1"
 		return self.execute_query(query) == 0

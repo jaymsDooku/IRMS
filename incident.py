@@ -24,6 +24,12 @@ class Incident:
 	def is_following(self, user):
 		return self.entity_manager.is_following(user, self)
 
+	def get_on_behalf(self):
+		return self.entity_manager.get_on_behalf(incident)
+
+	def is_on_behalf(self):
+		return self.get_on_behalf() is not None
+
 	def get_date_created(self):
 		if self.date_created is None:
 			return None

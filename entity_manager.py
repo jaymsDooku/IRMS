@@ -771,6 +771,10 @@ class EntityManager:
 			result.extend(incident_notifications)
 		return result
 
+	def get_on_behalf(self, incident):
+		on_behalf = self.database.get_on_behalf(incident)
+		on_behalf_user = self.get_user(on_behalf)
+		return on_behalf_user
 
 	def dump(self):
 		print('Roles: ' + str(self.roles))

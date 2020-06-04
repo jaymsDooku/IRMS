@@ -351,10 +351,10 @@ function raiseIncidentInitNormal(incidentOnBehalf) {
 			data['onBehalf'] = onBehalf;
 		}
 		console.log(data);
-		/*post(data, 'raiseIncident', function(xhttp) {
+		post(data, 'raiseIncident', function(xhttp) {
 			switchBody('listIncidents', listIncidentsInit);
 			changeNavBarItem(document.getElementById('yourIncidentsBtn'))
-		});*/
+		});
 	}
 }
 
@@ -666,14 +666,17 @@ function listUsersInit() {
 	var roleDropdowns = document.getElementsByClassName('role-dropdown');
 	for (var i = 0; i < roleDropdowns.length; i++) {
 		var dropdown = roleDropdowns[i];
-		var userId = dropdown.dataset.user;
 		dropdown.onchange = function(event) {
-			var chosenRole = dropdown.value;
+			var chosenRole = this.value;
+			var userId = this.dataset.user;
 
 			var data = {
 				role: chosenRole
 			};
-			post(data, 'updateRole/' + userId, function(xhttp) {
+			var path = 'updateRole/' + userId;
+			console.log(path);
+			console.log(data);
+			post(data, path, function(xhttp) {
 			});
 		}
 	}

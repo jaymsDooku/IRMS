@@ -378,7 +378,7 @@ def raise_incident():
 		identificationDeadline = TimeUtil.sqlite_to_datetime(sanitizedIdentificationDeadline)
 		implementationDeadline = TimeUtil.sqlite_to_datetime(sanitizedImplementationDeadline)
 		impact = entity_manager.get_impact_by_level(content['impact'])
-		severity = entity_manager.get_severity_code(content['severity'])
+		severity = entity_manager.get_severity_by_code(content['severity'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
 		#team = entity_manager.get_team_by_name(content['team'])

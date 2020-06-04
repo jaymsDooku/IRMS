@@ -28,7 +28,9 @@
 			</div>
 		</div>
 		<div class="incident-issuer">
-			<h5>Issued By: {{ data.incident.author.forename }} {{ data.incident.author.surname }}</h5>
+			<h5>Issued By: {{ data.incident.author.forename }} {{ data.incident.author.surname }} {% if data.incident.is_on_behalf() %} 
+				(on behalf of {{ data.incident.get_on_behalf().forename }} {{ data.incident.get_on_behalf().surname }})
+			{% endif %}</h5>
 		</div>
 	</div>
 	<div class="irms-title-right irms-inline-container">

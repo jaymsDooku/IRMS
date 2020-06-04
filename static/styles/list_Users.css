@@ -6,6 +6,11 @@
     background-color: rgba(225,225,225,0.2);
 }
 
+#table_Body select {
+	background-color: rgb(0, 0, 0, 0.3);
+	color: white;
+}
+
 #user_table{
     width: 90%;
     margin-left: 60px;
