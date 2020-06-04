@@ -11,11 +11,11 @@
 						{% if data.tasks[i].teams_count() != 0 %}
 							{% for j in range(0, data.tasks[i].teams_count()) %}
 								<div class="incident-tag">
-									<p>{{ data.tasks[i].teams[j].name }}</p>
+									<p>{{ data.tasks[i].teams[j].team.name }}{% if data.tasks[i].teams[j].get_status() == 'Pending Review' %}*{% endif %}</p>
 								</div>
 							{% endfor %}
 						{% else %}
-							<p>No teams assigned.</p>
+							<p class="no-teams">No teams assigned.</p>
 						{% endif %}
 					</div>
 					<div class="assign-team">

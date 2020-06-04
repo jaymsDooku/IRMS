@@ -404,7 +404,7 @@ function viewIncidentInit() {
 
 				identifiedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Identified</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
 
-				var incidentStatus = document.getElementById('incidentStatus');
+				var incidentStatus = document.getElementById('incidentStatus').parentNode;
 				incidentStatus.classList.remove(1);
 				incidentStatus.classList.add(responseJson.status_class);
 				incidentStatus.innerText = responseJson.status;
@@ -421,7 +421,7 @@ function viewIncidentInit() {
 
 				implementedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Implemented</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
 
-				var incidentStatus = document.getElementById('incidentStatus');
+				var incidentStatus = document.getElementById('incidentStatus').parentNode;
 				incidentStatus.classList.remove(1);
 				incidentStatus.classList.add(responseJson.status_class);
 				incidentStatus.innerText = responseJson.status;
@@ -493,8 +493,13 @@ function viewIncidentInit() {
 			var incidentId = assignTaskTeamBtn.dataset.incident;
 			var teamOption = teamSelect.options[teamSelect.selectedIndex];
 			var teamId = teamOption.dataset.team;
-			get('requestIncidentTeam/' + incidentId + '/' + teamId, function(xhttp) {
-				var teamsAssigned = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
+			get('requestTaskTeam/' + incidentId + '/' + teamId, function(xhttp) {
+				var noTeams = domUtil.getElementByClassName(taskItem, 'no-teams');
+				if (noTeams != null) {
+					noTeams.remove();
+				}
+
+				var teamsAssigned = domUtil.getElementByClassName(taskItem, 'teams-assigned');
 				teamsAssigned.innerHTML += '<div class="incident-tag"><p>' + teamOption.value + '</p></div>';
 				console.log('hello');
 			});
@@ -605,14 +610,17 @@ function listIncidentsInit() {
 
 	for (var i = 0; i < incidentItems.length; i++) {
 		var incidentItem = incidentItems[i];
-		var incidentId = incidentItem.dataset.incident;
 		incidentItem.onclick = function(event) {
-			switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			switchBody('viewIncident/' + this.dataset.incident, viewIncidentInit);
 		}
 
-		var followText = domUtil.getElementByClassName(incidentItem, 'follow-text');
-		initFollowButton(incidentId, followText);
+		initFollowText(incidentItem)
 	}
+}
+
+function initFollowText(incidentItem) {
+	var followText = domUtil.getElementByClassName(incidentItem, 'follow-text');
+	initFollowButton(incidentItem.dataset.incident, followText);
 }
 
 function initFollowButton(incidentId, followText) {
@@ -664,37 +672,9 @@ function listRequestsInit() {
 	        }
 		}
 
-		var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-incident-btn');
-		if (viewIncidentBtn != null) {
-			viewIncidentBtn.onclick = function(event) {
-				var incidentId = requestItem.dataset.incident;
-				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+		initViewButton(requestItem);
 
-				event.stopPropagation();
-			}
-		}
-
-		var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
-		var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
-		if (approveBtn != null) {
-			approveBtn.onclick = function(event) {
-				decideRequest(requestItem, 'approve');
-
-				approveBtn.remove();
-				denyBtn.remove();
-				event.stopPropagation();
-			}
-		}
-
-		if (denyBtn != null) {
-			denyBtn.onclick = function(event) {
-				decideRequest(requestItem, 'deny')
-
-				approveBtn.remove();
-				denyBtn.remove();
-				event.stopPropagation();
-			}
-		}
+		initApproveButtons(requestItem);
 	}
 
 	var teamAssignmentsBtn = document.getElementById('teamAssignmentsBtn');
@@ -717,6 +697,43 @@ function listRequestsInit() {
 		}
 	}
 }
+
+function initViewButton(requestItem) {
+	var viewIncidentBtn = domUtil.getElementByClassName(requestItem, 'view-incident-btn');
+	if (viewIncidentBtn != null) {
+		viewIncidentBtn.onclick = function(event) {
+			var incidentId = requestItem.dataset.incident;
+			switchBody('viewIncident/' + incidentId, viewIncidentInit);
+
+			event.stopPropagation();
+		}
+	}
+}
+
+function initApproveButtons(requestItem) {
+	var approveBtn = domUtil.getElementByClassName(requestItem, 'approve-btn');
+	var denyBtn = domUtil.getElementByClassName(requestItem, 'deny-btn');
+	if (approveBtn != null) {
+		approveBtn.onclick = function(event) {
+			decideRequest(requestItem, 'approve');
+
+			approveBtn.remove();
+			denyBtn.remove();
+			event.stopPropagation();
+		}
+	}
+
+	if (denyBtn != null) {
+		denyBtn.onclick = function(event) {
+			decideRequest(requestItem, 'deny');
+
+			approveBtn.remove();
+			denyBtn.remove();
+			event.stopPropagation();
+		}
+	}
+}
+
 function listUsersInit() {
 	var roleDropdowns = document.getElementsByClassName('role-dropdown');
 	for (var i = 0; i < roleDropdowns.length; i++) {
@@ -809,9 +826,7 @@ window.onload = function(event) {
 			setOutstandingNotifications(parseInt(unseen));
 
 			var sidebarBody = document.getElementsByClassName('sidebar-body')[0];
-			console.log(responseJson);
 			sidebarBody.innerHTML = responseJson.body;
-			console.log('notification update');
 		})
 	}, 5000);
 }

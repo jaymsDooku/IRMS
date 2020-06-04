@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS TaskTeamAssignmentRequest
     team_id INTEGER REFERENCES Team(team_id),
     task_id INTEGER REFERENCES Task(task_id),
     request_issuer INTEGER REFERENCES User(user_id),
-    approved BOOLEAN,
+    status INTEGER,
     date_issued TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (team_id, task_id)
 );

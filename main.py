@@ -144,6 +144,28 @@ def decide_incident_team(incident_id, team_id, decision):
 
 	return app.response_class(status = HTTP_OKAY)
 
+@app.route('/decideTaskTeam/<task_id>/<team_id>/<decision>')
+def decide_task_team(task_id, team_id, decision):
+	task_id = int(task_id)
+	team_id = int(team_id)
+
+	task = entity_manager.get_task(task_id)
+	team = entity_manager.get_team(team_id)
+
+	team_assignment_request = entity_manager.get_team_assignment_request(task, team)
+
+	if decision == 'approve':
+		new_status = IncidentValueChangeRequest.STATUS_APPROVED
+	elif decision == 'deny':
+		new_status = IncidentValueChangeRequest.STATUS_DENIED
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	entity_manager.decide_team_assignment_request(user, team_assignment_request, new_status)
+
+	return app.response_class(status = HTTP_OKAY)
+
 @app.route('/requestIncidentTeam/<incident_id>/<team_id>')
 def request_incident_team(incident_id, team_id):
 	incident_id = int(incident_id)
@@ -154,6 +176,25 @@ def request_incident_team(incident_id, team_id):
 	team = entity_manager.get_team(team_id)
 
 	team_assignment = entity_manager.request_team_assignment(user, incident, team)
+	
+	team_assignment_obj = {
+		'name': team_assignment.team.name,
+		'date_issued': team_assignment.date_issued,
+		'assigner': (team_assignment.assigner.forename + ' ' + team_assignment.assigner.surname),
+		'status': IncidentValueChangeRequest.status_to_string(team_assignment.status)
+	}
+	return Util.json_response(team_assignment_obj, HTTP_OKAY)
+
+@app.route('/requestTaskTeam/<task_id>/<team_id>')
+def request_task_team(task_id, team_id):
+	task_id = int(task_id)
+	team_id = int(team_id)
+
+	user = get_user()
+	task = entity_manager.get_task(task_id)
+	team = entity_manager.get_team(team_id)
+
+	team_assignment = entity_manager.request_team_assignment(user, task, team)
 	
 	team_assignment_obj = {
 		'name': team_assignment.team.name,
@@ -322,6 +363,9 @@ def view_incident(incident_id):
 	teams = entity_manager.get_teams(department)
 
 	user = get_user()
+
+	for task in incident.tasks:
+		print(task.teams)
 
 	data = {
 		'user': user,
@@ -535,6 +579,8 @@ def follow_incident(incident_id):
 @app.route('/notifications')
 def notifications():
 	user = get_user()
+	if user is None:
+		return app.response_class(status = HTTP_OKAY)
 
 	notifications = entity_manager.get_user_notifications(user)
 
@@ -587,7 +633,8 @@ def identified(incident_id):
 	incident_id = int(incident_id)
 	incident = entity_manager.get_incident(incident_id)
 
-	entity_manager.update_incident_identified_date(incident)
+	user = get_user()
+	entity_manager.update_incident_identified_date(user, incident)
 	status = incident.status
 	date = incident.date_identified
 
@@ -598,7 +645,8 @@ def implemented(incident_id):
 	incident_id = int(incident_id)
 	incident = entity_manager.get_incident(incident_id)
 
-	entity_manager.update_incident_implemented_date(incident)
+	user = get_user()
+	entity_manager.update_incident_implemented_date(user, incident)
 	status = incident.status
 	date = incident.date_implemented
 
