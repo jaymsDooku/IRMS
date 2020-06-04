@@ -131,6 +131,7 @@ span.pending {
 .export-csv {
 	color: white;
 	background-color: #f542e0;
+	text-decoration: none;
 }
 
 .export-csv:hover {

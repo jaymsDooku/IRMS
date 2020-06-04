@@ -3,9 +3,9 @@
 		<div class="irms-header-actions">
 			<div></div>
 			<div class="irms-inline-container">
-				<div class="incident-tag export-csv">
+				<a href="exportCSV/{{ data.incident.id }}" download="incident{{ data.incident.id }}.csv" class="incident-tag export-csv" data-incident="{{ data.incident.id }}" id="exportCSVBtn">
 					<p>Export CSV</p>
-				</div>
+				</a>
 				<div class="incident-tag {% if data.incident.is_following(data.user) %} following {% else %} follow {% endif %}" data-incident="{{ data.incident.id }}">
 						<p class="follow-text" id="followText">
 							{% if data.incident.is_following(data.user) %} 

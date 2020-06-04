@@ -378,7 +378,6 @@ class EntityManager:
 		severity = Severity(code)
 		self.database.insert_severity(severity)
 		self.severities[severity.id] = severity
-		print(severity.id)
 		return severity
 
 	def get_severity_by_code(self, code):

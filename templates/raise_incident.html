@@ -20,6 +20,14 @@
 				<label>SLA Implementation Deadline: </label>
 				<input id="incidentImplementation" type="datetime-local" name="resolution-deadline"/>
 			</div>
+			{% if data.user.role.name == 'Service Desk' %}
+				<div class="form-entry">
+					<label>On Behalf: </label>
+					<div class="autocomplete">
+						<input autocomplete="new-password" id="incidentOnBehalf" type="text" name="title" placeholder="Enter title" value="No One">
+					</div>
+				</div>
+			{% endif %}
 		</div>
 		<div class="right-body">
 			<div class="form-entries">
@@ -35,7 +43,7 @@
 					<label>Severity: </label>
 					<select id="severitySelect" name="severity">
 						{% for i in range(0, data.severitiesLength) %}
-							<option>{{ data.severities[i].level }} </option>
+							<option>{{ data.severities[i].code }} </option>
 						{% endfor %}
 					</select>
 				</div>

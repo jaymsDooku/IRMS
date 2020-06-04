@@ -1,6 +1,8 @@
+from os import path
 import atexit
+import csv
 
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
 
 from database import Database
 from entity_manager import EntityManager
@@ -396,7 +398,10 @@ def raise_incident():
 	department = departments[0]
 	teams = entity_manager.get_teams(department)
 
+	user = get_user()
+
 	data = {
+		'user': user,
 		'impactsLength': len(impacts),
 		'impacts': impacts,
 		'prioritiesLength': len(priorities),
@@ -524,6 +529,33 @@ def follow_incident(incident_id):
 	entity_manager.follow(user, incident)
 
 	return app.response_class(status = HTTP_OKAY)
+
+@app.route('/allUsers')
+def usernames():
+	users = entity_manager.get_users()
+	users_response = []
+	for user in users:
+		name = user.forename + ' ' + user.surname
+		users_response.append({ 'id': user.id, 'name': name})
+
+	return Util.json_response({ 'users': users_response }, HTTP_OKAY)
+
+@app.route('/exportCSV/<incident_id>')
+def export_csv(incident_id):
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+
+	reportsDir = path.join(app.root_path, 'reports')
+	filename = 'incident' + str(incident_id) + '.csv'
+
+	with open(reportsDir + '/' + filename, mode='w', newline='', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file, delimiter=",")
+		writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", \
+        	"SLA Implementation Deadline", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+        	"Question Count", "Task Count"])
+		writer.writerow(incident.to_csv())
+
+	return send_from_directory(directory = reportsDir, filename = filename)
 
 @app.route('/userNavBar')
 def user_mode():

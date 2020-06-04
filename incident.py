@@ -73,12 +73,17 @@ class Incident:
 		print('title: ' + str(self.title))
 		print('description: ' + str(self.description))
 		print('author: ' + str(self.author))
-		print('sla_identification_time: ' + str(self.sla_identification_deadline))
-		print('sla_implementation_time: ' + str(self.sla_implementation_deadline))
+		print('sla_identification_deadline: ' + str(self.sla_identification_deadline))
+		print('sla_implementation_deadline: ' + str(self.sla_implementation_deadline))
 		print('status: ' + str(self.status))
 		print('system: ' + str(self.system))
 		print('impact: ' + str(self.impact))
 		print('priority: ' + str(self.priority))
+
+	def to_csv(self):
+		author_name = self.author.forename + ' ' + self.author.surname
+		return [self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.sla_implementation_deadline, \
+			self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)]
 
 	def to_sql(self):
 		result = (self.title, self.description, self.author.id, \
