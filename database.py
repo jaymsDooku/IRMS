@@ -184,6 +184,12 @@ class Database:
 	def insert_task_assigned_team(self, assigned_team):
 		self.execute_update("INSERT INTO TaskTeamAssignment(team_id, task_id) VALUES (?, ?)", assigned_team)
 
+	def get_task_assigned_team(self, task):
+		cur = self.connection.cursor()
+		cur.execute("SELECT team_id FROM TaskTeamAssignment WHERE task_id = ?", (incident.id, ))
+		rows = cur.fetchall()
+		return rows
+
 	def get_team_assignment_details(self, assigned_team):
 		cur = self.connection.cursor()
 		cur.execute("SELECT request_issuer, status, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))

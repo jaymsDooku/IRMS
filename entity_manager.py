@@ -553,7 +553,11 @@ class EntityManager:
 		self.database.insert_team_assignment_request(team_assignment_request)
 		team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
 
-		assignment_type = if isinstance(assigned_to, Incident) 'incident' else 'task'
+		if isinstance(assigned_to, incident):
+			assignment_type = 'incident'
+		else:
+			assignment_type = 'task'
+
 		self.create_notification(incident, assigner.forename + ' ' + assigner.surname + ' has request a team assignment on ' + assignment_type + assigned_to.title)
 
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
