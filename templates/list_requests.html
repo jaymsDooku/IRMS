@@ -74,7 +74,7 @@
 					</div>
 				</div>
 				<div class="tags">
-					{% if data.user.role.name == 'Major Incident Manager' %}
+					{% if data.user.role.name == 'Major Incident Manager' or data.user.role.name == 'Queue Manager' %}
 						{% if data.requests[i].get_status() == "Pending Review" %}
 							<div class="incident-tag approve-btn">
 								<p>Approve</p>

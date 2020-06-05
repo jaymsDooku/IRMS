@@ -576,14 +576,15 @@ class EntityManager:
 			assignment_type = 'incident'
 			incident = assigned_to
 			self.database.insert_team_assignment_request(team_assignment_request)
+			team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
 			print('inserted incident team assignment')
 		else:
 			assignment_type = 'task'
 			incident = self.get_incident_of_task(assigned_to)
 			self.database.insert_task_team_assignment_request(team_assignment_request)
+			team_assignment_request.date_issued = self.database.get_task_assignment_date_requested(team_assignment_request)
 			print('inserted task team assignment')
 
-		team_assignment_request.date_issued = self.database.get_assignment_date_requested(team_assignment_request)
 		self.create_notification(incident, assigner.forename + ' ' + assigner.surname + ' has request a team assignment on ' + assignment_type + assigned_to.title)
 
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
@@ -844,6 +845,7 @@ class EntityManager:
 		return task
 
 	def get_task(self, task_id):
+		print(self.tasks)
 		return self.tasks[task_id]
 
 	def get_followers(self, incident):

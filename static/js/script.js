@@ -509,10 +509,10 @@ function viewIncidentInit() {
 
 		var assignTaskTeamBtn = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
 		assignTaskTeamBtn.onclick = function(event) {
-			var incidentId = assignTaskTeamBtn.dataset.incident;
+			var taskId = assignTaskTeamBtn.dataset.task;
 			var teamOption = teamSelect.options[teamSelect.selectedIndex];
 			var teamId = teamOption.dataset.team;
-			get('requestTaskTeam/' + incidentId + '/' + teamId, function(xhttp) {
+			get('requestTaskTeam/' + taskId + '/' + teamId, function(xhttp) {
 				var noTeams = domUtil.getElementByClassName(taskItem, 'no-teams');
 				if (noTeams != null) {
 					noTeams.remove();
