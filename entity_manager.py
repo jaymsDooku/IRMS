@@ -652,7 +652,7 @@ class EntityManager:
 		self.change_requests[change_request.id] = change_request
 		self.database.update_change_request_content(change_request)
 
-		self.create_notification(incident, user.forename + ' ' + user.surname + ' has updated ' + IncidentValueChangeRequest.value_type_to_string(value_type) + ' Change on ' + incident.title)
+		self.create_notification(change_request.incident, user.forename + ' ' + user.surname + ' has updated ' + change_request.get_value_type() + ' Change on ' + change_request.incident.title)
 
 		self.database.commit()
 
