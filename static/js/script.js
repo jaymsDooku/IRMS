@@ -333,7 +333,8 @@ function raiseIncidentInitNormal(incidentOnBehalf) {
 		var severity = severitySelect.value;
 		var system = systemSelect.value;
 		var priority = prioritySelect.value;
-		var team = teamSelect.value;
+		var teamOption = teamSelect.options[teamSelect.selectedIndex];
+		var teamId = teamOption.dataset.team;
 
 		var data = {
 			title: title,
@@ -344,7 +345,7 @@ function raiseIncidentInitNormal(incidentOnBehalf) {
 			severity: severity,
 			system: system,
 			priority: priority,
-			team: team,
+			team: teamId
 		};
 		if (incidentOnBehalf != null) {
 			var onBehalf = incidentOnBehalf.dataset.user;
@@ -524,33 +525,39 @@ function viewIncidentInit() {
 	}
 
 	var newNoteBtn = document.getElementById('newNoteBtn').parentNode;
-	newNoteBtn.onclick = function(event) {
-		var addNoteBtn = document.getElementById('addNoteBtn');
-		addNoteBtn.onclick = function(event) {
-			addIncidentItem('note', 'Note');
-		}
+	if (newNoteBtn != null) {
+		newNoteBtn.onclick = function(event) {
+			var addNoteBtn = document.getElementById('addNoteBtn');
+			addNoteBtn.onclick = function(event) {
+				addIncidentItem('note', 'Note');
+			}
 
-		showOverlay('note-form-container');
+			showOverlay('note-form-container');
+		}
 	}
 
 	var newQuestionBtn = document.getElementById('newQuestionBtn').parentNode;
-	newQuestionBtn.onclick = function(event) {
-		var askQuestionBtn = document.getElementById('askQuestionBtn');
-		askQuestionBtn.onclick = function(event) {
-			addIncidentItem('question', 'Question');
-		}
+	if (newQuestionBtn != null) {
+		newQuestionBtn.onclick = function(event) {
+			var askQuestionBtn = document.getElementById('askQuestionBtn');
+			askQuestionBtn.onclick = function(event) {
+				addIncidentItem('question', 'Question');
+			}
 
-		showOverlay('question-form-container');
+			showOverlay('question-form-container');
+		}
 	}
 
 	var newTaskBtn = document.getElementById('newTaskBtn').parentNode;
-	newTaskBtn.onclick = function(event) {
-		var addTaskBtn = document.getElementById('addTaskBtn');
-		addTaskBtn.onclick = function(event) {
-			addIncidentItem('task', 'Task');
-		}
+	if (newTaskBtn != null) {
+		newTaskBtn.onclick = function(event) {
+			var addTaskBtn = document.getElementById('addTaskBtn');
+			addTaskBtn.onclick = function(event) {
+				addIncidentItem('task', 'Task');
+			}
 
-		showOverlay('task-form-container');
+			showOverlay('task-form-container');
+		}
 	}
 
 	var overlay = document.getElementById('overlay');

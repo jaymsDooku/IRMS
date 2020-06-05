@@ -64,9 +64,11 @@
 	<div class="incident-sla-identification-container">
 		<div class="incident-sla-identification irms-inline-container">
 			{% if data.incident.status.level == "Identifying Resolution" %}
-				<div class="incident-tag identifying-tag" data-incident="{{ data.incident.id }}" id="identifiedBtn">
-					<p>Identified Resolution</p>
-				</div>
+				{% if data.user.has_identified_access() %}
+					<div class="incident-tag identifying-tag" data-incident="{{ data.incident.id }}" id="identifiedBtn">
+						<p>Identified Resolution</p>
+					</div>
+				{% endif %}
 			{% else %}
 				<div class="irms-header">
 					<p>Date Identified: </p>
@@ -80,9 +82,11 @@
 	<div class="incident-sla-implementation-container">
 		<div class="incident-sla-implementation irms-inline-container">
 			{% if data.incident.status.level != "Resolved" %}
-				<div class="incident-tag resolved-tag" data-incident="{{ data.incident.id }}" id="implementedBtn">
-					<p>Implemented Resolution</p>
-				</div>
+				{% if data.user.has_implemented_access() %}
+					<div class="incident-tag resolved-tag" data-incident="{{ data.incident.id }}" id="implementedBtn">
+						<p>Implemented Resolution</p>
+					</div>
+				{% endif %}
 			{% else %}
 				<div class="irms-header">
 					<p>Date Implemented: </p>

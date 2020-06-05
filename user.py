@@ -19,6 +19,11 @@ class User:
 	def has_impact_access(self):
 		return self.role.name == Role.RESOLVER or self.role.name == Role.QUEUE_MANAGER or self.role.name == Role.MAJOR_INCIDENT_MANAGER
 
+	def has_identified_access(self):
+		return self.role.name == Role.RESOLVER or self.role.name == Role.QUEUE_MANAGER or self.role.name == Role.MAJOR_INCIDENT_MANAGER
+
+	def has_implemented_access(self):
+		return self.role.name == Role.RESOLVER or self.role.name == Role.QUEUE_MANAGER or self.role.name == Role.MAJOR_INCIDENT_MANAGER
 
 	def to_sql(self):
 		return (self.forename, self.surname, self.email, self.username, self.password, self.role.id)

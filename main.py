@@ -457,13 +457,16 @@ def raise_incident():
 		severity = entity_manager.get_severity_by_code(content['severity'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
-		team = entity_manager.get_team_by_name(content['team'])
+		team = entity_manager.get_team(int(content['team']))
 		status = entity_manager.get_stage_by_level(Stage.IDENTIFYING)
 
 		incident = entity_manager.create_incident(title, description, author, \
 			identificationDeadline, implementationDeadline, status, system, \
 			impact, priority, severity)
 
+		print(author)
+		print(incident)
+		print(team)
 		entity_manager.request_team_assignment(author, incident, team)
 		return app.response_class(status = HTTP_CREATED)
 
