@@ -841,6 +841,8 @@ class EntityManager:
 		task.date_created = self.database.get_task_date_created(task)
 
 		incident.tasks.append(task)
+		self.tasks[task.id] = task
+		
 		self.database.commit()
 		return task
 

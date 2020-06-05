@@ -507,22 +507,7 @@ function viewIncidentInit() {
 		var teamSelect = domUtil.getElementByClassName(taskItem, 'task-team-select');
 		initDepartmentSelect(departmentSelect, teamSelect);
 
-		var assignTaskTeamBtn = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
-		assignTaskTeamBtn.onclick = function(event) {
-			var taskId = assignTaskTeamBtn.dataset.task;
-			var teamOption = teamSelect.options[teamSelect.selectedIndex];
-			var teamId = teamOption.dataset.team;
-			get('requestTaskTeam/' + taskId + '/' + teamId, function(xhttp) {
-				var noTeams = domUtil.getElementByClassName(taskItem, 'no-teams');
-				if (noTeams != null) {
-					noTeams.remove();
-				}
-
-				var teamsAssigned = domUtil.getElementByClassName(taskItem, 'teams-assigned');
-				teamsAssigned.innerHTML += '<div class="incident-tag"><p>' + teamOption.value + '</p></div>';
-				console.log('hello');
-			});
-		}
+		initAssignTaskTeamBtn(taskItem);
 	}
 
 	var newNoteBtn = document.getElementById('newNoteBtn').parentNode;
@@ -530,7 +515,7 @@ function viewIncidentInit() {
 		newNoteBtn.onclick = function(event) {
 			var addNoteBtn = document.getElementById('addNoteBtn');
 			addNoteBtn.onclick = function(event) {
-				addIncidentItem('note', 'Note');
+				addIncidentItem(addNoteBtn, 'note', 'Note');
 			}
 
 			showOverlay('note-form-container');
@@ -542,7 +527,7 @@ function viewIncidentInit() {
 		newQuestionBtn.onclick = function(event) {
 			var askQuestionBtn = document.getElementById('askQuestionBtn');
 			askQuestionBtn.onclick = function(event) {
-				addIncidentItem('question', 'Question');
+				addIncidentItem(askQuestionBtn, 'question', 'Question');
 			}
 
 			showOverlay('question-form-container');
@@ -555,7 +540,7 @@ function viewIncidentInit() {
 		newTaskBtn.onclick = function(event) {
 			var addTaskBtn = document.getElementById('addTaskBtn');
 			addTaskBtn.onclick = function(event) {
-				addIncidentItem('task', 'Task');
+				addIncidentItem(addTaskBtn, 'task', 'Task');
 			}
 
 			showOverlay('task-form-container');
@@ -573,6 +558,29 @@ function viewIncidentInit() {
 	}
 }
 
+function initAssignTaskTeamBtn(taskItem) {
+	var assignTaskTeamBtn = domUtil.getElementByClassName(taskItem, 'assign-task-team-btn');
+		assignTaskTeamBtn.onclick = function(event) {
+			var departmentSelect = domUtil.getElementByClassName(taskItem, 'task-department-select');
+			var teamSelect = domUtil.getElementByClassName(taskItem, 'task-team-select');
+
+			var taskId = assignTaskTeamBtn.dataset.task;
+			var teamOption = teamSelect.options[teamSelect.selectedIndex];
+			var teamId = teamOption.dataset.team;
+			var path = 'requestTaskTeam/' + taskId + '/' + teamId;
+			console.log(path);
+			get(path, function(xhttp) {
+				var noTeams = domUtil.getElementByClassName(taskItem, 'no-teams');
+				if (noTeams != null) {
+					noTeams.remove();
+				}
+
+				var teamsAssigned = domUtil.getElementByClassName(taskItem, 'teams-assigned');
+				teamsAssigned.innerHTML += '<div class="incident-tag"><p>' + teamOption.innerText + '</p></div>';
+			});
+		}
+}
+
 function viewIncidentPageItem(id, itemType, callback) {
 	get('view' + itemType + '/' + id, function(xhttp) {
 		var overlayViewContainer = document.getElementsByClassName('overlay-view-container')[0];
@@ -583,8 +591,8 @@ function viewIncidentPageItem(id, itemType, callback) {
 	});
 }
 
-function addIncidentItem(itemType, item) {
-	var incidentId = addNoteBtn.dataset.incident;
+function addIncidentItem(btn, itemType, item) {
+	var incidentId = btn.dataset.incident;
 
 	var titleItem = document.getElementById(itemType + 'Title');
 	var title = titleItem.value;
@@ -597,7 +605,9 @@ function addIncidentItem(itemType, item) {
 		content: content
 	};
 	var verb = itemType == 'question' ? 'ask' : 'add';
-	post(data, verb + item + '/' + incidentId, function(xhttp) {
+	var path = verb + item + '/' + incidentId;
+	console.log(path);
+	post(data, path, function(xhttp) {
 		switchBody('viewIncident/' + incidentId, viewIncidentInit);
 	});
 }

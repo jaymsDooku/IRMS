@@ -7,7 +7,7 @@
             <p>Logged in: <span>{{ data.user.forename }} {{ data.user.surname }}</span></p>
             <p>Role: <span>{{ data.user.role.name }}</span></p>
         </div>
-        {% if data.user.role.name == 'Major Incident Manager' %}
+        {% if data.user.role.name == 'Major Incident Manager' or data.user.role.name == 'Queue Manager' %}
         <div class="navbar-admin">
             <p>Mode: </p>
             <div class="irms-inline-container">
