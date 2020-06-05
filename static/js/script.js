@@ -602,10 +602,53 @@ function showJustificationOverlay(incidentId, oldValue, newValue, valueType) {
 	showOverlay('request-justification-container');
 }
 
+function getIncidentIds() {
+	var result = [];
+	var incidentItems = document.getElementsByClassName('incident-item');
+	for (var i = 0; i < incidentItems.length; i++) {
+		var incidentItem = incidentItems[i];
+		result[i] = incidentItem.dataset.incident;
+	}
+	return result;
+}
+
 function listIncidentsInit() {
 	var incidentItems = document.getElementsByClassName('incident-item');
 	if (incidentItems.length == 1 && incidentItems[0].classList.contains('no-incidents')) {
 		return;
+	}
+
+	var listExportCSVBtn = document.getElementById('listExportCSVBtn');
+	listExportCSVBtn.onclick = function(event) {
+		event.preventDefault();
+
+		var startDate = document.getElementById('startDate');
+		var endDate = document.getElementById('endDate');
+		var incidentIds = getIncidentIds();
+		if (incidentIds.length == 0) {
+			return;
+		}
+
+		var data = {
+			startDate: startDate.value,
+			endDate: endDate.value,
+			incidents: incidentIds
+		};
+
+		post(data, 'listExportCSV', function(xhttp) {
+			var response = xhttp.response;
+			var binaryData = [];
+			binaryData.push(response);
+			const url = window.URL.createObjectURL(new Blob(binaryData, {type: "application/zip"}));
+			const a = document.createElement('a');
+			a.style.display = 'none';
+			a.href = url;
+			var current_date = Date.now()
+			a.download = 'incident' + current_date + '.csv';
+			document.body.appendChild(a);
+			a.click();
+			window.URL.revokeObjectURL(url);
+		});
 	}
 
 	for (var i = 0; i < incidentItems.length; i++) {

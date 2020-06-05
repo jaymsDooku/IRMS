@@ -11,6 +11,7 @@ from time_unit import TimeUtil, TimeUnit
 from stage import Stage
 from role import Role
 from incident_value_change_request import IncidentValueChangeRequest
+from datetime import timedelta
 
 HTTP_OKAY = 200
 HTTP_CREATED = 201
@@ -37,6 +38,21 @@ def get_user():
 		return entity_manager.get_user(int(session['user_id']))
 	return None
 
+def add_dates(data, incidents):
+	if len(incidents) > 0:
+		startDate = incidents[0].date_created
+		endDate = incidents[0].date_created
+		for incident in incidents:
+			if incident.date_created < startDate:
+				startDate = incident.date_created
+			if incident.date_created > endDate:
+				endDate = incident.date_created
+
+		if startDate == endDate:
+			endDate = endDate + timedelta(minutes=1)
+		data['startDate'] = TimeUtil.datetime_to_string(startDate)
+		data['endDate'] = TimeUtil.datetime_to_string(endDate)
+
 @app.route('/')
 def index():
 	user = get_user()
@@ -61,6 +77,10 @@ def index():
 			'notifications': notifications,
 			'notificationsLength': len(notifications)
 		}
+
+		add_dates(data, incidents)
+
+		print(data)
 		return render_template('irms.html', data = data)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -311,6 +331,9 @@ def all_incidents():
 		'incidents': incidents,
 		'incidentsLength': len(incidents)
 	}
+
+	add_dates(data, incidents)
+
 	return render_template('list_incidents.html', data = data)
 
 @app.route('/listUsers') 
@@ -395,12 +418,16 @@ def view_incident(incident_id):
 def list_incidents():
 	user = get_user()
 	incidents = entity_manager.get_incidents(user)
+
 	data = {
 		'pageTitle': 'Your Incidents',
 		'user': user,
 		'incidents': incidents,
-		'incidentsLength': len(incidents)
+		'incidentsLength': len(incidents),
 	}
+
+	add_dates(data, incidents)
+
 	return render_template('list_incidents.html', data = data)
 
 @app.route('/raiseIncident', methods = ['GET', 'POST'])
@@ -625,6 +652,49 @@ def export_csv(incident_id):
 
 	return send_from_directory(directory = reportsDir, filename = filename)
 
+@app.route('/listExportCSV', methods=['POST'])
+def list_export_csv():
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	user = get_user()
+	start = content['startDate']
+	end = content['endDate']
+	incidentIds = content['incidents']
+	incidents = []
+	for incidentId in incidentIds:
+		incidents.append(entity_manager.get_incident(int(incidentId)))
+
+	startDate = TimeUtil.sqlite_to_datetime(TimeUtil.sanitize_time_input(start))
+	endDate = TimeUtil.sqlite_to_datetime(TimeUtil.sanitize_time_input(end))
+	selectedIncidents = []
+
+	for incident in incidents:
+		print(type(incident.date_created))
+		print(type(startDate))
+		print(type(endDate))
+		if incident.date_created >= startDate and incident.date_created <= endDate:
+			selectedIncidents.append(incident)
+
+	current_date = TimeUtil.now()
+	reportsDir = path.join(app.root_path, 'reports')
+	filename = 'incident' + current_date.strftime('%Y_%m_%d_%H_%M_%S') + '.csv'
+
+	with open(reportsDir + '/' + filename, mode='w', newline='', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file, delimiter=",")
+		writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", "Date Identified", \
+	        	"SLA Implementation Deadline", "Date Implemented", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"Question Count", "Task Count"])
+		for incident in selectedIncidents:
+			author_name = incident.author.forename + ' ' + incident.author.surname
+			writer.writerow([incident.id, incident.title, incident.description, author_name, incident.sla_identification_deadline, incident.date_identified, incident.sla_implementation_deadline, incident.date_implemented, \
+				incident.status.level, incident.system.name, incident.impact.level, incident.priority.code, incident.severity.code, len(incident.notes), len(incident.questions), len(incident.tasks)])
+
+	return send_from_directory(directory = reportsDir, filename = filename)
+
+
 @app.route('/resolutionIdentified/<incident_id>')
 def identified(incident_id):
 	incident_id = int(incident_id)
@@ -651,11 +721,19 @@ def implemented(incident_id):
 
 @app.route('/userNavBar')
 def user_mode():
-	return render_template('user_navbar.html')
+	user = get_user()
+	data = {
+		'user': user
+	}
+	return render_template('user_navbar.html', data = data)
 
 @app.route('/managerNavBar')
 def manager_mode():
-	return render_template('manager_navbar.html')
+	user = get_user()
+	data = {
+		'user': user
+	}
+	return render_template('manager_navbar.html', data = data)
 
 
 app.run()

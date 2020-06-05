@@ -37,7 +37,21 @@ class TimeUtil:
 		return datetime_obj
 
 	@staticmethod
+	def now():
+		return datetime.now()
+
+	@staticmethod
 	def sanitize_time_input(input):
 		result = ' '.join(input.split('T'))
 		result += ':00'
+		return result
+
+	@staticmethod
+	def datetime_to_string(date):
+		return date.strftime("%Y-%m-%dT%H:%M")
+
+	@staticmethod
+	def desanitize_time_input(sanitized):
+		result = sanitized[0:-3]
+		result = 'T'.join(result.split(' '))
 		return result

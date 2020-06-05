@@ -1,5 +1,6 @@
 from datetime import datetime
 from incident_value_change_request import IncidentValueChangeRequest
+from stage import Stage
 
 class Incident:
 
@@ -34,7 +35,10 @@ class Incident:
 		if self.date_created is None:
 			return None
 
-		return datetime.strptime(self.date_created, '%Y-%m-%d %H:%M:%S')
+		if isinstance(self.date_created, str):
+			return datetime.strptime(self.date_created, '%Y-%m-%d %H:%M:%S')
+		else:
+			return self.date_created
 
 	def has_priority_change_request(self):
 		change_requests = self.entity_manager.get_incident_change_requests(self)
@@ -73,7 +77,9 @@ class Incident:
 			return None
 
 		diff = self.sla_implementation_deadline - date_created_obj
-		return diff		
+		return diff
+
+
 
 	def dump(self):
 		print('title: ' + str(self.title))
@@ -86,14 +92,29 @@ class Incident:
 		print('impact: ' + str(self.impact))
 		print('priority: ' + str(self.priority))
 
-	def to_csv(self):
+	def to_csv(self, writer):
 		author_name = self.author.forename + ' ' + self.author.surname
-		return [self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.sla_implementation_deadline, \
-			self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)]
+		if self.status.level == Stage.IDENTIFYING:
+			writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", \
+	        	"SLA Implementation Deadline", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"Question Count", "Task Count"])
+			writer.writerow([self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.sla_implementation_deadline, \
+				self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
+		elif self.status.level == Stage.RESOLVING:
+			writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", "Date Identified", \
+	        	"SLA Implementation Deadline", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"Question Count", "Task Count"])
+			writer.writerow([self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.date_identified, self.sla_implementation_deadline, \
+				self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
+		elif self.status.level == Stage.RESOLVED:
+			writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", "Date Identified", \
+	        	"SLA Implementation Deadline", "Date Implemented", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"Question Count", "Task Count"])
+			writer.writerow([self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.date_identified, self.sla_implementation_deadline, self.date_implemented, \
+				self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
 
 	def to_sql(self):
 		result = (self.title, self.description, self.author.id, \
 			self.sla_identification_deadline, self.sla_implementation_deadline, \
 			self.status.id, self.system.id, self.impact.id, self.severity.id, self.priority.id)
-		print(result)
 		return result

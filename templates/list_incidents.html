@@ -3,7 +3,7 @@
 		<div class="irms-title">
 			<h2>{{ data.pageTitle }}</h2>
 		</div>
-		<div class="irms-inline-container">
+		<!--<div class="irms-inline-container">
 			<div class="checkbox-container irms-inline-container">
 				<label>Active</label>
 				<input type="checkbox" name="active">
@@ -19,7 +19,22 @@
 					<p>Date ▼</p>
 				</div>
 			</div>
-		</div>
+		</div>-->
+		{% if data.incidentsLength > 0 %}
+			<div class="list-export-container irms-inline-container">
+				<div class="list-date-input irms-inline-container">
+					<p>Start: </p>
+					<input id="startDate" type="datetime-local" name="start" value="{{ data.startDate }}"/>
+				</div>
+				<div class="list-date-input irms-inline-container">
+					<p>End: </p>
+					<input id="endDate" type="datetime-local" name="end" value="{{ data.endDate }}"/>
+				</div>
+				<a href="listExportCSV" download="incident_{{ data.current_date }}.csv" class="incident-tag export-csv" id="listExportCSVBtn">
+					<p>Export CSV</p>
+				</a>
+			</div>
+		{% endif %}
 	</div>
 	{% if data.incidentsLength == 0 %}
 		<div class="incident-item no-incidents">

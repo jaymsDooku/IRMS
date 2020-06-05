@@ -459,7 +459,7 @@ class EntityManager:
 		self.database.insert_incident(incident)
 
 		date_created = self.database.get_incident_create_date(incident)
-		incident.date_created = date_created
+		incident.date_created = TimeUtil.sqlite_to_datetime(date_created)
 		self.incidents[incident.id] = incident
 
 		self.database.commit()
@@ -487,7 +487,7 @@ class EntityManager:
 				sla_identification_deadline, sla_implementation_deadline, status, system, \
 				impact, priority, severity)
 			incident.id = incident_row[0]
-			incident.date_created = incident_row[11]
+			incident.date_created = TimeUtil.sqlite_to_datetime(incident_row[11])
 			incident.date_identified = incident_row[12]
 			incident.date_implemented = incident_row[13]
 
