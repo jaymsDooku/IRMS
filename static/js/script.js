@@ -376,12 +376,29 @@ var oldValues = {};
 
 function initViewIncidentSelect(elId, valueType) {
 	var select = document.getElementById(elId);
+	if (select == null) {
+		return;
+	}
 	select.onfocus = function(event) {
 		oldValues[valueType] = select.value;
 	}
 	select.onchange = function(event) {
 		var incidentId = select.dataset.incident;
 		var newValue = select.value;
+		var role = select.dataset.role;
+
+		if (role == 'Major Incident Manager' || role == 'Queue Manager') {
+			var data = {
+				valueType: valueType,
+				newValue: newValue
+			};
+
+			post(data, 'updateValue/' + incidentId, function(xhttp) {
+				switchBody('viewIncident/' + incidentId, viewIncidentInit);
+			});
+			return;
+		}
+
 		showJustificationOverlay(incidentId, oldValues[valueType], newValue, valueType);
 		oldValues[valueType] = newValue;
 	}
@@ -619,36 +636,38 @@ function listIncidentsInit() {
 	}
 
 	var listExportCSVBtn = document.getElementById('listExportCSVBtn');
-	listExportCSVBtn.onclick = function(event) {
-		event.preventDefault();
+	if (listExportCSVBtn != null) {
+		listExportCSVBtn.onclick = function(event) {
+			event.preventDefault();
 
-		var startDate = document.getElementById('startDate');
-		var endDate = document.getElementById('endDate');
-		var incidentIds = getIncidentIds();
-		if (incidentIds.length == 0) {
-			return;
+			var startDate = document.getElementById('startDate');
+			var endDate = document.getElementById('endDate');
+			var incidentIds = getIncidentIds();
+			if (incidentIds.length == 0) {
+				return;
+			}
+
+			var data = {
+				startDate: startDate.value,
+				endDate: endDate.value,
+				incidents: incidentIds
+			};
+
+			post(data, 'listExportCSV', function(xhttp) {
+				var response = xhttp.response;
+				var binaryData = [];
+				binaryData.push(response);
+				const url = window.URL.createObjectURL(new Blob(binaryData, {type: "application/zip"}));
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				var current_date = Date.now()
+				a.download = 'incident' + current_date + '.csv';
+				document.body.appendChild(a);
+				a.click();
+				window.URL.revokeObjectURL(url);
+			});
 		}
-
-		var data = {
-			startDate: startDate.value,
-			endDate: endDate.value,
-			incidents: incidentIds
-		};
-
-		post(data, 'listExportCSV', function(xhttp) {
-			var response = xhttp.response;
-			var binaryData = [];
-			binaryData.push(response);
-			const url = window.URL.createObjectURL(new Blob(binaryData, {type: "application/zip"}));
-			const a = document.createElement('a');
-			a.style.display = 'none';
-			a.href = url;
-			var current_date = Date.now()
-			a.download = 'incident' + current_date + '.csv';
-			document.body.appendChild(a);
-			a.click();
-			window.URL.revokeObjectURL(url);
-		});
 	}
 
 	for (var i = 0; i < incidentItems.length; i++) {
@@ -863,13 +882,15 @@ window.onload = function(event) {
 
 	setInterval(function() {
 		get('notifications', function(xhttp) {
-			var responseJson = JSON.parse(xhttp.responseText);
+			if (xhttp.responseText) {
+				var responseJson = JSON.parse(xhttp.responseText);
 
-			var unseen = responseJson.unseen;
-			setOutstandingNotifications(parseInt(unseen));
+				var unseen = responseJson.unseen;
+				setOutstandingNotifications(parseInt(unseen));
 
-			var sidebarBody = document.getElementsByClassName('sidebar-body')[0];
-			sidebarBody.innerHTML = responseJson.body;
+				var sidebarBody = document.getElementsByClassName('sidebar-body')[0];
+				sidebarBody.innerHTML = responseJson.body;
+			}
 		})
 	}, 5000);
 }

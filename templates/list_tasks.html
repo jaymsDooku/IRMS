@@ -3,68 +3,74 @@
 		<h3>Tasks</h3>
 	</div>
 	<div class="irms-body">
-		{% for i in range(0, data.tasksLength) %}
-			<div class="incident-task" data-task="{{ data.tasks[i].id }}">
-				<div class="incident-task-meta">
-					<h5>Assigned Teams</h5>
-					<div class="teams-assigned irms-inline-container">
-						{% if data.tasks[i].teams_count() != 0 %}
-							{% for j in range(0, data.tasks[i].teams_count()) %}
-								<div class="incident-tag">
-									<p>{{ data.tasks[i].teams[j].team.name }}{% if data.tasks[i].teams[j].get_status() == 'Pending Review' %}*{% endif %}</p>
+		{% if data.tasksLength == 0%}
+			<p class="no-tasks">There are currently no tasks on this incident.</p>
+		{% else %}
+			{% for i in range(0, data.tasksLength) %}
+				<div class="incident-task" data-task="{{ data.tasks[i].id }}">
+					<div class="incident-task-meta">
+						<h5>Assigned Teams</h5>
+						<div class="teams-assigned irms-inline-container">
+							{% if data.tasks[i].teams_count() != 0 %}
+								{% for j in range(0, data.tasks[i].teams_count()) %}
+									<div class="incident-tag">
+										<p>{{ data.tasks[i].teams[j].team.name }}{% if data.tasks[i].teams[j].get_status() == 'Pending Review' %}*{% endif %}</p>
+									</div>
+								{% endfor %}
+							{% else %}
+								<p class="no-teams">No teams assigned.</p>
+							{% endif %}
+						</div>
+						<div class="assign-team">
+							<div class="assign-team-fields irms-inline-container">
+								<div class="department-select-container irms-inline-container">
+									<label>Department: </label>
+									<select class="task-department-select" name="department-name">
+										{% for i in range(0, data.departmentsLength) %}
+											<option>{{ data.departments[i].name }}</option>
+										{% endfor %}
+									</select>
 								</div>
-							{% endfor %}
-						{% else %}
-							<p class="no-teams">No teams assigned.</p>
-						{% endif %}
-					</div>
-					<div class="assign-team">
-						<div class="assign-team-fields irms-inline-container">
-							<div class="department-select-container irms-inline-container">
-								<label>Department: </label>
-								<select class="task-department-select" name="department-name">
-									{% for i in range(0, data.departmentsLength) %}
-										<option>{{ data.departments[i].name }}</option>
-									{% endfor %}
-								</select>
+								<div class="team-select-container irms-inline-container">
+									<label>Team: </label>
+									<select class="task-team-select" name="team-name">
+										{% for i in range(0, data.teamsLength) %}
+											<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
+										{% endfor %}
+									</select>
+								</div>
 							</div>
-							<div class="team-select-container irms-inline-container">
-								<label>Team: </label>
-								<select class="task-team-select" name="team-name">
-									{% for i in range(0, data.teamsLength) %}
-										<option data-team="{{ data.teams[i].id }}">{{ data.teams[i].name }}</option>
-									{% endfor %}
-								</select>
+							<img data-incident="{{ data.incident.id }}" class="new-btn assign-team-btn assign-task-team-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+						</div>
+					</div>
+					<div class="incident-task-body">
+						<div class="irms-header">
+							<div class="incident-task-header-meta irms-inline-container">
+								<div>
+									<h5>{{ data.tasks[i].author.forename }} {{ data.tasks[i].author.surname }}</h5>
+								</div>
+								<div class="incident-task-status irms-inline-container">
+									<div class="incident-tag todo-tag">
+										{{ data.tasks[i].status }}
+									</div>
+									<h5>{{ data.tasks[i].date_created }}</h5>
+								</div>
+							</div>
+							<div class="incident-task-title">
+								<h3>{{ data.tasks[i].title }}</h3>
 							</div>
 						</div>
-						<img data-incident="{{ data.incident.id }}" class="new-btn assign-team-btn assign-task-team-btn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+						<div class="irms-body">
+							<p>{{ data.tasks[i].content }}</p>
+						</div>
 					</div>
 				</div>
-				<div class="incident-task-body">
-					<div class="irms-header">
-						<div class="incident-task-header-meta irms-inline-container">
-							<div>
-								<h5>{{ data.tasks[i].author.forename }} {{ data.tasks[i].author.surname }}</h5>
-							</div>
-							<div class="incident-task-status irms-inline-container">
-								<div class="incident-tag todo-tag">
-									{{ data.tasks[i].status }}
-								</div>
-								<h5>{{ data.tasks[i].date_created }}</h5>
-							</div>
-						</div>
-						<div class="incident-task-title">
-							<h3>{{ data.tasks[i].title }}</h3>
-						</div>
-					</div>
-					<div class="irms-body">
-						<p>{{ data.tasks[i].content }}</p>
-					</div>
-				</div>
-			</div>
-		{% endfor %}
+			{% endfor %}
+		{% endif %}
 	</div>
-	<div class="add-incident-task-container">
-		<img class="new-btn new-task-btn" id="newTaskBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
-	</div>
+	{% if data.user.role.name == 'Resolver' %}
+		<div class="add-incident-task-container">
+			<img class="new-btn new-task-btn" id="newTaskBtn" src="{{ url_for('static', filename='img/new icon.svg') }}">
+		</div>
+	{% endif %}
 </div>

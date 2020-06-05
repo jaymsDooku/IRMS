@@ -718,6 +718,19 @@ class EntityManager:
 
 		self.database.commit()
 
+	def update_incident_value(self, user, incident, value_type, new_value):
+		if value_type == IncidentValueChangeRequest.TYPE_PRIORITY:
+			incident.priority = self.get_priority_by_code(new_value)
+		elif value_type == IncidentValueChangeRequest.TYPE_IMPACT:
+			incident.impact = self.get_impact_by_level(new_value)
+		elif value_type == IncidentValueChangeRequest.TYPE_SEVERITY:
+			incident.severity = self.get_severity_by_code(new_value)
+
+		self.database.update_incident(incident)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has updated the ' + IncidentValueChangeRequest.value_type_to_string(change_request.value_type) + ' of ' + change_request.incident.title)
+
+		self.database.commit()
+
 	def update_change_request_content(self, change_request, new_value, justification):
 		change_request.new_value = new_value
 		change_request.justification = justification

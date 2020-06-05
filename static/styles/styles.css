@@ -792,3 +792,7 @@ th, td {
 .list-export-container {
 	margin-right: 20px;
 }
+
+.no-tasks {
+	text-align: center;
+}

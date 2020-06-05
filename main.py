@@ -118,8 +118,11 @@ def login():
 			'pageTitle': pageTitle,
 			'user': user,
 			'incidents': incidents,
-			'incidentsLength': len(incidents)
+			'incidentsLength': len(incidents),
 		}
+
+		add_dates(data, incidents)
+
 		success_response = {
 			'status': 'success',
 			'body': render_template('irms_body.html', data = data)
@@ -454,12 +457,14 @@ def raise_incident():
 		severity = entity_manager.get_severity_by_code(content['severity'])
 		system = entity_manager.get_system_class_by_name(content['system'])
 		priority = entity_manager.get_priority_by_code(content['priority'])
-		#team = entity_manager.get_team_by_name(content['team'])
+		team = entity_manager.get_team_by_name(content['team'])
 		status = entity_manager.get_stage_by_level(Stage.IDENTIFYING)
 
-		entity_manager.create_incident(title, description, author, \
+		incident = entity_manager.create_incident(title, description, author, \
 			identificationDeadline, implementationDeadline, status, system, \
 			impact, priority, severity)
+
+		entity_manager.request_team_assignment(author, incident, team)
 		return app.response_class(status = HTTP_CREATED)
 
 	severities = entity_manager.get_all_severities()
@@ -694,6 +699,24 @@ def list_export_csv():
 
 	return send_from_directory(directory = reportsDir, filename = filename)
 
+@app.route('/updateValue/<incident_id>', methods=['POST'])
+def update_value(incident_id):
+	if request.is_json:
+		content = request.json
+	else:
+		return app.response_class(status = HTTP_BAD_REQUEST)
+
+	incident_id = int(incident_id)
+	incident = entity_manager.get_incident(incident_id)
+
+	user = get_user()
+
+	value_type = content['valueType']
+	new_value = content['newValue']
+
+	entity_manager.update_incident_value(user, incident, value_type, new_value)
+
+	return app.response_class(status = HTTP_OKAY)
 
 @app.route('/resolutionIdentified/<incident_id>')
 def identified(incident_id):
