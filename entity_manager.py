@@ -760,11 +760,13 @@ class EntityManager:
 		assigned_team = AssignedTeam(team_assignment_request.team, team_assignment_request.assigned_to)
 		if isinstance(team_assignment_request.assigned_to, Incident):
 			self.database.insert_assigned_team(assigned_team)
+			team_type = 'Incident'
 		else:
 			self.database.insert_task_assigned_team(assigned_team)
+			team_type = 'Task'
 
 		team_assignment_request.status = new_status
-		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id)] = team_assignment_request
+		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id, team_type)] = team_assignment_request
 		self.database.update_team_assignment_request_status(team_assignment_request)
 		self.create_notification(incident, user.forename + ' ' + user.surname + ' has made a decision on a team assignment on ' + incident.title)
 
@@ -810,9 +812,19 @@ class EntityManager:
 	def get_question(self, question_id):
 		return self.questions[question_id]
 
+	def get_incident_by_question(self, question):
+		for incident in self.incidents.values():
+			incident_questions = incident.questions
+			for incident_question in incident_questions:
+				if incident_question.id == question.id:
+					return incident
+		return None
+
 	def answer_question(self, answerer, question, answer_content):
 		answer = Answer(question, answerer, answer_content)
 		self.database.insert_answer(answer)
+
+		incident = self.get_incident_by_question(question)
 		self.create_notification(incident, answerer.forename + ' ' + answerer.surname + ' answered a question on ' + incident.title)
 
 		answer.date_answered = self.database.get_date_answered(answer)

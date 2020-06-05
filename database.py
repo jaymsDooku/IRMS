@@ -206,7 +206,7 @@ class Database:
 
 	def get_team_assignment_details(self, assigned_team):
 		cur = self.connection.cursor()
-		cur.execute("SELECT request_issuer, status, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.incident.id))
+		cur.execute("SELECT request_issuer, status, date_issued FROM IncidentTeamAssignmentRequest WHERE team_id = ? AND incident_id = ?", (assigned_team.team.id, assigned_team.assigned_to.id))
 		row = cur.fetchone()
 		return row
 

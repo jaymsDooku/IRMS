@@ -155,6 +155,7 @@ function navbarInit() {
 		}
 
 		var container = document.getElementsByClassName('container')[0];
+		console.log(container);
 		container.onclick = function() {
 			sideView.close();
 		}
@@ -548,8 +549,9 @@ function viewIncidentInit() {
 		}
 	}
 
-	var newTaskBtn = document.getElementById('newTaskBtn').parentNode;
+	var newTaskBtn = document.getElementById('newTaskBtn');
 	if (newTaskBtn != null) {
+		newTaskBtn = newTaskBtn.parentNode;
 		newTaskBtn.onclick = function(event) {
 			var addTaskBtn = document.getElementById('addTaskBtn');
 			addTaskBtn.onclick = function(event) {
