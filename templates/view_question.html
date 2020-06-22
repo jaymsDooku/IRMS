@@ -10,8 +10,10 @@
 		<p>{{ data.question.content }}</p>
 	</div>
 	<div class="answer-question">
-		<label>Write an Answer</label>
-		<textarea autocomplete="new-password" id="answerContent" name="content" placeholder="Enter answer" cols="100" rows="5" charswidth = "140"></textarea>
+		<div class="answer-question-box">
+			<label>Write an Answer</label>
+			<textarea autocomplete="new-password" id="answerContent" name="content" placeholder="Enter answer" cols="120" rows="5" charswidth = "140"></textarea>
+		</div>
 		<button id="submitAnswerBtn" data-question="{{ data.question.id }}">Submit Answer</button>
 	</div>
 	<div class="question-answers">

@@ -135,11 +135,20 @@ function navbarInit() {
 			changeNavBarItem(yourRequestsBtn);
 		}
 	}
+
 	var SeeUserRolesBtn = document.getElementById('SeeUserRolesBtn');
 	if (SeeUserRolesBtn != null) {
 		SeeUserRolesBtn.onclick = function(event) {
 			switchBody('listUsers', listUsersInit);	
 			changeNavBarItem(SeeUserRolesBtn);
+		}
+	}
+
+	var serviceDeskIncidentsBtn = document.getElementById('serviceDeskIncidentsBtn');
+	if (serviceDeskIncidentsBtn != null) {
+		serviceDeskIncidentsBtn.onclick = function(event) {
+			switchBody('serviceDeskIncidents', listIncidentsInit);
+			changeNavBarItem(serviceDeskIncidentsBtn);
 		}
 	}
 
@@ -212,6 +221,7 @@ function autocomplete(inp, arr) {
 	  for (i = 0; i < arr.length; i++) {
 	    /*check if the item starts with the same letters as the text field value:*/
 	    var arrEl = arr[i];
+	    console.log(arrEl);
 	    var name = arrEl.name;
 	    if (name.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
 	      /*create a DIV element for each matching element:*/
@@ -227,7 +237,7 @@ function autocomplete(inp, arr) {
 	          var autocompleteTxt = this.getElementsByTagName("input")[0];
 	          console.log(autocompleteTxt);
 	          inp.value = autocompleteTxt.value;
-	          inp.dataset.user = autocompleteTxt.user;
+	          inp.dataset.user = autocompleteTxt.dataset.user;
 	          /*close the list of autocompleted values,
 	          (or any other open lists of autocompleted values:*/
 	          closeAllLists();
@@ -366,6 +376,7 @@ function raiseIncidentInit() {
 		get('allUsers', function(xhttp) {
 			var responseJson = JSON.parse(xhttp.responseText);
 			var users = responseJson.users;
+			console.log(users);
 			autocomplete(incidentOnBehalf, users);
 			raiseIncidentInitNormal(incidentOnBehalf);
 		});
@@ -423,9 +434,10 @@ function viewIncidentInit() {
 
 				identifiedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Identified</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
 
-				var incidentStatus = document.getElementById('incidentStatus').parentNode;
-				incidentStatus.classList.remove(1);
-				incidentStatus.classList.add(responseJson.status_class);
+				var incidentStatus = document.getElementById('incidentStatus');
+				var incidentStatusParent = incidentStatus.parentNode;
+				incidentStatusParent.classList.remove(1);
+				incidentStatusParent.classList.add(responseJson.status_class);
 				incidentStatus.innerText = responseJson.status;
 			});
 		}
@@ -439,10 +451,11 @@ function viewIncidentInit() {
 				var responseJson = JSON.parse(xhttp.responseText);
 
 				implementedBtn.parentNode.innerHTML = '<div class="irms-header"><p>Date Implemented</p></div><div class="irms-text"><p>' + responseJson.date + '</p></div>';
-
-				var incidentStatus = document.getElementById('incidentStatus').parentNode;
-				incidentStatus.classList.remove(1);
-				incidentStatus.classList.add(responseJson.status_class);
+				console.log(responseJson);
+				var incidentStatus = document.getElementById('incidentStatus');
+				var incidentStatusParent = incidentStatus.parentNode;
+				incidentStatusParent.classList.remove(1);
+				incidentStatusParent.classList.add(responseJson.status_class);
 				incidentStatus.innerText = responseJson.status;
 			});
 		}
@@ -801,6 +814,7 @@ function initApproveButtons(requestItem) {
 			approveBtn.remove();
 			denyBtn.remove();
 			event.stopPropagation();
+			console.log('approve');
 		}
 	}
 
@@ -811,6 +825,7 @@ function initApproveButtons(requestItem) {
 			approveBtn.remove();
 			denyBtn.remove();
 			event.stopPropagation();
+			console.log('deny');
 		}
 	}
 }

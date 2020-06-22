@@ -39,7 +39,7 @@
 						<div class="incident-tag view-incident-btn">
 							<p>View</p>
 						</div>
-						{% if data.user.role.name == 'Major Incident Manager' %}
+						{% if data.user.role.name == 'Major Incident Manager' or (data.user.role.name == "Queue Manager") %}
 							{% if data.requests[i].get_status() == "Pending Review" %}
 								<div class="incident-tag approve-btn">
 									<p>Approve</p>
@@ -63,7 +63,7 @@
 		{% endif %}
 	{% else %}
 		{% for i in range(0, data.requestsLength) %}
-		<div class="request-item" data-assignedto="{{ data.requests[i].assigned_to.id }}" data-team="{{ data.requests[i].team.id }}">
+		<div class="request-item" data-assignedto="{{ data.requests[i].assigned_to.id }}" data-team="{{ data.requests[i].team.id }}" data-incident="{{ data.requests[i].get_incident_id() }}">
 			<div class="request-title-container irms-inline-container">
 				<div class="request-title irms-inline-container">
 					<h4>{{ data.requests[i].team.name }}</h4>
@@ -74,7 +74,10 @@
 					</div>
 				</div>
 				<div class="tags">
-					{% if data.user.role.name == 'Major Incident Manager' or data.user.role.name == 'Queue Manager' %}
+					<div class="incident-tag view-incident-btn">
+						<p>View</p>
+					</div>
+					{% if (data.user.role.name == "Major Incident Manager") %}
 						{% if data.requests[i].get_status() == "Pending Review" %}
 							<div class="incident-tag approve-btn">
 								<p>Approve</p>

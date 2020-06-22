@@ -22,3 +22,7 @@
     background-color: rgba(189, 189, 189, 0.5);  
     margin: auto;
 }
+
+.users-header {
+    margin-top: 20px;
+}

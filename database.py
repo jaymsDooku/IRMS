@@ -385,7 +385,6 @@ class Database:
 	def insert_on_behalf(self, incident, on_behalf):
 		cur = self.connection.cursor()
 		cur.execute("INSERT INTO OnBehalf(incident_id, behalf_of) VALUES (?, ?)", (incident.id, on_behalf.id))
-		task.id = cur.lastrowid
 
 	def get_on_behalf(self, incident):
 		cur = self.connection.cursor()

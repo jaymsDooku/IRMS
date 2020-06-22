@@ -1,6 +1,7 @@
 from os import path
 import atexit
 import csv
+from datetime import datetime
 
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
 
@@ -426,7 +427,23 @@ def list_incidents():
 		'pageTitle': 'Your Incidents',
 		'user': user,
 		'incidents': incidents,
-		'incidentsLength': len(incidents),
+		'incidentsLength': len(incidents)
+	}
+
+	add_dates(data, incidents)
+
+	return render_template('list_incidents.html', data = data)
+
+@app.route('/serviceDeskIncidents')
+def service_desk_incidents():
+	user = get_user()
+	incidents = entity_manager.get_service_desk_incidents()
+
+	data = {
+		'pageTitle': 'Service Desk Incidents',
+		'user': user,
+		'incidents': incidents,
+		'incidentsLength': len(incidents)
 	}
 
 	add_dates(data, incidents)
@@ -463,6 +480,10 @@ def raise_incident():
 		incident = entity_manager.create_incident(title, description, author, \
 			identificationDeadline, implementationDeadline, status, system, \
 			impact, priority, severity)
+
+		if 'onBehalf' in content:
+			on_behalf_user = entity_manager.get_user(int(content['onBehalf']))
+			entity_manager.create_on_behalf(incident, on_behalf_user)
 
 		print(author)
 		print(incident)
@@ -675,14 +696,13 @@ def list_export_csv():
 	for incidentId in incidentIds:
 		incidents.append(entity_manager.get_incident(int(incidentId)))
 
+	print(incidents)
+
 	startDate = TimeUtil.sqlite_to_datetime(TimeUtil.sanitize_time_input(start))
-	endDate = TimeUtil.sqlite_to_datetime(TimeUtil.sanitize_time_input(end))
+	endDate = TimeUtil.sqlite_to_datetime(TimeUtil.sanitize_time_input(end)) + timedelta(days=1)
 	selectedIncidents = []
 
 	for incident in incidents:
-		print(type(incident.date_created))
-		print(type(startDate))
-		print(type(endDate))
 		if incident.date_created >= startDate and incident.date_created <= endDate:
 			selectedIncidents.append(incident)
 
@@ -693,12 +713,15 @@ def list_export_csv():
 	with open(reportsDir + '/' + filename, mode='w', newline='', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file, delimiter=",")
 		writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", "Date Identified", \
-	        	"SLA Implementation Deadline", "Date Implemented", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"SLA Implementation Deadline", "Date Implemented", "Time To Resolve", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
 	        	"Question Count", "Task Count"])
 		for incident in selectedIncidents:
 			author_name = incident.author.forename + ' ' + incident.author.surname
-			writer.writerow([incident.id, incident.title, incident.description, author_name, incident.sla_identification_deadline, incident.date_identified, incident.sla_implementation_deadline, incident.date_implemented, \
-				incident.status.level, incident.system.name, incident.impact.level, incident.priority.code, incident.severity.code, len(incident.notes), len(incident.questions), len(incident.tasks)])
+			date_identified = incident.date_identified if incident.date_identified is not None else 'N/A'
+			date_implemented = incident.date_implemented if incident.date_implemented is not None else 'N/A'
+			ttr = (datetime.strptime(incident.date_implemented, '%Y-%m-%d %H:%M:%S') - incident.get_date_created()) if incident.date_implemented is not None else 'N/A'
+			writer.writerow([incident.id, incident.title, incident.description, author_name, incident.sla_identification_deadline, date_identified, incident.sla_implementation_deadline, date_implemented, \
+				ttr, incident.status.level, incident.system.name, incident.impact.level, incident.priority.code, incident.severity.code, len(incident.notes), len(incident.questions), len(incident.tasks)])
 
 	return send_from_directory(directory = reportsDir, filename = filename)
 
@@ -717,7 +740,7 @@ def update_value(incident_id):
 	value_type = content['valueType']
 	new_value = content['newValue']
 
-	entity_manager.update_incident_value(user, incident, value_type, new_value)
+	entity_manager.update_incident_value(user, incident, IncidentValueChangeRequest.string_to_value_type(value_type), new_value)
 
 	return app.response_class(status = HTTP_OKAY)
 

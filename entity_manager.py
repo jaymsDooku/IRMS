@@ -472,6 +472,13 @@ class EntityManager:
 				incidents.append(incident)
 		return incidents
 
+	def get_service_desk_incidents(self):
+		incidents = []
+		for incident in list(self.incidents.values()):
+			if incident.author.role.name == Role.SERVICE_DESK:
+				incidents.append(incident)
+		return incidents
+
 	def load_incidents(self):
 		incident_rows = self.database.get_incidents()
 		for incident_row in incident_rows:
@@ -570,7 +577,7 @@ class EntityManager:
 		return None
 
 	def request_team_assignment(self, assigner, assigned_to, team):
-		team_assignment_request = TeamAssignmentRequest(team, assigned_to, assigner, IncidentValueChangeRequest.STATUS_PENDING)
+		team_assignment_request = TeamAssignmentRequest(self, team, assigned_to, assigner, IncidentValueChangeRequest.STATUS_PENDING)
 
 		if isinstance(assigned_to, Incident):
 			assignment_type = 'incident'
@@ -617,7 +624,7 @@ class EntityManager:
 			assigner = self.get_user(team_assignment_row[2])
 			status = team_assignment_row[3]
 			date_issued = team_assignment_row[4]
-			team_assignment_request = TeamAssignmentRequest(team, incident, assigner, status)
+			team_assignment_request = TeamAssignmentRequest(self, team, incident, assigner, status)
 			team_assignment_request.date_issued = date_issued
 
 			self.team_assignment_requests[(team.id, incident.id, 'Incident')] = team_assignment_request
@@ -630,7 +637,7 @@ class EntityManager:
 			assigner = self.get_user(task_team_assignment_row[2])
 			status = task_team_assignment_row[3]
 			date_issued = task_team_assignment_row[4]
-			team_assignment_request = TeamAssignmentRequest(team, task, assigner, status)
+			team_assignment_request = TeamAssignmentRequest(self, team, task, assigner, status)
 			team_assignment_request.date_issued = date_issued
 
 			self.team_assignment_requests[(team.id, task.id, 'Task')] = team_assignment_request
@@ -728,7 +735,7 @@ class EntityManager:
 			incident.severity = self.get_severity_by_code(new_value)
 
 		self.database.update_incident(incident)
-		self.create_notification(incident, user.forename + ' ' + user.surname + ' has updated the ' + IncidentValueChangeRequest.value_type_to_string(change_request.value_type) + ' of ' + change_request.incident.title)
+		self.create_notification(incident, user.forename + ' ' + user.surname + ' has updated the ' + IncidentValueChangeRequest.value_type_to_string(value_type) + ' of ' + incident.title)
 
 		self.database.commit()
 
@@ -762,9 +769,11 @@ class EntityManager:
 		if isinstance(team_assignment_request.assigned_to, Incident):
 			self.database.insert_assigned_team(assigned_team)
 			team_type = 'Incident'
+			incident = team_assignment_request.assigned_to
 		else:
 			self.database.insert_task_assigned_team(assigned_team)
 			team_type = 'Task'
+			incident = self.get_incident_by_task(team_assingment_request.assigned_to)
 
 		team_assignment_request.status = new_status
 		self.team_assignment_requests[(team_assignment_request.team.id, team_assignment_request.assigned_to.id, team_type)] = team_assignment_request
@@ -818,6 +827,14 @@ class EntityManager:
 			incident_questions = incident.questions
 			for incident_question in incident_questions:
 				if incident_question.id == question.id:
+					return incident
+		return None
+
+	def get_incident_by_task(self, task):
+		for incident in self.incidents.values():
+			incident_tasks = incident.tasks
+			for incident_task in incident_tasks:
+				if incident_task.id == task.id:
 					return incident
 		return None
 
@@ -921,6 +938,9 @@ class EntityManager:
 
 	def seen_user_notification(self, user_notification):
 		self.database.seen_user_notification(user_notification)
+
+	def create_on_behalf(self, incident, on_behalf):
+		self.database.insert_on_behalf(incident, on_behalf)
 
 	def get_on_behalf(self, incident):
 		on_behalf = self.database.get_on_behalf(incident)

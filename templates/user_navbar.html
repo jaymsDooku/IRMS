@@ -1,8 +1,14 @@
 <li id="raiseIncidentBtn">Raise an Incident</li>
 <li id="yourIncidentsBtn" class="navbar-selected">Your Incidents</li>
 <li id="yourRequestsBtn">Your Requests</li>
+{% if data.user.role.name == 'Resolver' %}
+    <li id="allIncidentsBtn">All Incidents</li>  
+{% endif %}
 {% if data.user.role.name == 'Technician' %}
     <li id="SeeUserRolesBtn">User Roles</li>  
+{% endif %}
+{% if data.user.role.name == 'Service Desk' %}
+	<li id="serviceDeskIncidentsBtn">Service Desk Incidents</li>
 {% endif %}
 <li id="notificationsBtn">Notifications <span id="outstandingNotifications"></span></li>
 <li id="logoutBtn">Log out</li>

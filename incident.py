@@ -108,10 +108,11 @@ class Incident:
 				self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
 		elif self.status.level == Stage.RESOLVED:
 			writer.writerow(["ID", "Title", "Description", "Author", "SLA Identification Deadline", "Date Identified", \
-	        	"SLA Implementation Deadline", "Date Implemented", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
+	        	"SLA Implementation Deadline", "Date Implemented", "Time To Resolve", "Status", "System", "Impact", "Priority", "Severity", "Note Count", \
 	        	"Question Count", "Task Count"])
+			ttr = datetime.strptime(self.date_implemented, '%Y-%m-%d %H:%M:%S') - self.get_date_created()
 			writer.writerow([self.id, self.title, self.description, author_name, self.sla_identification_deadline, self.date_identified, self.sla_implementation_deadline, self.date_implemented, \
-				self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
+				ttr, self.status.level, self.system.name, self.impact.level, self.priority.code, self.severity.code, len(self.notes), len(self.questions), len(self.tasks)])
 
 	def to_sql(self):
 		result = (self.title, self.description, self.author.id, \
